@@ -1,0 +1,85 @@
+---
+config:
+  theme: neutral
+  themeVariables:
+    fontFamily: Arial
+    fontSize: 15px
+    lineColor: "#000000"
+    edgeLabelBackground: "#ffffff"
+  flowchart:
+    curve: basis
+    nodeSpacing: 45
+    rankSpacing: 130
+    htmlLabels: true
+---
+
+%% Figure: Safety Certification Use Case Diagram
+%% Beaker Breakers Studio
+%% Scope: safety training, tier assessment and certificate issue
+%% Source: Chapter 3 requirements FR-02.1 to FR-02.9 and FR-10.5
+%%         SRS Section 20, UC-02 Safety Certification
+
+%% Shape note: Mermaid has no ellipse shape. Use cases are drawn here with the
+%% stadium shape ([text]), which is the nearest oval Mermaid offers. The
+%% Graphviz version of this figure (safety_uc.dot) uses true UML ellipses and
+%% is the one to place in the report.
+
+flowchart LR
+
+    %% ================= Actors =================
+    Student["Student"]
+    Teacher["Teacher"]
+    Admin["Administrator"]
+
+    %% ================= System boundary =================
+    subgraph SYS["Beaker Breakers Studio (Safety Certification Scope)"]
+        UC02(["UC-02<br/>Safety Certification"])
+        UC021(["UC-02.1<br/>Attempt Tier Assessment"])
+        RAND(["Select Random Questions<br/>from Tier Bank"])
+        SCORE(["Compute Score<br/>on Server"])
+        UNLOCK(["Unlock Next Tier"])
+        UC022(["UC-02.2<br/>Receive Safety Certificate"])
+        REATT(["Reattempt Failed Tier"])
+        VIEW(["View Own Safety Certificate"])
+        UC26(["UC-26<br/>Verify Student Certificates"])
+        UC21(["UC-21<br/>Manage Certificate Registry"])
+        EXPORT(["Export Certificate Register"])
+        UC03(["UC-03<br/>Perform Virtual Experiment"])
+    end
+
+    %% ================= Actor associations =================
+    Student --- UC02
+    Student --- UC03
+    Student --- VIEW
+    Teacher --- UC26
+    Admin --- UC21
+
+    %% ================= Include relationships =================
+    UC02 -.->|"&lt;&lt;include&gt;&gt; FR-02.1"| UC021
+    UC02 -.->|"&lt;&lt;include&gt;&gt; FR-02.2"| UNLOCK
+    UC02 -.->|"&lt;&lt;include&gt;&gt; FR-02.7"| UC022
+    UC021 -.->|"&lt;&lt;include&gt;&gt; FR-02.4"| RAND
+    UC021 -.->|"&lt;&lt;include&gt;&gt; FR-02.5"| SCORE
+    UC03 -.->|"&lt;&lt;include&gt;&gt; FR-02.3<br/>Tier 1 gate"| UC02
+    UC21 -.->|"&lt;&lt;include&gt;&gt; FR-10.5"| EXPORT
+
+    %% ================= Extend relationship =================
+    REATT -.->|"&lt;&lt;extend&gt;&gt; FR-02.6<br/>[score below 80 percent]"| UC021
+
+    %% ================= Constraint notes =================
+    %% FR-02.1: the four sequential tiers are Basic Lab Rules, Chemical Handling,
+    %%          Fire and Heat Safety, and First Aid and Emergency.
+    %% FR-02.8: no certificate is issued if any tier score is below 80 percent,
+    %%          and an issued certificate is never deleted or revoked.
+    %% FR-02.9: the certificate is shown on the student profile and to the
+    %%          teacher assigned to that student's class, which is why both
+    %%          View Own Safety Certificate and UC-26 appear here.
+
+    %% ================= Styling (outline only, no fill colour) =================
+    classDef actor fill:#ffffff,stroke:#000000,stroke-width:1.5px,color:#000000
+    classDef uc fill:#ffffff,stroke:#000000,stroke-width:1.5px,color:#000000
+
+    class Student,Teacher,Admin actor
+    class UC02,UC021,RAND,SCORE,UNLOCK,UC022,REATT,VIEW,UC26,UC21,EXPORT,UC03 uc
+
+    style SYS fill:#ffffff,stroke:#000000,stroke-width:1.5px,color:#000000

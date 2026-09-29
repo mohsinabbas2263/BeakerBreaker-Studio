@@ -1,0 +1,73 @@
+---
+config:
+  theme: neutral
+  themeVariables:
+    fontFamily: Arial
+    fontSize: 15px
+    lineColor: "#000000"
+    edgeLabelBackground: "#ffffff"
+  flowchart:
+    curve: basis
+    nodeSpacing: 55
+    rankSpacing: 130
+    htmlLabels: true
+---
+
+%% Figure 3.1: System Context Diagram
+%% Beaker Breakers Studio
+%% Source: SRS Section 3.1 System Context, Section 5 User Classes,
+%%         Section 6 Operating Environment, Section 8.3 Software Interfaces
+%% Requirement identifiers follow Chapter 3 (Requirements)
+%% Reading order: left column = human user classes, centre = the system itself,
+%%                right column = external services.
+%% The circle is the system under specification; every node outside it is
+%% external to the system boundary.
+
+flowchart LR
+
+    %% ================= Human user classes (four) =================
+    Student["Student"]
+    Teacher["Teacher"]
+    Admin["Administrator"]
+    Maint["System Maintainer"]
+
+    %% ================= System under specification =================
+    %% The single process circle represents the whole of Beaker Breakers Studio.
+    %% Everything outside it lies beyond the system boundary.
+    CORE(("Beaker Breakers<br/>Studio"))
+
+    %% ================= External services (five) =================
+    AI["AI Language Service<br/>(Gemini API)"]
+    VOICE["Voice Synthesis Service<br/>(ElevenLabs API)"]
+    PUSH["Push Notification Service<br/>(Firebase Cloud Messaging)"]
+    MAIL["Transactional Email Service<br/>(SendGrid)"]
+    RT["Real Time Event Service<br/>(Pusher)"]
+
+    %% ================= User class flows =================
+    Student <-- "sends: login credentials, safety quiz answers, experiment step actions<br/>receives: AI guidance, step feedback, experience points, badges, safety certificate" --> CORE
+
+    Teacher <-- "sends: class task assignments, broadcast messages, report requests<br/>receives: live class status, readiness classification, class progress reports" --> CORE
+
+    Admin <-- "sends: user and class records, bulk account import, library configuration<br/>receives: school wide analytics, safety certificate register, data exports" --> CORE
+
+    Maint <-- "sends: deployment actions, configuration updates, restore request<br/>receives: availability and health indicators, recoverable data copies" --> CORE
+
+    %% ================= External service flows =================
+    CORE <-- "sends: step context and six dimension score data<br/>receives: guidance text, readiness classification" --> AI
+
+    CORE <-- "sends: narration text<br/>receives: synthesised voice audio" --> VOICE
+
+    CORE <-- "sends: push notification payloads<br/>receives: delivery acknowledgement" --> PUSH
+
+    CORE <-- "sends: account, password reset and report emails<br/>receives: delivery status" --> MAIL
+
+    CORE <-- "sends: live class and leaderboard events<br/>receives: subscription and channel status" --> RT
+
+    %% ================= Styling (outline only, no fill colour) =================
+    classDef actor fill:#ffffff,stroke:#000000,stroke-width:1.5px,color:#000000
+    classDef ext fill:#ffffff,stroke:#000000,stroke-width:1.5px,stroke-dasharray:5 4,color:#000000
+    classDef core fill:#ffffff,stroke:#000000,stroke-width:2px,color:#000000
+
+    class Student,Teacher,Admin,Maint actor
+    class AI,VOICE,PUSH,MAIL,RT ext
+    class CORE core
