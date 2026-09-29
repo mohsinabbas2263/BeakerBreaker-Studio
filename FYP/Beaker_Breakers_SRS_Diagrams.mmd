@@ -1,0 +1,596 @@
+%% =====================================================================
+%%  BEAKER BREAKERS STUDIO
+%%  AI-Powered Gamified Virtual Chemistry Laboratory Portal
+%%
+%%  SRS REQUIREMENTS MODELS — MERMAID SOURCE
+%%  Companion to: Software Requirements Specification v1.0
+%%                (prepared in accordance with ISO/IEC/IEEE 29148:2018)
+%%
+%%  Contains 16 diagrams (Figure 1 - Figure 16).
+%%  Each diagram is delimited by a banner comment and may be pasted
+%%  individually into https://mermaid.live or any Mermaid renderer.
+%%
+%%  MERMAID NOTATION LIMITATIONS (documented, not defects):
+%%   1. Mermaid has no native UML use-case diagram type. Use-case models
+%%      below are expressed as flowcharts using the conventions:
+%%        ((text))  = use case (ellipse)
+%%        [text]    = actor
+%%        subgraph  = system boundary
+%%        -.->|"<<include>>"|  /  -.->|"<<extend>>"|  = UML dependencies
+%%        -.->|"<<generalization>>"| = actor generalisation
+%%   2. Mermaid has no native DFD type. DFDs below use flowcharts with:
+%%        ((text))  = process        [text]  = external entity
+%%        [(text)]  = data store
+%%   3. Mermaid stateDiagram-v2 does not render UML "final state" as a
+%%      bullseye in all versions; [*] is used per Mermaid convention.
+%%   4. Mermaid erDiagram does not express optionality beyond crow's-foot
+%%      o/| markers; cardinality is therefore also stated in the SRS text.
+%% =====================================================================
+
+
+%% ---------------------------------------------------------------------
+%% Figure 1: System Context Diagram
+%% SRS source: SRS §3.1 System Context; §8.3 Software Interfaces; §5 User Classes
+%% ---------------------------------------------------------------------
+flowchart LR
+    Student["Student"]
+    Teacher["Teacher"]
+    Admin["Administrator"]
+    Maint["System Maintainer"]
+
+    subgraph SYS["Beaker Breakers Studio — System Boundary"]
+        CORE(("Beaker Breakers Studio"))
+    end
+
+    Gemini["Gemini API"]
+    Eleven["ElevenLabs API"]
+    FCM["Firebase Cloud Messaging"]
+    SendGrid["SendGrid"]
+    Pusher["Pusher"]
+
+    Student -->|"credentials, quiz answers, step completions"| CORE
+    CORE -->|"AI guidance, XP, badges, certificate, notifications"| Student
+    Teacher -->|"task definitions, report requests, broadcasts"| CORE
+    CORE -->|"live class status, readiness reports, class reports"| Teacher
+    Admin -->|"account and class data, library configuration, CSV import"| CORE
+    CORE -->|"school analytics, certificate registry, exports"| Admin
+    Maint -->|"restore request (BR-03)"| CORE
+    CORE -->|"system health status"| Maint
+
+    CORE -->|"step context, six-dimension score data"| Gemini
+    Gemini -->|"guidance text, readiness classification"| CORE
+    CORE -->|"narration text"| Eleven
+    Eleven -->|"voice audio"| CORE
+    CORE -->|"push payloads"| FCM
+    CORE -->|"transactional email"| SendGrid
+    CORE -->|"live class events"| Pusher
+
+
+%% ---------------------------------------------------------------------
+%% Figure 2: Overall Use Case Diagram
+%% SRS source: SRS §4 Product Functions; §9 Role-Permission Matrix; §11 Functional Requirements; §20 Use Cases
+%% ---------------------------------------------------------------------
+flowchart LR
+    User["User"]
+    Student["Student"]
+    Teacher["Teacher"]
+    Admin["Administrator"]
+    Maint["System Maintainer"]
+
+    subgraph SYS["Beaker Breakers Studio — System Boundary"]
+        subgraph AUTH["Authentication and Account Access (11.1)"]
+            UC01((UC-01<br/>Log In))
+            UC07((UC-07<br/>Reset Password))
+        end
+        subgraph LEARN["Safety and Experimentation (11.2-11.5)"]
+            UC02((UC-02<br/>Safety Certification))
+            UC08((UC-08<br/>Browse Experiment Library))
+            UC03((UC-03<br/>Perform Virtual Experiment))
+            UC09((UC-09<br/>Take Knowledge Quiz))
+            UC04((UC-04<br/>AR Mode Session))
+        end
+        subgraph GAM["Gamification and Engagement (11.6-11.7)"]
+            UC10((UC-10<br/>Earn Rewards))
+            UC11((UC-11<br/>Daily Missions and Streaks))
+            UC12((UC-12<br/>View Leaderboard))
+            UC13((UC-13<br/>View Own Readiness Status))
+        end
+        subgraph TEACH["Teacher Class Management (11.8-11.9)"]
+            UC05((UC-05<br/>Generate AI Readiness Report))
+            UC06((UC-06<br/>Assign Task))
+            UC14((UC-14<br/>Monitor Class))
+            UC15((UC-15<br/>Broadcast Notification))
+            UC16((UC-16<br/>Review Class Reports))
+        end
+        subgraph ADMIN["Administration and Reporting (11.10, 17)"]
+            UC17((UC-17<br/>Manage User Accounts))
+            UC18((UC-18<br/>Bulk Import Students))
+            UC19((UC-19<br/>Manage Classes))
+            UC20((UC-20<br/>Configure Experiment Library))
+            UC21((UC-21<br/>Manage Certificate Registry))
+            UC22((UC-22<br/>Generate Analytics and Export Reports))
+        end
+        subgraph OPS["Operations (18)"]
+            UC23((UC-23<br/>Restore From Backup))
+            UC24((UC-24<br/>Monitor System Health))
+        end
+    end
+
+    Student -.->|"&lt;&lt;generalization&gt;&gt;"| User
+    Teacher -.->|"&lt;&lt;generalization&gt;&gt;"| User
+    Admin -.->|"&lt;&lt;generalization&gt;&gt;"| User
+
+    User --- UC01
+    User --- UC07
+    Student --- UC02
+    Student --- UC08
+    Student --- UC03
+    Student --- UC04
+    Student --- UC10
+    Student --- UC11
+    Student --- UC12
+    Student --- UC13
+    Teacher --- UC05
+    Teacher --- UC06
+    Teacher --- UC14
+    Teacher --- UC15
+    Teacher --- UC16
+    Admin --- UC17
+    Admin --- UC18
+    Admin --- UC19
+    Admin --- UC20
+    Admin --- UC21
+    Admin --- UC22
+    Maint --- UC23
+    Maint --- UC24
+
+    UC03 -.->|"&lt;&lt;include&gt;&gt;"| UC09
+    UC03 -.->|"&lt;&lt;include&gt;&gt; Tier 1 gate"| UC02
+    UC09 -.->|"&lt;&lt;include&gt;&gt;"| UC10
+    UC04 -.->|"&lt;&lt;extend&gt;&gt;"| UC03
+
+
+%% ---------------------------------------------------------------------
+%% Figure 3: Student Use Case Diagram
+%% SRS source: SRS §11.1-11.7; §20 UC-01 to UC-04; §9 Student permission column
+%% ---------------------------------------------------------------------
+flowchart LR
+    Student["Student"]
+    Gemini["Gemini API<br/>&lt;&lt;external&gt;&gt;"]
+
+    subgraph SYS["Beaker Breakers Studio — Student Scope"]
+        UC01((UC-01<br/>Log In))
+        UC07((UC-07<br/>Reset Password))
+        UC02((UC-02<br/>Safety Certification))
+        UC02a((UC-02.1<br/>Attempt Tier Quiz))
+        UC02b((UC-02.2<br/>Receive Safety Certificate))
+        UC08((UC-08<br/>Browse Experiment Library))
+        UC03((UC-03<br/>Perform Virtual Experiment))
+        UC25((UC-25<br/>Receive AI Step Guidance))
+        UC09((UC-09<br/>Take Knowledge Quiz))
+        UC04((UC-04<br/>AR Mode Session))
+        UC10((UC-10<br/>Earn Rewards))
+        UC11((UC-11<br/>Daily Missions and Streaks))
+        UC12((UC-12<br/>View Leaderboard))
+        UC13((UC-13<br/>View Own Readiness Status))
+    end
+
+    Student --- UC01
+    Student --- UC07
+    Student --- UC02
+    Student --- UC08
+    Student --- UC03
+    Student --- UC04
+    Student --- UC10
+    Student --- UC11
+    Student --- UC12
+    Student --- UC13
+
+    UC02 -.->|"&lt;&lt;include&gt;&gt;"| UC02a
+    UC02 -.->|"&lt;&lt;include&gt;&gt;"| UC02b
+    UC03 -.->|"&lt;&lt;include&gt;&gt; IR-02"| UC02
+    UC03 -.->|"&lt;&lt;include&gt;&gt; FR-03.5"| UC25
+    UC03 -.->|"&lt;&lt;include&gt;&gt; FR-04.1"| UC09
+    UC09 -.->|"&lt;&lt;include&gt;&gt; FR-04.3"| UC10
+    UC04 -.->|"&lt;&lt;extend&gt;&gt;"| UC03
+    UC25 --- Gemini
+
+
+%% ---------------------------------------------------------------------
+%% Figure 4: Teacher Use Case Diagram
+%% SRS source: SRS §11.8-11.9; §17 Reporting; §20 UC-05, UC-06; §9 Teacher permission column
+%% ---------------------------------------------------------------------
+flowchart LR
+    Teacher["Teacher"]
+    Gemini["Gemini API<br/>&lt;&lt;external&gt;&gt;"]
+    FCM["Firebase Cloud Messaging<br/>&lt;&lt;external&gt;&gt;"]
+    SendGrid["SendGrid<br/>&lt;&lt;external&gt;&gt;"]
+    Pusher["Pusher<br/>&lt;&lt;external&gt;&gt;"]
+
+    subgraph SYS["Beaker Breakers Studio — Teacher Scope"]
+        UC01((UC-01<br/>Log In))
+        UC14((UC-14<br/>Monitor Class))
+        UC06((UC-06<br/>Assign Task))
+        UC06a((UC-06.1<br/>Track Task Status))
+        UC05((UC-05<br/>Generate AI Readiness Report))
+        UC15((UC-15<br/>Broadcast Notification))
+        UC16((UC-16<br/>Review Class Reports))
+        UC12((UC-12<br/>View Leaderboard - own class))
+        UC26((UC-26<br/>Verify Student Certificates))
+    end
+
+    Teacher --- UC01
+    Teacher --- UC14
+    Teacher --- UC06
+    Teacher --- UC05
+    Teacher --- UC15
+    Teacher --- UC16
+    Teacher --- UC12
+    Teacher --- UC26
+
+    UC06 -.->|"&lt;&lt;include&gt;&gt;"| UC06a
+    UC06 -.->|"&lt;&lt;include&gt;&gt; FR-09.3"| UC15
+    UC05 --- Gemini
+    UC15 --- FCM
+    UC15 --- SendGrid
+    UC14 --- Pusher
+
+    NOTE["Scope constraint FR-09.4 / IR-07:<br/>every Teacher use case is restricted to<br/>students of the teacher's assigned class"]
+
+
+%% ---------------------------------------------------------------------
+%% Figure 5: Administrator Use Case Diagram
+%% SRS source: SRS §11.1 (FR-01.5); §11.10; §17 Reporting; §19 Audit; §9 Admin permission column
+%% ---------------------------------------------------------------------
+flowchart LR
+    Admin["Administrator"]
+    SendGrid["SendGrid<br/>&lt;&lt;external&gt;&gt;"]
+
+    subgraph SYS["Beaker Breakers Studio — Administrator Scope"]
+        UC01((UC-01<br/>Log In))
+        UC17((UC-17<br/>Manage User Accounts))
+        UC18((UC-18<br/>Bulk Import Students))
+        UC19((UC-19<br/>Manage Classes))
+        UC20((UC-20<br/>Configure Experiment Library))
+        UC21((UC-21<br/>Manage Certificate Registry))
+        UC22((UC-22<br/>Generate Analytics and Export Reports))
+        UC27((UC-27<br/>Record Audit Entry))
+    end
+
+    Admin --- UC01
+    Admin --- UC17
+    Admin --- UC18
+    Admin --- UC19
+    Admin --- UC20
+    Admin --- UC21
+    Admin --- UC22
+
+    UC17 -.->|"&lt;&lt;include&gt;&gt; AL-02"| UC27
+    UC18 -.->|"&lt;&lt;include&gt;&gt; AL-02"| UC27
+    UC21 -.->|"&lt;&lt;include&gt;&gt; AL-03"| UC27
+    UC22 -.->|"&lt;&lt;include&gt;&gt; AL-03"| UC27
+    UC18 --- SendGrid
+
+    NOTE["DR-06: accounts are created only by the Administrator.<br/>No public self-registration use case exists."]
+
+
+%% ---------------------------------------------------------------------
+%% Figure 6: External Integration Use Case Diagram
+%% SRS source: SRS §8.3 Software Interfaces; §12 NFR-06; §18 Backup
+%% ---------------------------------------------------------------------
+flowchart LR
+    Gemini["Gemini API<br/>&lt;&lt;external&gt;&gt;"]
+    Eleven["ElevenLabs API<br/>&lt;&lt;external&gt;&gt;"]
+    FCM["Firebase Cloud Messaging<br/>&lt;&lt;external&gt;&gt;"]
+    SendGrid["SendGrid<br/>&lt;&lt;external&gt;&gt;"]
+    Pusher["Pusher<br/>&lt;&lt;external&gt;&gt;"]
+    Maint["System Maintainer"]
+
+    subgraph SYS["Beaker Breakers Studio — External Integration Scope"]
+        UC25((UC-25<br/>Receive AI Step Guidance))
+        UC05((UC-05<br/>Generate AI Readiness Report))
+        UC15((UC-15<br/>Broadcast Notification))
+        UC07((UC-07<br/>Reset Password))
+        UC14((UC-14<br/>Monitor Class))
+        UC23((UC-23<br/>Restore From Backup))
+        UC24((UC-24<br/>Monitor System Health))
+        UCV((Narrate Guidance<br/>NO SUPPORTING FR — gap G-02))
+    end
+
+    UC25 --- Gemini
+    UC05 --- Gemini
+    UC15 --- FCM
+    UC15 --- SendGrid
+    UC07 --- SendGrid
+    UC14 --- Pusher
+    UCV --- Eleven
+    Maint --- UC23
+    Maint --- UC24
+
+    NOTE["Fallback behaviour NFR-06 and 8.3:<br/>Gemini unavailable to pre-written hints<br/>FCM unavailable to in-app notification<br/>Pusher unavailable to 30-second polling<br/>SendGrid 3 retries over 24 hours"]
+
+
+%% ---------------------------------------------------------------------
+%% Figure 7: Data Flow Diagram — Level 0
+%% SRS source: SRS §3.1 System Context; §4 Product Functions
+%% ---------------------------------------------------------------------
+flowchart LR
+    Student["Student"]
+    Teacher["Teacher"]
+    Admin["Administrator"]
+    Gemini["Gemini API"]
+    Notif["FCM / SendGrid / Pusher"]
+
+    P0(("0<br/>Beaker Breakers Studio"))
+
+    Student -->|"credentials, quiz answers, step completions"| P0
+    P0 -->|"AI guidance, XP, badges, certificate, notifications"| Student
+    Teacher -->|"task definitions, report requests, broadcasts"| P0
+    P0 -->|"class status, readiness reports, class reports"| Teacher
+    Admin -->|"account and class data, library configuration"| P0
+    P0 -->|"analytics, certificate registry, exports"| Admin
+    P0 -->|"step context, dimension scores"| Gemini
+    Gemini -->|"guidance, classification"| P0
+    P0 -->|"push, email and live event payloads"| Notif
+
+
+%% ---------------------------------------------------------------------
+%% Figure 8: Data Flow Diagram — Level 1
+%% SRS source: SRS §11 Functional Requirements; §16 Data Requirements; §19 Audit
+%% ---------------------------------------------------------------------
+flowchart LR
+    Student["Student"]
+    Teacher["Teacher"]
+    Admin["Administrator"]
+    Gemini["Gemini API"]
+    Notif["FCM / SendGrid / Pusher"]
+
+    P1(("1.0<br/>Authenticate and Authorise"))
+    P2(("2.0<br/>Safety Certification"))
+    P3(("3.0<br/>Experiment Execution"))
+    P4(("4.0<br/>Assessment and Rewards"))
+    P5(("5.0<br/>Readiness Reporting"))
+    P6(("6.0<br/>Class Management"))
+    P7(("7.0<br/>Administration and Reporting"))
+
+    D1[("D1 users / student_profiles")]
+    D2[("D2 safety_attempts / certificates")]
+    D3[("D3 experiments / experiment_steps")]
+    D4[("D4 experiment_sessions / rewards")]
+    D5[("D5 readiness_reports")]
+    D6[("D6 tasks / task_assignments / notifications")]
+    D7[("D7 audit_logs")]
+
+    Student -->|credentials| P1
+    Teacher -->|credentials| P1
+    Admin -->|credentials| P1
+    P1 -->|verify user| D1
+    P1 -->|"login event AL-01"| D7
+    P1 -->|session token| Student
+
+    Student -->|tier quiz answers| P2
+    P2 -->|attempt, certificate| D2
+    P2 -->|tier pass event| P4
+    P2 -->|tier result, certificate| Student
+
+    Student -->|step completions| P3
+    P3 -->|read experiment| D3
+    P3 -->|session state| D4
+    P3 -->|step context| Gemini
+    Gemini -->|guidance| P3
+    P3 -->|AI guidance, progress| Student
+    P3 -->|completion event| P4
+
+    Student -->|quiz answers| P4
+    P4 -->|score, XP, badges| D4
+    P4 -->|XP, badges, leaderboard| Student
+
+    Teacher -->|report request| P5
+    P5 -->|read session data| D4
+    P5 -->|dimension scores| Gemini
+    Gemini -->|classification| P5
+    P5 -->|store report| D5
+    P5 -->|readiness report| Teacher
+    P5 -->|own readiness status| Student
+
+    Teacher -->|task definition, broadcast| P6
+    P6 -->|tasks, assignments, notifications| D6
+    P6 -->|read class roster| D1
+    P6 -->|push, email, live events| Notif
+    P6 -->|live class status| Teacher
+    P6 -->|task, notification| Student
+
+    Admin -->|account and class data, config| P7
+    P7 -->|manage users| D1
+    P7 -->|library config| D3
+    P7 -->|certificate registry| D2
+    P7 -->|"admin action AL-02 / AL-03"| D7
+    P7 -->|analytics, exports| Admin
+    P7 -->|welcome email| Notif
+
+
+%% ---------------------------------------------------------------------
+%% Figure 9: Activity Diagram — Safety Certification
+%% SRS source: SRS §11.2 FR-02.1 to FR-02.6; §14 DR-02; §15 IR-10; §20 UC-02
+%% ---------------------------------------------------------------------
+flowchart TB
+    ST(("Start")) --> A1["Open Safety Training"]
+    A1 --> A2["System presents lowest unlocked tier N"]
+    A2 --> A3["System randomises questions from tier N bank (FR-02.3)"]
+    A3 --> A4["Student submits answers"]
+    A4 --> A5["System computes score server-side (IR-05)"]
+    A5 --> D1{"score &gt;= 80 percent"}
+    D1 -->|"no"| A6["Display result with retry option (FR-02.6)"]
+    A6 --> A3
+    D1 -->|"yes"| A7["Mark tier N passed, unlock tier N+1, award 50 XP"]
+    A7 --> D2{"N = 4"}
+    D2 -->|"no"| A2
+    D2 -->|"yes"| A8["Issue certificate with UUID and four tier scores (FR-02.4)"]
+    A8 --> A9["Display on student profile and teacher safety review (FR-02.5)"]
+    A9 --> EN((("End")))
+
+
+%% ---------------------------------------------------------------------
+%% Figure 10: Activity Diagram — Perform Virtual Experiment
+%% SRS source: SRS §11.3-11.4, §11.6-11.7; §12 NFR-05, NFR-06; §15 IR-02, IR-05; §20 UC-03
+%% ---------------------------------------------------------------------
+flowchart TB
+    ST(("Start")) --> A1["Browse experiment library (UC-08)"]
+    A1 --> D0{"Safety Tier 1 passed"}
+    D0 -->|"no"| A0["Deny access, redirect to Safety Training (IR-02)"] --> EN((("End")))
+    D0 -->|"yes"| D1{"prerequisites met"}
+    D1 -->|"no"| A01["Experiment shown locked (FR-03.2)"] --> EN
+    D1 -->|"yes"| A2["Open experiment, display chemical equation and explanation (FR-03.4)"]
+    A2 --> A3["Complete next step by tap-to-complete (FR-03.3)"]
+    A3 --> A4["Request AI step guidance"]
+    A4 --> D2{"Gemini API available"}
+    D2 -->|"yes"| A5["Display Beaky guidance within 2 s"]
+    D2 -->|"no"| A6["Display pre-written fallback hint (NFR-06)"]
+    A5 --> A7["Persist step state (NFR-05)"]
+    A6 --> A7
+    A7 --> D3{"all steps complete"}
+    D3 -->|"no"| A3
+    D3 -->|"yes"| A8["Unlock and present knowledge quiz (FR-04.1)"]
+    A8 --> A9["Grade quiz server-side, show per-answer feedback (FR-04.2)"]
+    A9 --> D4{"score &gt;= 80 percent"}
+    D4 -->|"no"| A10["Record attempt, offer retry (FR-04.4)"] --> A9
+    D4 -->|"yes"| D5{"XP not yet awarded"}
+    D5 -->|"no"| EN
+    D5 -->|"yes"| A11["Award XP once (FR-04.3), evaluate badges and rank"]
+    A11 --> A12["Update leaderboard within 2 s (FR-07.2)"] --> EN
+
+
+%% ---------------------------------------------------------------------
+%% Figure 11: Activity Diagram — AR Experiment Session
+%% SRS source: SRS §11.5 FR-05.1 to FR-05.5; §12 NFR-12; §20 UC-04
+%% ---------------------------------------------------------------------
+flowchart TB
+    ST(("Start")) --> A1["Select AR-enabled experiment and tap Launch AR"]
+    A1 --> D1{"device supports ARCore or ARKit"}
+    D1 -->|"no"| A5["Launch Simulation AR mode within 1 s, clearly labelled (FR-05.3)"]
+    D1 -->|"yes"| A2["Request camera permission"]
+    A2 --> D2{"permission granted"}
+    D2 -->|"no"| A5
+    D2 -->|"yes"| A3["Scan for flat surface within 3 s (FR-05.1)"]
+    A3 --> D3{"surface detected"}
+    D3 -->|"no"| A5
+    D3 -->|"yes"| A4["Anchor 3D overlay, enable Rotate, Beaky and Exit (FR-05.2)"]
+    A4 --> A6["Student performs experiment in selected mode"]
+    A5 --> A6
+    A6 --> A7["Exit: stop camera streams and release resources (FR-05.4)"]
+    A7 --> A8["Log AR session with mode and device (FR-05.5)"]
+    A8 --> EN((("End")))
+
+
+%% ---------------------------------------------------------------------
+%% Figure 12: Activity Diagram — AI Readiness Report Generation
+%% SRS source: SRS §11.8 FR-08.1 to FR-08.4; §11.9 FR-09.4; §15 IR-07; §19 AL-04; §20 UC-05
+%% ---------------------------------------------------------------------
+flowchart TB
+    ST(("Start")) --> A1["Teacher opens AI Readiness and selects a student"]
+    A1 --> D0{"student in teacher's assigned class"}
+    D0 -->|"no"| A0["Reject with HTTP 403 and log denial (IR-07, AL-04)"] --> EN((("End")))
+    D0 -->|"yes"| D1{"student has 3 or more completed experiments"}
+    D1 -->|"no"| A2["Explain data requirement, no report generated"] --> EN
+    D1 -->|"yes"| A3["Compute six performance dimensions (FR-08.1)"]
+    A3 --> A4["Submit to Gemini API, response within 5 s (FR-08.2)"]
+    A4 --> D2{"Gemini API responds"}
+    D2 -->|"no"| A5["Offer retry"] --> A4
+    D2 -->|"yes"| A6["Classify as Not Ready, Approaching Readiness or Ready (FR-08.3)"]
+    A6 --> A7["Store report with teacher, student and timestamp (FR-08.4)"]
+    A7 --> A8["Display on class monitor, student may view own status"]
+    A8 --> EN
+
+
+%% ---------------------------------------------------------------------
+%% Figure 13: Activity Diagram — Teacher Task Assignment
+%% SRS source: SRS §11.9 FR-09.1 to FR-09.4; §15 IR-07; §19 AL-04; §20 UC-06
+%% ---------------------------------------------------------------------
+flowchart TB
+    ST(("Start")) --> A1["Teacher opens Task Assignment"]
+    A1 --> A2["Select experiment, target and due date"]
+    A2 --> D1{"due date in future"}
+    D1 -->|"no"| A3["Display validation error"] --> A2
+    D1 -->|"yes"| D2{"target within teacher's assigned class"}
+    D2 -->|"no"| A4["Reject with HTTP 403 and log denial (IR-07, AL-04)"] --> EN((("End")))
+    D2 -->|"yes"| A5["Create task and per-student assignment rows (FR-09.2)"]
+    A5 --> FORK["fork"]
+    FORK --> A6["Dispatch notification via FCM, in-app or email (FR-09.3)"]
+    FORK --> A7["Display task on student's assigned-task list"]
+    A6 --> JOIN["join"]
+    A7 --> JOIN
+    JOIN --> A8["Teacher tracks status on class dashboard (FR-09.1)"]
+    A8 --> EN
+
+
+%% ---------------------------------------------------------------------
+%% Figure 14: State Machine Diagram — Task Lifecycle
+%% SRS source: SRS §11.9 FR-09.2; §16 task_assignments
+%% ---------------------------------------------------------------------
+stateDiagram-v2
+    [*] --> Assigned : teacher assigns task (FR-09.2)
+    Assigned --> InProgress : student opens experiment
+    InProgress --> Completed : quiz passed at 80 percent or above (FR-04.3)
+    Assigned --> Overdue : due date reached
+    InProgress --> Overdue : due date reached
+    Overdue --> Completed : late completion
+    Completed --> [*]
+
+
+%% ---------------------------------------------------------------------
+%% Figure 15: State Machine Diagram — Safety Certification
+%% SRS source: SRS §11.2 FR-02.1, FR-02.2; §14 DR-02, DR-05; §15 IR-02, IR-10
+%% ---------------------------------------------------------------------
+stateDiagram-v2
+    [*] --> Uncertified
+    Uncertified --> Tier1Passed : tier 1 score at least 80 percent
+    Tier1Passed --> Tier2Passed : tier 2 score at least 80 percent
+    Tier2Passed --> Tier3Passed : tier 3 score at least 80 percent
+    Tier3Passed --> Certified : tier 4 score at least 80 percent / issue certificate
+    Uncertified --> Uncertified : score below 80 percent / retry
+    Tier1Passed --> Tier1Passed : score below 80 percent / retry
+    Tier2Passed --> Tier2Passed : score below 80 percent / retry
+    Tier3Passed --> Tier3Passed : score below 80 percent / retry
+    Certified --> [*]
+
+    note right of Certified
+        DR-02: 80 percent threshold is fixed policy
+        IR-10: no certificate if any tier below 80 percent
+        DR-05: issued certificates are never deleted
+    end note
+
+
+%% ---------------------------------------------------------------------
+%% Figure 16: Entity Relationship Diagram
+%% SRS source: SRS §16 Data Requirements — Entity List
+%% ---------------------------------------------------------------------
+erDiagram
+    SCHOOLS ||--o{ USERS : "employs / enrols"
+    SCHOOLS ||--o{ CLASSES : "operates"
+    USERS ||--o| STUDENT_PROFILES : "has"
+    CLASSES ||--o{ STUDENT_PROFILES : "contains"
+    CLASSES ||--o{ CLASS_TEACHERS : "assigned via"
+    USERS ||--o{ CLASS_TEACHERS : "teaches via"
+
+    EXPERIMENTS ||--o{ EXPERIMENT_STEPS : "consists of"
+    EXPERIMENTS ||--o{ EXPERIMENT_QUIZ_QUESTIONS : "assessed by"
+    EXPERIMENTS ||--o| EXPERIMENTS : "prerequisite of"
+
+    USERS ||--o{ EXPERIMENT_SESSIONS : "student performs"
+    EXPERIMENTS ||--o{ EXPERIMENT_SESSIONS : "instantiated as"
+    USERS ||--o{ SAFETY_ATTEMPTS : "student attempts"
+    SAFETY_TIER_QUESTIONS ||--o{ SAFETY_ATTEMPTS : "answered in"
+    USERS ||--o| CERTIFICATES : "student holds"
+    USERS ||--o{ READINESS_REPORTS : "student is subject of"
+    USERS ||--o{ REWARDS : "student earns"
+
+    USERS ||--o{ TASKS : "teacher creates"
+    EXPERIMENTS ||--o{ TASKS : "assigned as"
+    TASKS ||--o{ TASK_ASSIGNMENTS : "fans out to"
+    USERS ||--o{ TASK_ASSIGNMENTS : "student receives"
+
+    USERS ||--o{ NOTIFICATIONS : "recipient of"
+    USERS ||--o{ FCM_TOKENS : "registers"
+    USERS ||--o{ AUDIT_LOGS : "actor of"
+
+

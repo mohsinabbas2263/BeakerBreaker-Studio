@@ -1,0 +1,24 @@
+sequenceDiagram
+  actor S as Student
+  participant C as Client
+  participant AI as AI Assistant Service
+  participant X as Context Builder
+  participant KB as Knowledge Base
+  participant L as LLM Provider
+  participant SF as Safety Filter
+  participant DB as Database
+
+  S->>C: ask question
+  C->>AI: POST /ai/query (+ sessionId)
+  AI->>X: build context
+  X->>DB: read session, current step, experiment
+  X->>KB: retrieve relevant passages
+  KB-->>X: grounded passages
+  X-->>AI: assembled prompt
+  AI->>L: request completion
+  L-->>AI: draft response
+  AI->>SF: screen response
+  SF-->>AI: approved / rewritten / refused
+  AI->>DB: log AIInteraction
+  AI-->>C: educational response
+  C-->>S: display guidance

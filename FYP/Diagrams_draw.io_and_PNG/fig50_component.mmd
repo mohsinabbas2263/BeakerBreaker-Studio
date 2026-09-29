@@ -1,0 +1,45 @@
+flowchart LR
+  UI["Client UI (web / mobile)"]
+  Lab["3D Laboratory Engine"]
+  ARc["AR Component"]
+  Auth["Authentication Component"]
+  Stu["Student Management"]
+  Tea["Teacher Management"]
+  Adm["Administration"]
+  Exp["Experiment Management"]
+  Sim["Chemistry Simulation Component"]
+  AI["AI Assistant Component"]
+  Saf["Safety Engine"]
+  Ass["Assessment Engine"]
+  Gam["Gamification Engine"]
+  Not["Notification Component"]
+  Rep["Reporting & Analytics"]
+  Data["Data Access Layer"]
+
+  UI --> Auth
+  UI --> Lab
+  UI --> Stu
+  UI --> AI
+  Lab --> Exp
+  Lab --> Sim
+  Lab --> Saf
+  ARc -.->|reuses scene + assets| Lab
+  Exp --> Data
+  Sim --> Data
+  Saf --> Data
+  Ass -->|readiness gate| Exp
+  Ass -->|safety quizzes| Saf
+  Ass --> Data
+  AI -->|safety screening| Saf
+  AI -->|experiment context| Exp
+  AI --> Data
+  Exp -->|completion events| Gam
+  Saf -->|safe-practice events| Gam
+  Gam --> Data
+  Gam --> Not
+  Tea --> Rep
+  Adm --> Data
+  Rep --> Data
+  Stu --> Data
+  Tea --> Data
+  Auth --> Data

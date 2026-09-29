@@ -1,0 +1,146 @@
+classDiagram
+  class User {
+    <<abstract>>
+    -userId : int
+    -name : string
+    -email : string
+    -passwordHash : string
+    -role : enum
+    +login()
+    +logout()
+  }
+  class Student {
+    -classId : int
+    -totalPoints : int
+    -level : int
+    +startSession()
+    +submitAttempt()
+    +viewProgress()
+  }
+  class Teacher {
+    -subject : string
+    +assignExperiment()
+    +viewClassProgress()
+    +reviewAttempts()
+  }
+  class Administrator {
+    +manageUsers()
+    +manageContent()
+    +configureSafety()
+  }
+  class ClassGroup {
+    -classId : int
+    -name : string
+    -academicYear : string
+    +getStudents()
+  }
+  class Experiment {
+    -experimentId : int
+    -title : string
+    -difficulty : enum
+    -objective : text
+    -theory : text
+    +getSteps()
+    +getRequirements()
+  }
+  class ExperimentStep {
+    -stepIndex : int
+    -instruction : text
+    -expectedAction : json
+    -expectedObservation : text
+    +validate(action)
+  }
+  class Equipment {
+    -name : string
+    -assetRef : string
+  }
+  class Chemical {
+    -name : string
+    -formula : string
+    -hazardClass : string
+  }
+  class ExperimentSession {
+    -sessionId : int
+    -startedAt : datetime
+    -stepsCompleted : json
+    -status : enum
+    +recordStep()
+    +complete()
+    +reset()
+  }
+  class Result {
+    -score : decimal
+    -observations : json
+    -dimensionScores : json
+    +evaluate()
+  }
+  class Assessment {
+    -type : enum
+    -passMark : int
+    +generate()
+  }
+  class Question {
+    -text : text
+    -options : json
+    -correctIndex : int
+  }
+  class Attempt {
+    -score : decimal
+    -passed : bool
+    -answers : json
+    +grade()
+  }
+  class SafetyRule {
+    -ruleCode : string
+    -description : text
+    -severity : enum
+    +evaluate(action)
+  }
+  class Certification {
+    -certificateId : uuid
+    -tierScores : json
+    -issuedAt : datetime
+    +issue()
+  }
+  class Progress {
+    -experimentsDone : int
+    -points : int
+    -level : int
+    +update()
+  }
+  class Badge {
+    -code : string
+    -name : string
+    -criteria : json
+  }
+  class Achievement {
+    -earnedAt : datetime
+  }
+  class AIInteraction {
+    -query : text
+    -response : text
+    -contextRef : json
+    -createdAt : datetime
+  }
+
+  User <|-- Student
+  User <|-- Teacher
+  User <|-- Administrator
+  ClassGroup "1" -- "1..*" Student
+  Teacher "*" -- "*" ClassGroup
+  Experiment "1" *-- "1..*" ExperimentStep
+  Experiment "*" -- "*" Equipment
+  Experiment "*" -- "*" Chemical
+  Experiment "*" -- "*" SafetyRule
+  Experiment "1" -- "1..*" Assessment
+  Assessment "1" *-- "1..*" Question
+  Student "1" -- "*" Attempt
+  Assessment "1" -- "*" Attempt
+  Student "1" -- "*" ExperimentSession
+  Experiment "1" -- "*" ExperimentSession
+  ExperimentSession "1" *-- "1" Result
+  ExperimentSession "1" -- "*" AIInteraction
+  Student "1" -- "1" Progress
+  Student "1" -- "*" Achievement
+  Badge "1" -- "*" Achievement
+  Student "1" -- "0..1" Certification

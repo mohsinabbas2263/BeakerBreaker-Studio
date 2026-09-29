@@ -1,0 +1,24 @@
+sequenceDiagram
+  actor S as Student
+  participant C as Client
+  participant E as Experiment Service
+  participant SIM as Simulation Component
+  participant G as Gamification Engine
+  participant DB as Database
+  participant R as Cache
+
+  S->>C: complete final step
+  C->>E: POST /sessions/{id}/steps
+  E->>SIM: validate action against step rule
+  SIM-->>E: outcome + observation
+  E->>DB: persist step state
+  C->>E: POST /sessions/{id}/complete
+  E->>DB: write Result (score, dimension scores)
+  E->>G: emit completion event
+  G->>DB: read Progress + Badge criteria
+  G->>DB: award points, update level
+  G->>DB: insert Achievement (if criteria met)
+  G->>R: update leaderboard
+  G-->>E: rewards summary
+  E-->>C: result + rewards
+  C-->>S: show result, badge, points

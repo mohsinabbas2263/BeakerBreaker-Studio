@@ -1,0 +1,45 @@
+flowchart LR
+  Student([Student])
+  Teacher([Teacher])
+  Admin([Administrator])
+
+  U1(("Register / Log In"))
+  U2(("Browse Experiment Library"))
+  U3(("Complete Safety Certification"))
+  U4(("Take Readiness Assessment"))
+  U5(("Perform Virtual Experiment"))
+  U6(("Query AI Assistant"))
+  U7(("View Progress & Achievements"))
+  U8(("Use AR Mode"))
+  U9(("Assign Experiment"))
+  U10(("Monitor Student Progress"))
+  U11(("Review Assessment Results"))
+  U12(("View Analytics"))
+  U13(("Manage Users"))
+  U14(("Manage Experiment & Chemistry Content"))
+  U15(("Configure Safety Rules"))
+  U16(("Generate Reports"))
+
+  Student --- U1
+  Student --- U2
+  Student --- U3
+  Student --- U4
+  Student --- U5
+  Student --- U6
+  Student --- U7
+  Student --- U8
+  Teacher --- U1
+  Teacher --- U9
+  Teacher --- U10
+  Teacher --- U11
+  Teacher --- U12
+  Admin --- U1
+  Admin --- U13
+  Admin --- U14
+  Admin --- U15
+  Admin --- U16
+
+  U5 -.->|include: readiness gate| U4
+  U5 -.->|include: certification gate| U3
+  U6 -.->|extend| U5
+  U8 -.->|extend| U5

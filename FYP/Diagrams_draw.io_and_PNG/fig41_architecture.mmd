@@ -1,0 +1,51 @@
+flowchart TB
+  subgraph P["PRESENTATION LAYER"]
+    Web["Web Client<br/>React.js + Next.js"]
+    Mob["Mobile Client<br/>Flutter (Android / iOS)"]
+    Lab3D["3D Virtual Laboratory Renderer<br/>(WebGL)"]
+    ARv["AR View (optional)"]
+  end
+  subgraph A["APPLICATION LAYER — Laravel REST API"]
+    Auth["Authentication & RBAC"]
+    ExpS["Experiment Service"]
+    SimS["Chemistry Simulation<br/>(rule-based)"]
+    SafeS["Safety Engine"]
+    AssS["Assessment & Readiness Engine"]
+    GamS["Gamification Engine"]
+    AIS["AI Assistant Service"]
+    NotS["Notification Service"]
+    RepS["Reporting & Analytics"]
+  end
+  subgraph DL["DATA LAYER"]
+    DB[("MySQL")]
+    Cache[("Redis")]
+    Obj[("Object Storage")]
+  end
+  subgraph E["EXTERNAL SERVICES"]
+    LLM["LLM Provider"]
+    KB["Curated Chemistry<br/>Knowledge Base"]
+    Push["Push / Email Delivery"]
+    CDN["CDN"]
+  end
+
+  Web --> Auth
+  Mob --> Auth
+  Lab3D --> ExpS
+  ARv -.-> ExpS
+  Auth --> DB
+  Auth --> Cache
+  ExpS --> SimS
+  ExpS --> DB
+  ExpS --> Obj
+  SimS --> DB
+  SafeS --> DB
+  AssS --> DB
+  GamS --> DB
+  GamS --> Cache
+  AIS --> LLM
+  AIS --> KB
+  AIS --> Cache
+  AIS -.->|safety filter| SafeS
+  NotS --> Push
+  RepS --> DB
+  Obj --> CDN

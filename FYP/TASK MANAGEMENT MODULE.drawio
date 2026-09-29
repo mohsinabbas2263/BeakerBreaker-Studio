@@ -1,0 +1,113 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.1 Chrome/142.0.7444.265 Electron/39.8.0 Safari/537.36" version="29.6.1">
+  <diagram name="Page-1" id="tXknYBWDLu-3qrgtnLWB">
+    <mxGraphModel dx="582" dy="357" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="rxhjsMRxgVCSygXqT_LY-1" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};participant=umlActor;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;align=center;size=65;fillColor=#dae8fc;strokeColor=light-dark(#000000, #5c79a3);strokeWidth=2;" value="Teacher" vertex="1">
+          <mxGeometry height="680" width="35" x="20" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="rxhjsMRxgVCSygXqT_LY-17" parent="rxhjsMRxgVCSygXqT_LY-1" style="shape=umlDestroy;whiteSpace=wrap;html=1;strokeWidth=3;targetShapes=umlLifeline;" value="" vertex="1">
+          <mxGeometry height="30" width="30" x="2" y="620" as="geometry" />
+        </mxCell>
+        <mxCell id="rxhjsMRxgVCSygXqT_LY-2" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};participant=umlActor;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;align=center;size=65;fillColor=#dae8fc;strokeColor=light-dark(#000000, #5c79a3);strokeWidth=2;" value="Student" vertex="1">
+          <mxGeometry height="640" width="45" x="220" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="rxhjsMRxgVCSygXqT_LY-18" parent="rxhjsMRxgVCSygXqT_LY-2" style="shape=umlDestroy;whiteSpace=wrap;html=1;strokeWidth=3;targetShapes=umlLifeline;" value="" vertex="1">
+          <mxGeometry height="30" width="30" x="8" y="620" as="geometry" />
+        </mxCell>
+        <mxCell id="rxhjsMRxgVCSygXqT_LY-3" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};size=65;fillColor=#dae8fc;strokeColor=light-dark(#000000, #5c79a3);strokeWidth=2;" value="Client" vertex="1">
+          <mxGeometry height="630" width="150" x="420" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="rxhjsMRxgVCSygXqT_LY-19" parent="rxhjsMRxgVCSygXqT_LY-3" style="shape=umlDestroy;whiteSpace=wrap;html=1;strokeWidth=3;targetShapes=umlLifeline;" value="" vertex="1">
+          <mxGeometry height="30" width="30" x="60" y="620" as="geometry" />
+        </mxCell>
+        <mxCell id="rxhjsMRxgVCSygXqT_LY-4" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};size=65;fillColor=#dae8fc;strokeColor=light-dark(#000000, #5c79a3);strokeWidth=2;" value="API" vertex="1">
+          <mxGeometry height="640" width="150" x="620" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="rxhjsMRxgVCSygXqT_LY-20" parent="rxhjsMRxgVCSygXqT_LY-4" style="shape=umlDestroy;whiteSpace=wrap;html=1;strokeWidth=3;targetShapes=umlLifeline;" value="" vertex="1">
+          <mxGeometry height="30" width="30" x="60" y="620" as="geometry" />
+        </mxCell>
+        <mxCell id="rxhjsMRxgVCSygXqT_LY-5" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};size=65;fillColor=#dae8fc;strokeColor=light-dark(#000000, #5c79a3);strokeWidth=2;" value="DB" vertex="1">
+          <mxGeometry height="630" width="150" x="820" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="rxhjsMRxgVCSygXqT_LY-21" parent="rxhjsMRxgVCSygXqT_LY-5" style="shape=umlDestroy;whiteSpace=wrap;html=1;strokeWidth=3;targetShapes=umlLifeline;" value="" vertex="1">
+          <mxGeometry height="30" width="30" x="60" y="620" as="geometry" />
+        </mxCell>
+        <mxCell id="rxhjsMRxgVCSygXqT_LY-6" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};size=65;fillColor=#dae8fc;strokeColor=light-dark(#000000, #5c79a3);strokeWidth=2;" value="Notify" vertex="1">
+          <mxGeometry height="680" width="150" x="1020" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="rxhjsMRxgVCSygXqT_LY-7" edge="1" parent="1" source="rxhjsMRxgVCSygXqT_LY-1" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;fillColor=#dae8fc;strokeColor=light-dark(#000000, #5c79a3);strokeWidth=2;" target="rxhjsMRxgVCSygXqT_LY-3" value="Create Task">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="304" y="127" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rxhjsMRxgVCSygXqT_LY-8" edge="1" parent="1" source="rxhjsMRxgVCSygXqT_LY-3" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;fillColor=#dae8fc;strokeColor=light-dark(#000000, #5c79a3);strokeWidth=2;" target="rxhjsMRxgVCSygXqT_LY-4" value="Submit Task">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="604" y="179" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rxhjsMRxgVCSygXqT_LY-9" edge="1" parent="1" source="rxhjsMRxgVCSygXqT_LY-4" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;fillColor=#dae8fc;strokeColor=light-dark(#000000, #5c79a3);strokeWidth=2;" target="rxhjsMRxgVCSygXqT_LY-5" value="Save Task">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="804" y="231" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rxhjsMRxgVCSygXqT_LY-10" edge="1" parent="1" source="rxhjsMRxgVCSygXqT_LY-4" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;fillColor=#dae8fc;strokeColor=light-dark(#000000, #5c79a3);strokeWidth=2;" target="rxhjsMRxgVCSygXqT_LY-6" value="Notify Student">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="904" y="283" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rxhjsMRxgVCSygXqT_LY-11" edge="1" parent="1" source="rxhjsMRxgVCSygXqT_LY-6" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;dashPattern=2 3;endArrow=block;fillColor=#dae8fc;strokeColor=light-dark(#000000, #5c79a3);strokeWidth=2;" target="rxhjsMRxgVCSygXqT_LY-2" value="Task Alert">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="707" y="335" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rxhjsMRxgVCSygXqT_LY-12" edge="1" parent="1" source="rxhjsMRxgVCSygXqT_LY-2" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;fillColor=#dae8fc;strokeColor=light-dark(#000000, #5c79a3);strokeWidth=2;" target="rxhjsMRxgVCSygXqT_LY-3" value="View Tasks">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="404" y="387" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rxhjsMRxgVCSygXqT_LY-13" edge="1" parent="1" source="rxhjsMRxgVCSygXqT_LY-3" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;fillColor=#dae8fc;strokeColor=light-dark(#000000, #5c79a3);strokeWidth=2;" target="rxhjsMRxgVCSygXqT_LY-4" value="Request Tasks">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="604" y="439" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rxhjsMRxgVCSygXqT_LY-14" edge="1" parent="1" source="rxhjsMRxgVCSygXqT_LY-4" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;fillColor=#dae8fc;strokeColor=light-dark(#000000, #5c79a3);strokeWidth=2;" target="rxhjsMRxgVCSygXqT_LY-5" value="Fetch Tasks">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="804" y="491" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rxhjsMRxgVCSygXqT_LY-15" edge="1" parent="1" source="rxhjsMRxgVCSygXqT_LY-5" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;dashPattern=2 3;endArrow=block;fillColor=#dae8fc;strokeColor=light-dark(#000000, #5c79a3);strokeWidth=2;" target="rxhjsMRxgVCSygXqT_LY-4" value="Task Data">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="807" y="543" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rxhjsMRxgVCSygXqT_LY-16" edge="1" parent="1" source="rxhjsMRxgVCSygXqT_LY-4" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;dashPattern=2 3;endArrow=block;fillColor=#dae8fc;strokeColor=light-dark(#000000, #5c79a3);strokeWidth=2;" target="rxhjsMRxgVCSygXqT_LY-3" value="Show Tasks">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="607" y="595" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

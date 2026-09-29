@@ -1,0 +1,25 @@
+erDiagram
+  USER ||--o| STUDENT : "is a"
+  USER ||--o| TEACHER : "is a"
+  CLASSGROUP ||--o{ STUDENT : contains
+  TEACHER }o--o{ CLASSGROUP : teaches
+
+  EXPERIMENT ||--o{ EXPERIMENTSTEP : "consists of"
+  EXPERIMENT }o--o{ EQUIPMENT : requires
+  EXPERIMENT }o--o{ CHEMICAL : requires
+  EXPERIMENT }o--o{ SAFETYRULE : "governed by"
+  EXPERIMENT ||--o{ ASSESSMENT : has
+
+  ASSESSMENT ||--o{ QUESTION : contains
+  STUDENT ||--o{ ATTEMPT : makes
+  ASSESSMENT ||--o{ ATTEMPT : "evaluated by"
+
+  STUDENT ||--o{ EXPERIMENTSESSION : performs
+  EXPERIMENT ||--o{ EXPERIMENTSESSION : "instantiated as"
+  EXPERIMENTSESSION ||--|| RESULT : produces
+  EXPERIMENTSESSION ||--o{ AIINTERACTION : logs
+
+  STUDENT ||--|| PROGRESS : has
+  STUDENT ||--o{ ACHIEVEMENT : earns
+  BADGE ||--o{ ACHIEVEMENT : "awarded as"
+  STUDENT ||--o| CERTIFICATION : holds

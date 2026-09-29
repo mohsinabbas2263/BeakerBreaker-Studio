@@ -1,0 +1,26 @@
+flowchart TB
+  Desktop["Student / Teacher Desktop Browser<br/>(WebGL)"]
+  Mobile["Mobile Device (Flutter app)"]
+  ARdev["AR-capable Mobile Device<br/>(ARCore / ARKit)"]
+  CDNEdge["CDN / TLS Edge"]
+
+  subgraph Cloud["Cloud Infrastructure"]
+    App["Application Server<br/>(Laravel REST API)"]
+    DBs[("Database Server (MySQL)")]
+    Cch[("Cache Server (Redis)")]
+    Store[("Object Storage<br/>3D assets, exports")]
+  end
+
+  AIsvc["External AI Service (LLM provider)"]
+  Msg["Push / Email Delivery Services"]
+
+  Desktop -->|HTTPS| CDNEdge
+  Mobile -->|HTTPS| CDNEdge
+  ARdev -.->|HTTPS| CDNEdge
+  CDNEdge -->|HTTPS| App
+  CDNEdge -->|asset delivery| Store
+  App -->|SQL / TLS| DBs
+  App -->|cache, sessions| Cch
+  App -->|signed URLs| Store
+  App -->|HTTPS async| AIsvc
+  App -->|HTTPS| Msg

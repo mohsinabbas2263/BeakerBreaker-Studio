@@ -1,0 +1,12 @@
+flowchart TB
+  ST((Start)) --> S1["Open Safety Certification<br/>(lowest unlocked tier N)"]
+  S1 --> S2["Study tier safety material<br/>(hazards, PPE, rules)"]
+  S2 --> S3["Attempt tier safety quiz"]
+  S3 --> D1{"Score >= pass mark?"}
+  D1 -- no --> S4["Show gap feedback;<br/>allow retry with regenerated questions"] --> S3
+  D1 -- yes --> S5["Mark tier passed;<br/>unlock tier N+1"]
+  S5 --> D2{"All tiers passed?"}
+  D2 -- no --> S1
+  D2 -- yes --> S6["Issue Certification record<br/>(identifier, tier scores, timestamp)"]
+  S6 --> S7["Certification visible to student<br/>and assigned teacher"]
+  S7 --> EN(((End)))
