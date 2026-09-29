@@ -289,7 +289,7 @@ Every requirement identifier used across the diagrams, the SRS and the design ch
 | Name | Role |
 |:--|:--|
 | **Rabail** | Project lead, frontend and documentation |
-| **Syed Mohsin Abbas** | Backend |
+| **Syed Mohsin Abbas** | Backend, Project Managment (github) and architecture design  |
 | *Supervisor* | *Ma'am Mehk Fatima* |
 
 **Department of Computer Science, The University of Chenab, Gujrat, Pakistan**
