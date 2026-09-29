@@ -11,7 +11,7 @@
 <br/>
 
 [![Status](https://img.shields.io/badge/status-in%20development-F5A623?style=for-the-badge)](#-roadmap)
-[![Final Year Project](https://img.shields.io/badge/Final%20Year%20Project-BSCS-4A90D9?style=for-the-badge)](#-the-team)
+[![Final Year Project](https://img.shields.io/badge/Final%20Year%20Project-BS-4A90D9?style=for-the-badge)](#-the-team)
 [![University of Chenab](https://img.shields.io/badge/University%20of%20Chenab-Gujrat-2E7D32?style=for-the-badge)](#-the-team)
 [![License](https://img.shields.io/badge/license-TBD-lightgrey?style=for-the-badge)](#-license)
 
@@ -290,7 +290,7 @@ Every requirement identifier used across the diagrams, the SRS and the design ch
 |:--|:--|
 | **Rabail** | Project lead, frontend and documentation |
 | **Syed Mohsin Abbas** | Backend |
-| *Supervisor* | *to be added* |
+| *Supervisor* | *Ma'am Mehk Fatima* |
 
 **Department of Computer Science, The University of Chenab, Gujrat, Pakistan**
 Final Year Project, BSCS
