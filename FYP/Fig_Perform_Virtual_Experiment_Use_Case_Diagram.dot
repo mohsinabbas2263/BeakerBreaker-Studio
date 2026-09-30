@@ -1,0 +1,117 @@
+/* Figure: Perform Virtual Experiment Use Case Diagram
+ * Beaker Breakers Studio
+ * Scope: experiment selection, step execution, AI guidance, knowledge quiz and AR mode
+ * Source: Chapter 3 requirements FR-03.1 to FR-03.8, FR-04.1 to FR-04.5,
+ *         FR-05.1 to FR-05.6, FR-06.1, FR-02.3, NFR-05, NFR-06
+ *         SRS Section 20, UC-03 Perform Virtual Experiment
+ * Use cases are drawn as true ellipses, per UML.
+ * Render: dot -Tpng -Gdpi=180 experiment_uc.dot -o experiment_uc.png
+ */
+
+digraph PerformVirtualExperiment {
+    rankdir = LR;
+    splines = spline;
+    nodesep = 0.42;
+    ranksep = 1.25;
+    bgcolor = "white";
+    fontname = "Arial";
+
+    node [fontname = "Arial", fontsize = 11, color = "black", fontcolor = "black"];
+    edge [fontname = "Arial", fontsize = 9, color = "black", fontcolor = "black"];
+
+    /* ---------------- Actors (outside the boundary) ---------------- */
+    node [shape = box, width = 1.5, height = 0.5];
+    Student [label = "Student"];
+    Gemini  [label = "Gemini API\n«external»"];
+
+    /* ---------------- System boundary ---------------- */
+    subgraph cluster_sys {
+        label = "Beaker Breakers Studio (Virtual Experiment Scope)";
+        labelloc = "t";
+        fontsize = 12;
+        fontname = "Arial";
+        color = "black";
+        margin = 26;
+
+        node [shape = ellipse, width = 1.95, height = 0.85];
+
+        /* core */
+        UC03   [label = "UC-03\nPerform Virtual\nExperiment"];
+        UC08   [label = "UC-08\nBrowse Experiment\nLibrary"];
+        FILTER [label = "Filter Library by\nDifficulty and Topic"];
+        UC02   [label = "UC-02\nSafety Certification"];
+        PREREQ [label = "Verify Prerequisite\nExperiment"];
+        STEPS  [label = "Present Steps in\nDeclared Order"];
+        RECORD [label = "Record Step\nCompletion"];
+        EQN    [label = "Display Chemical Equation\nand Explanatory Note"];
+        RESUME [label = "Resume Incomplete\nExperiment"];
+        REPEAT [label = "Repeat Completed\nExperiment"];
+
+        /* guidance */
+        UC25    [label = "UC-25\nReceive AI Step\nGuidance"];
+        PREAUTH [label = "Present Pre Authored\nGuidance"];
+
+        /* quiz */
+        UC09    [label = "UC-09\nTake Knowledge Quiz"];
+        FEEDBK  [label = "Show Answer Feedback\nand Explanation"];
+        RECQ    [label = "Record Quiz Attempt"];
+        UC10    [label = "UC-10\nAward Experience\nPoints"];
+        REQUIZ  [label = "Reattempt Failed Quiz"];
+
+        /* augmented reality */
+        UC04 [label = "UC-04\nAR Mode Session"];
+        CAM  [label = "Request Camera\nPermission"];
+        SURF [label = "Detect and Anchor\nto Surface"];
+        SIM  [label = "Present Simulated\nMode"];
+        REL  [label = "Release Camera and\nMotion Sensors"];
+
+        NOTE1 [shape = note, fontsize = 9,
+               label = "NFR-05\nNo recorded progress, experience\npoint or badge is lost on a page\nrefresh, session expiry or network\ninterruption."];
+
+        NOTE2 [shape = note, fontsize = 9,
+               label = "FR-06.2\nExperience points are never\nawarded for the speed at which\na step or quiz is completed."];
+    }
+
+    /* ---------------- Actor associations ---------------- */
+    edge [arrowhead = none, style = solid];
+    Student -> UC03;
+    Student -> UC08;
+    UC25 -> Gemini;
+
+    /* UC-04, UC-09 and UC-25 carry no direct actor association: an included or
+     * extending use case is never initiated by the actor on its own. The
+     * student reaches them through UC-03. */
+
+    /* ---------------- Include relationships ---------------- */
+    edge [arrowhead = vee, style = dashed, decorate = true];
+    UC08 -> FILTER [label = "«include»\nFR-03.2"];
+
+    UC03 -> UC02   [label = "«include»\nFR-02.3\nTier 1 gate"];
+    UC03 -> PREREQ [label = "«include»\nFR-03.3"];
+    UC03 -> STEPS  [label = "«include»\nFR-03.4"];
+    UC03 -> RECORD [label = "«include»\nFR-03.5"];
+    UC03 -> EQN    [label = "«include»\nFR-03.6"];
+    UC03 -> UC25   [label = "«include»\nFR-03.7"];
+    UC03 -> UC09   [label = "«include»\nFR-04.1"];
+
+    UC09 -> FEEDBK [label = "«include»\nFR-04.2"];
+    UC09 -> RECQ   [label = "«include»\nFR-04.4"];
+    UC09 -> UC10   [label = "«include»\nFR-04.3"];
+
+    UC04 -> CAM  [label = "«include»\nFR-05.2"];
+    UC04 -> SURF [label = "«include»\nFR-05.3"];
+    UC04 -> REL  [label = "«include»\nFR-05.6"];
+
+    /* ---------------- Extend relationships ---------------- */
+    PREAUTH -> UC25 [label = "«extend»\nNFR-06\n[AI service unavailable]"];
+    REQUIZ  -> UC09 [label = "«extend»\nFR-04.5\n[quiz not passed]"];
+    SIM     -> UC04 [label = "«extend»\nFR-05.4\n[device unsupported, permission\nrefused or no surface found]"];
+    UC04    -> UC03 [label = "«extend»\nFR-05.1\n[AR available for experiment]"];
+    RESUME  -> UC03 [label = "«extend»\nFR-03.5\n[experiment incomplete]"];
+    REPEAT  -> UC03 [label = "«extend»\nFR-03.8\n[experiment already complete]"];
+
+    /* ---------------- Note attachments ---------------- */
+    edge [arrowhead = none, style = dotted];
+    NOTE1 -> RECORD;
+    NOTE2 -> UC10;
+}
