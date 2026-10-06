@@ -1,0 +1,257 @@
+<mxfile host="Electron">
+  <diagram id="B3HZ055_rw6REhJLXg7l" name="Page-1">
+    <mxGraphModel dx="1964" dy="1252" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <UserObject label="" mermaidData="{&#xa;  &quot;data&quot;: &quot;---\nconfig:\n  theme: neutral\n  themeVariables:\n    fontFamily: Arial\n    fontSize: 15px\n    lineColor: \&quot;#000000\&quot;\n    edgeLabelBackground: \&quot;#ffffff\&quot;\n  flowchart:\n    curve: basis\n    nodeSpacing: 45\n    rankSpacing: 135\n    htmlLabels: true\n---\n\n%% Figure: Gamification Use Case Diagram\n%% Beaker Breakers Studio\n%% Scope: experience points, badges, rank levels, streaks, missions, leaderboard\n%% Source: Chapter 3 requirements FR-06.1 to FR-06.5, FR-07.1 to FR-07.3,\n%%         FR-04.3, NFR-05\n%%         SRS Section 20, UC-10 Earn Rewards,\n%%         UC-11 Daily Missions and Streaks, UC-12 View Leaderboard\n\n%% Shape note: Mermaid has no ellipse shape. Use cases are drawn here with the\n%% stadium shape ([text]). The Graphviz version of this figure uses true UML\n%% ellipses and is the one to place in the report.\n\nflowchart LR\n\n    %% ================= Actors =================\n    Student[\&quot;Student\&quot;]\n    Teacher[\&quot;Teacher\&quot;]\n    Pusher[\&quot;Pusher&lt;br/&gt;&amp;lt;&amp;lt;external&amp;gt;&amp;gt;\&quot;]\n\n    %% ================= System boundary =================\n    subgraph SYS[\&quot;Beaker Breakers Studio (Gamification Scope)\&quot;]\n        UC10([\&quot;UC-10&lt;br/&gt;Earn Rewards\&quot;])\n        XP([\&quot;Award Experience Points by Experiment&lt;br/&gt;Difficulty or Safety Tier Passed\&quot;])\n        BADGE([\&quot;Award a Badge Once&lt;br/&gt;from the Badge Set\&quot;])\n        RANK([\&quot;Assign One of Eight Rank Levels\&quot;])\n\n        UC11([\&quot;UC-11&lt;br/&gt;Daily Missions and Streaks\&quot;])\n        MISS([\&quot;Present Three Daily Missions\&quot;])\n        RESET([\&quot;Replace the Missions at Midnight PKT\&quot;])\n        STREAK([\&quot;Record Consecutive Days of Activity\&quot;])\n        SBADGE([\&quot;Award a Streak Badge at&lt;br/&gt;7, 30 and 100 Days\&quot;])\n\n        UC12([\&quot;UC-12&lt;br/&gt;View Leaderboard\&quot;])\n        FIELDS([\&quot;Show Display Name, Avatar,&lt;br/&gt;Rank Level and Points Only\&quot;])\n        PUSHUC([\&quot;Reflect a Points Change&lt;br/&gt;Within 2 Seconds\&quot;])\n\n        %% context: the two events that cause rewards to be awarded\n        UC09([\&quot;UC-09&lt;br/&gt;Take Knowledge Quiz\&quot;])\n        UC02([\&quot;UC-02&lt;br/&gt;Safety Certification\&quot;])\n    end\n\n    %% ================= Actor associations =================\n    %% UC-10 carries no direct actor association: rewards are awarded by the\n    %% system as a consequence of UC-09 or UC-02, not initiated by the student.\n    Student --- UC09\n    Student --- UC02\n    Student --- UC11\n    Student --- UC12\n    Teacher --- UC12\n    PUSHUC --- Pusher\n\n    %% ================= Include relationships =================\n    UC09 -.-&gt;|\&quot;&amp;lt;&amp;lt;include&amp;gt;&amp;gt; FR-04.3\&quot;| UC10\n    UC02 -.-&gt;|\&quot;&amp;lt;&amp;lt;include&amp;gt;&amp;gt; FR-06.1\&quot;| UC10\n\n    UC10 -.-&gt;|\&quot;&amp;lt;&amp;lt;include&amp;gt;&amp;gt; FR-06.1\&quot;| XP\n    UC10 -.-&gt;|\&quot;&amp;lt;&amp;lt;include&amp;gt;&amp;gt; FR-06.3\&quot;| BADGE\n    UC10 -.-&gt;|\&quot;&amp;lt;&amp;lt;include&amp;gt;&amp;gt; FR-06.4\&quot;| RANK\n\n    UC11 -.-&gt;|\&quot;&amp;lt;&amp;lt;include&amp;gt;&amp;gt; FR-07.3\&quot;| MISS\n    UC11 -.-&gt;|\&quot;&amp;lt;&amp;lt;include&amp;gt;&amp;gt; FR-07.3\&quot;| RESET\n    UC11 -.-&gt;|\&quot;&amp;lt;&amp;lt;include&amp;gt;&amp;gt; FR-06.5\&quot;| STREAK\n\n    UC12 -.-&gt;|\&quot;&amp;lt;&amp;lt;include&amp;gt;&amp;gt; FR-07.1\&quot;| FIELDS\n    UC12 -.-&gt;|\&quot;&amp;lt;&amp;lt;include&amp;gt;&amp;gt; FR-07.2\&quot;| PUSHUC\n\n    %% ================= Extend relationship =================\n    SBADGE -.-&gt;|\&quot;&amp;lt;&amp;lt;extend&amp;gt;&amp;gt; FR-06.5&lt;br/&gt;[streak reaches 7, 30 or 100 days]\&quot;| UC11\n\n    %% ================= Constraint notes =================\n    %% FR-06.2: experience points are never awarded for the speed at which a\n    %%          student completes an experiment or a quiz.\n    %% FR-06.4: a student&#39;s points or rank level are never reduced by any\n    %%          operation.\n    %% NFR-05: no awarded point or badge is lost to a refresh, a session expiry\n    %%         or a network interruption.\n\n    %% ================= Styling (outline only, no fill colour) =================\n    classDef actor fill:#ffffff,stroke:#000000,stroke-width:1.5px,color:#000000\n    classDef ext fill:#ffffff,stroke:#000000,stroke-width:1.5px,stroke-dasharray:5 4,color:#000000\n    classDef uc fill:#ffffff,stroke:#000000,stroke-width:1.5px,color:#000000\n\n    class Student,Teacher actor\n    class Pusher ext\n    class UC10,XP,BADGE,RANK,UC11,MISS,RESET,STREAK,SBADGE uc\n    class UC12,FIELDS,PUSHUC,UC09,UC02 uc\n\n    style SYS fill:#ffffff,stroke:#000000,stroke-width:1.5px,color:#000000\n&quot;,&#xa;  &quot;config&quot;: null&#xa;}" id="37">
+          <mxCell connectable="0" parent="1" style="group;transparentBounds=1;editIcon=1;lockedGroup=0;groupPadding=10;" vertex="1">
+            <mxGeometry as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="Beaker Breakers Studio (Gamification Scope)" mermaidId="n:SYS" mermaidBaseStyle="html=1;whiteSpace=wrap;strokeWidth=1.5;verticalAlign=top;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" mermaidBaseValue="Beaker Breakers Studio (Gamification Scope)" id="2">
+          <mxCell parent="37" style="html=1;whiteSpace=wrap;strokeWidth=1.5;verticalAlign=top;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" vertex="1">
+            <mxGeometry height="692" width="1286" x="166" y="10" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="UC-10&#xa;Earn Rewards" mermaidId="n:UC10" mermaidBaseStyle="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" mermaidBaseValue="UC-10&#xa;Earn Rewards" id="3">
+          <mxCell parent="2" style="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" vertex="1">
+            <mxGeometry height="53" width="120" x="578" y="138" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="Award Experience Points by Experiment&#xa;Difficulty or Safety Tier Passed" mermaidId="n:XP" mermaidBaseStyle="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" mermaidBaseValue="Award Experience Points by Experiment&#xa;Difficulty or Safety Tier Passed" id="4">
+          <mxCell parent="2" style="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" vertex="1">
+            <mxGeometry height="53" width="308" x="943" y="45" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="Award a Badge Once&#xa;from the Badge Set" mermaidId="n:BADGE" mermaidBaseStyle="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" mermaidBaseValue="Award a Badge Once&#xa;from the Badge Set" id="5">
+          <mxCell parent="2" style="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" vertex="1">
+            <mxGeometry height="53" width="170" x="1012" y="148" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="Assign One of Eight Rank Levels" mermaidId="n:RANK" mermaidBaseStyle="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" mermaidBaseValue="Assign One of Eight Rank Levels" id="6">
+          <mxCell parent="2" style="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" vertex="1">
+            <mxGeometry height="39" width="250" x="972" y="251" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="UC-11&#xa;Daily Missions and Streaks" mermaidId="n:UC11" mermaidBaseStyle="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" mermaidBaseValue="UC-11&#xa;Daily Missions and Streaks" id="7">
+          <mxCell parent="2" style="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" vertex="1">
+            <mxGeometry height="53" width="209" x="533" y="408" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="Present Three Daily Missions" mermaidId="n:MISS" mermaidBaseStyle="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" mermaidBaseValue="Present Three Daily Missions" id="8">
+          <mxCell parent="2" style="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" vertex="1">
+            <mxGeometry height="39" width="226" x="984" y="340" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="Replace the Missions at Midnight PKT" mermaidId="n:RESET" mermaidBaseStyle="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" mermaidBaseValue="Replace the Missions at Midnight PKT" id="9">
+          <mxCell parent="2" style="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" vertex="1">
+            <mxGeometry height="39" width="289" x="953" y="429" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="Record Consecutive Days of Activity" mermaidId="n:STREAK" mermaidBaseStyle="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" mermaidBaseValue="Record Consecutive Days of Activity" id="10">
+          <mxCell parent="2" style="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" vertex="1">
+            <mxGeometry height="39" width="280" x="957" y="548" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="Award a Streak Badge at&#xa;7, 30 and 100 Days" mermaidId="n:SBADGE" mermaidBaseStyle="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" mermaidBaseValue="Award a Streak Badge at&#xa;7, 30 and 100 Days" id="11">
+          <mxCell parent="2" style="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" vertex="1">
+            <mxGeometry height="53" width="199" x="35" y="408" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="UC-12&#xa;View Leaderboard" mermaidId="n:UC12" mermaidBaseStyle="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" mermaidBaseValue="UC-12&#xa;View Leaderboard" id="12">
+          <mxCell parent="2" style="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" vertex="1">
+            <mxGeometry height="53" width="153" x="58" y="607" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="Show Display Name, Avatar,&#xa;Rank Level and Points Only" mermaidId="n:FIELDS" mermaidBaseStyle="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" mermaidBaseValue="Show Display Name, Avatar,&#xa;Rank Level and Points Only" id="13">
+          <mxCell parent="2" style="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" vertex="1">
+            <mxGeometry height="53" width="221" x="527" y="511" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="Reflect a Points Change&#xa;Within 2 Seconds" mermaidId="n:PUSHUC" mermaidBaseStyle="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" mermaidBaseValue="Reflect a Points Change&#xa;Within 2 Seconds" id="14">
+          <mxCell parent="2" style="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" vertex="1">
+            <mxGeometry height="53" width="193" x="541" y="614" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="UC-09&#xa;Take Knowledge Quiz" mermaidId="n:UC09" mermaidBaseStyle="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" mermaidBaseValue="UC-09&#xa;Take Knowledge Quiz" id="15">
+          <mxCell parent="2" style="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" vertex="1">
+            <mxGeometry height="53" width="175" x="47" y="45" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="UC-02&#xa;Safety Certification" mermaidId="n:UC02" mermaidBaseStyle="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" mermaidBaseValue="UC-02&#xa;Safety Certification" id="16">
+          <mxCell parent="2" style="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" vertex="1">
+            <mxGeometry height="53" width="164" x="53" y="213" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;&amp;nbsp;" mermaidId="e:UC09-&gt;UC10#0" mermaidBaseStyle="curved=1;dashed=1;dashPattern=2 3;fixDash=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=#333333;exitX=1;exitY=0.51;entryX=0;entryY=0.09;" mermaidBaseValue="&amp;lt;&amp;lt;include&amp;gt;&amp;gt; FR-04.3" id="26">
+          <mxCell edge="1" parent="2" source="15" style="curved=1;dashed=1;dashPattern=2 3;fixDash=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=#333333;exitX=1;exitY=0.51;entryX=0;entryY=0.09;" target="3">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points">
+                <mxPoint x="381" y="72" />
+              </Array>
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <UserObject label="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;&amp;nbsp;" mermaidId="e:UC02-&gt;UC10#0" mermaidBaseStyle="curved=1;dashed=1;dashPattern=2 3;fixDash=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=#333333;exitX=1;exitY=0.51;entryX=0;entryY=0.83;" mermaidBaseValue="&amp;lt;&amp;lt;include&amp;gt;&amp;gt; FR-06.1" id="27">
+          <mxCell edge="1" parent="2" source="16" style="curved=1;dashed=1;dashPattern=2 3;fixDash=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=#333333;exitX=1;exitY=0.51;entryX=0;entryY=0.83;" target="3">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points">
+                <mxPoint x="381" y="240" />
+              </Array>
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <UserObject label="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;&amp;nbsp;" mermaidId="e:UC10-&gt;XP#0" mermaidBaseStyle="curved=1;dashed=1;dashPattern=2 3;fixDash=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=#333333;exitX=0.99;exitY=0;entryX=0;entryY=0.51;" mermaidBaseValue="&amp;lt;&amp;lt;include&amp;gt;&amp;gt; FR-06.1" id="28">
+          <mxCell edge="1" parent="2" source="3" style="curved=1;dashed=1;dashPattern=2 3;fixDash=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=#333333;exitX=0.99;exitY=0;entryX=0;entryY=0.51;" target="4">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points">
+                <mxPoint x="846" y="72" />
+              </Array>
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <UserObject label="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;&amp;nbsp;" mermaidId="e:UC10-&gt;BADGE#0" mermaidBaseStyle="curved=1;dashed=1;dashPattern=2 3;fixDash=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=#333333;exitX=1;exitY=0.55;entryX=0;entryY=0.51;" mermaidBaseValue="&amp;lt;&amp;lt;include&amp;gt;&amp;gt; FR-06.3" id="29">
+          <mxCell edge="1" parent="2" style="curved=1;dashed=1;dashPattern=2 3;fixDash=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=#333333;exitX=1;exitY=0.55;entryX=0;entryY=0.51;">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points">
+                <mxPoint x="847" y="175" />
+              </Array>
+              <mxPoint x="699" y="167.14999999999986" as="sourcePoint" />
+              <mxPoint x="1013" y="175.02999999999975" as="targetPoint" />
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <UserObject label="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;&amp;nbsp;" mermaidId="e:UC10-&gt;RANK#0" mermaidBaseStyle="curved=1;dashed=1;dashPattern=2 3;fixDash=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=#333333;exitX=0.93;exitY=1;entryX=0;entryY=0.51;" mermaidBaseValue="&amp;lt;&amp;lt;include&amp;gt;&amp;gt; FR-06.4" id="30">
+          <mxCell edge="1" parent="2" source="3" style="curved=1;dashed=1;dashPattern=2 3;fixDash=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=#333333;exitX=0.93;exitY=1;entryX=0;entryY=0.51;" target="6">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points">
+                <mxPoint x="846" y="271" />
+              </Array>
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <UserObject label="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;&amp;nbsp;" mermaidId="e:UC11-&gt;MISS#0" mermaidBaseStyle="curved=1;dashed=1;dashPattern=2 3;fixDash=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=#333333;exitX=0.85;exitY=0;entryX=0;entryY=0.51;" mermaidBaseValue="&amp;lt;&amp;lt;include&amp;gt;&amp;gt; FR-07.3" id="31">
+          <mxCell edge="1" parent="2" source="7" style="curved=1;dashed=1;dashPattern=2 3;fixDash=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=#333333;exitX=0.85;exitY=0;entryX=0;entryY=0.51;" target="8">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points">
+                <mxPoint x="846" y="360" />
+              </Array>
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <UserObject label="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;&amp;nbsp;" mermaidId="e:UC11-&gt;RESET#0" mermaidBaseStyle="curved=1;dashed=1;dashPattern=2 3;fixDash=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=#333333;exitX=1;exitY=0.64;entryX=0;entryY=0.51;" mermaidBaseValue="&amp;lt;&amp;lt;include&amp;gt;&amp;gt; FR-07.3" id="32">
+          <mxCell edge="1" parent="2" source="7" style="curved=1;dashed=1;dashPattern=2 3;fixDash=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=#333333;exitX=1;exitY=0.64;entryX=0;entryY=0.51;" target="9">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points">
+                <mxPoint x="846" y="449" />
+              </Array>
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <UserObject label="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;&amp;nbsp;" mermaidId="e:UC11-&gt;STREAK#0" mermaidBaseStyle="curved=1;dashed=1;dashPattern=2 3;fixDash=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=#333333;exitX=0.7;exitY=1;entryX=0;entryY=0.51;" mermaidBaseValue="&amp;lt;&amp;lt;include&amp;gt;&amp;gt; FR-06.5" id="33">
+          <mxCell edge="1" parent="2" source="7" style="curved=1;dashed=1;dashPattern=2 3;fixDash=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=#333333;exitX=0.7;exitY=1;entryX=0;entryY=0.51;" target="10">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points">
+                <mxPoint x="864" y="550" />
+              </Array>
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <UserObject label="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;&amp;nbsp;" mermaidId="e:UC12-&gt;FIELDS#0" mermaidBaseStyle="curved=1;dashed=1;dashPattern=2 3;fixDash=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=#333333;exitX=0.94;exitY=0;entryX=0;entryY=0.51;" mermaidBaseValue="&amp;lt;&amp;lt;include&amp;gt;&amp;gt; FR-07.1" id="34">
+          <mxCell edge="1" parent="2" source="12" style="curved=1;dashed=1;dashPattern=2 3;fixDash=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=#333333;exitX=0.94;exitY=0;entryX=0;entryY=0.51;" target="13">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points">
+                <mxPoint x="381" y="538" />
+              </Array>
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <UserObject label="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;&amp;nbsp;" mermaidId="e:UC12-&gt;PUSHUC#0" mermaidBaseStyle="curved=1;dashed=1;dashPattern=2 3;fixDash=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=#333333;exitX=1;exitY=0.55;entryX=0;entryY=0.51;" mermaidBaseValue="&amp;lt;&amp;lt;include&amp;gt;&amp;gt; FR-07.2" id="35">
+          <mxCell edge="1" parent="2" source="12" style="curved=1;dashed=1;dashPattern=2 3;fixDash=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=#333333;exitX=1;exitY=0.55;entryX=0;entryY=0.51;" target="14">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points">
+                <mxPoint x="381" y="641" />
+              </Array>
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <UserObject label="&amp;lt;&amp;lt;extend&amp;gt;&amp;gt;&amp;nbsp;&lt;br&gt;[streak reaches 7, 30 or 100 days]" mermaidId="e:SBADGE-&gt;UC11#0" mermaidBaseStyle="curved=1;dashed=1;dashPattern=2 3;fixDash=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=#333333;exitX=1;exitY=0.51;entryX=0;entryY=0.51;" mermaidBaseValue="&amp;lt;&amp;lt;extend&amp;gt;&amp;gt; FR-06.5&#xa;[streak reaches 7, 30 or 100 days]" id="36">
+          <mxCell edge="1" parent="2" source="11" style="curved=1;dashed=1;dashPattern=2 3;fixDash=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=#333333;exitX=1;exitY=0.51;entryX=0;entryY=0.51;" target="7">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points" />
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <UserObject label="Pusher&#xa;&amp;lt;&amp;lt;external&amp;gt;&amp;gt;" mermaidId="n:Pusher" mermaidBaseStyle="html=1;whiteSpace=wrap;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;dashed=1;dashPattern=5 4;fixDash=1;" mermaidBaseValue="Pusher&#xa;&amp;lt;&amp;lt;external&amp;gt;&amp;gt;" id="19">
+          <mxCell parent="37" style="html=1;whiteSpace=wrap;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;dashed=1;dashPattern=5 4;fixDash=1;" vertex="1">
+            <mxGeometry height="73" width="153" x="1260" y="750" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="" mermaidId="e:Student-&gt;UC09#0" mermaidBaseStyle="curved=1;startArrow=none;endArrow=none;strokeColor=#000000;exitX=0.62;exitY=0;entryX=0;entryY=0.51;" mermaidBaseValue="" id="20">
+          <mxCell edge="1" parent="37" source="cwM7jPMOoniQaYeBhUhL-37" style="curved=1;startArrow=none;endArrow=none;strokeColor=#000000;exitX=1;exitY=0.3333333333333333;entryX=0;entryY=0.51;exitDx=0;exitDy=0;exitPerimeter=0;" target="15">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points">
+                <mxPoint x="151" y="82" />
+                <mxPoint x="176" y="82" />
+              </Array>
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <UserObject label="" mermaidId="e:Student-&gt;UC02#0" mermaidBaseStyle="curved=1;startArrow=none;endArrow=none;strokeColor=#000000;exitX=1;exitY=0.56;entryX=0;entryY=0.51;" mermaidBaseValue="" id="21">
+          <mxCell edge="1" parent="37" source="cwM7jPMOoniQaYeBhUhL-37" style="curved=1;startArrow=none;endArrow=none;strokeColor=#000000;exitX=1;exitY=0.3333333333333333;entryX=0;entryY=0.51;exitDx=0;exitDy=0;exitPerimeter=0;" target="16">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points">
+                <mxPoint x="151" y="250" />
+                <mxPoint x="176" y="250" />
+              </Array>
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <UserObject label="" mermaidId="e:Student-&gt;UC11#0" mermaidBaseStyle="curved=1;startArrow=none;endArrow=none;strokeColor=#000000;exitX=0.79;exitY=1;entryX=0.25;entryY=0;" mermaidBaseValue="" id="22">
+          <mxCell edge="1" parent="37" source="cwM7jPMOoniQaYeBhUhL-37" style="curved=1;startArrow=none;endArrow=none;strokeColor=#000000;exitX=1;exitY=0.3333333333333333;entryX=0.25;entryY=0;exitDx=0;exitDy=0;exitPerimeter=0;" target="7">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points">
+                <mxPoint x="151" y="311" />
+                <mxPoint x="176" y="311" />
+                <mxPoint x="301" y="311" />
+                <mxPoint x="547" y="311" />
+              </Array>
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <UserObject label="" mermaidId="e:Student-&gt;UC12#0" mermaidBaseStyle="curved=1;startArrow=none;endArrow=none;strokeColor=#000000;exitX=0.62;exitY=1;entryX=0.41;entryY=0;" mermaidBaseValue="" id="23">
+          <mxCell edge="1" parent="37" source="cwM7jPMOoniQaYeBhUhL-37" style="curved=1;startArrow=none;endArrow=none;strokeColor=#000000;exitX=1;exitY=1;entryX=0.41;entryY=0;exitDx=0;exitDy=0;exitPerimeter=0;" target="12">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points">
+                <mxPoint x="151" y="404" />
+                <mxPoint x="176" y="404" />
+              </Array>
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <UserObject label="" mermaidId="e:Teacher-&gt;UC12#0" mermaidBaseStyle="curved=1;startArrow=none;endArrow=none;strokeColor=#000000;exitX=1;exitY=0.5;entryX=0;entryY=0.83;" mermaidBaseValue="" id="24">
+          <mxCell edge="1" parent="37" source="cwM7jPMOoniQaYeBhUhL-40" style="curved=1;startArrow=none;endArrow=none;strokeColor=#000000;exitX=1;exitY=0.3333333333333333;entryX=0;entryY=0.83;exitDx=0;exitDy=0;exitPerimeter=0;" target="12">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="" mermaidId="e:PUSHUC-&gt;Pusher#0" mermaidBaseStyle="curved=1;startArrow=none;endArrow=none;strokeColor=#000000;exitX=1;exitY=0.51;entryX=0.05;entryY=0;" mermaidBaseValue="" id="25">
+          <mxCell edge="1" parent="37" source="14" style="curved=1;startArrow=none;endArrow=none;strokeColor=#000000;exitX=1;exitY=0.51;entryX=0.05;entryY=0;" target="19">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points">
+                <mxPoint x="1012" y="651" />
+                <mxPoint x="1640" y="690" />
+              </Array>
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <mxCell id="cwM7jPMOoniQaYeBhUhL-37" parent="37" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" value="&lt;span style=&quot;font-family: &amp;quot;Trebuchet MS&amp;quot;, Verdana, Arial, sans-serif; font-size: 16px; white-space: normal;&quot;&gt;Student&lt;/span&gt;" vertex="1">
+          <mxGeometry height="60" width="30" x="70" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="cwM7jPMOoniQaYeBhUhL-40" parent="37" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" value="&lt;span style=&quot;font-family: &amp;quot;Trebuchet MS&amp;quot;, Verdana, Arial, sans-serif; font-size: 16px; white-space: normal;&quot;&gt;Teacher&lt;/span&gt;" vertex="1">
+          <mxGeometry height="60" width="30" x="90" y="560" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
