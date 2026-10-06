@@ -1,0 +1,169 @@
+<mxfile host="Electron">
+  <diagram id="EmMags_3KQQOcc9W5gFo" name="Page-1">
+    <mxGraphModel dx="1511" dy="963" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <UserObject label="" mermaidData="{&#xa;  &quot;data&quot;: &quot;---\nconfig:\n  theme: neutral\n  themeVariables:\n    fontFamily: Arial\n    fontSize: 15px\n    lineColor: \&quot;#000000\&quot;\n    edgeLabelBackground: \&quot;#ffffff\&quot;\n  flowchart:\n    curve: basis\n    nodeSpacing: 45\n    rankSpacing: 135\n    htmlLabels: true\n---\n\n%% Figure: AI Readiness Reporting Use Case Diagram\n%% Beaker Breakers Studio\n%% Scope: six dimension scoring, readiness classification and report access\n%% Source: Chapter 3 requirements FR-08.1 to FR-08.6, FR-09.1, SR-08\n%%         SRS Section 20, UC-05 Generate AI Readiness Report,\n%%         UC-13 View Own Readiness Status\n\n%% Shape note: Mermaid has no ellipse shape. Use cases are drawn here with the\n%% stadium shape ([text]). The Graphviz version of this figure uses true UML\n%% ellipses and is the one to place in the report.\n\nflowchart LR\n\n    %% ================= Actors =================\n    Teacher[\&quot;Teacher\&quot;]\n    Student[\&quot;Student\&quot;]\n    Gemini[\&quot;Gemini API&lt;br/&gt;&amp;lt;&amp;lt;external&amp;gt;&amp;gt;\&quot;]\n\n    %% ================= System boundary =================\n    subgraph SYS[\&quot;Beaker Breakers Studio (AI Readiness Reporting Scope)\&quot;]\n        UC05([\&quot;UC-05&lt;br/&gt;Generate AI Readiness Report\&quot;])\n        SCOPE([\&quot;Restrict Access to an Assigned Class\&quot;])\n        ELIG([\&quot;Check the Experiment Count&lt;br/&gt;of the Subject\&quot;])\n        DECL([\&quot;Decline the Report and&lt;br/&gt;State the Reason\&quot;])\n        DIM([\&quot;Compute the Six&lt;br/&gt;Performance Dimensions\&quot;])\n        CLASSIFY([\&quot;Classify as Not Ready, Approaching&lt;br/&gt;Readiness or Ready for Real Lab\&quot;])\n        STORE([\&quot;Record the Report with Teacher, Student,&lt;br/&gt;Values, Classification and Time\&quot;])\n\n        UC13([\&quot;UC-13&lt;br/&gt;View Own Readiness Status\&quot;])\n        OWN([\&quot;Present the Values and Classification&lt;br/&gt;of the Requesting Student Only\&quot;])\n    end\n\n    %% ================= Actor associations =================\n    Teacher --- UC05\n    Student --- UC13\n    DIM --- Gemini\n    CLASSIFY --- Gemini\n\n    %% ================= Include relationships =================\n    UC05 -.-&gt;|\&quot;&amp;lt;&amp;lt;include&amp;gt;&amp;gt; FR-09.1\&quot;| SCOPE\n    UC05 -.-&gt;|\&quot;&amp;lt;&amp;lt;include&amp;gt;&amp;gt; FR-08.4\&quot;| ELIG\n    UC05 -.-&gt;|\&quot;&amp;lt;&amp;lt;include&amp;gt;&amp;gt; FR-08.1\&quot;| DIM\n    UC05 -.-&gt;|\&quot;&amp;lt;&amp;lt;include&amp;gt;&amp;gt; FR-08.3\&quot;| CLASSIFY\n    UC05 -.-&gt;|\&quot;&amp;lt;&amp;lt;include&amp;gt;&amp;gt; FR-08.5\&quot;| STORE\n    UC13 -.-&gt;|\&quot;&amp;lt;&amp;lt;include&amp;gt;&amp;gt; FR-08.6\&quot;| OWN\n\n    %% ================= Extend relationship =================\n    DECL -.-&gt;|\&quot;&amp;lt;&amp;lt;extend&amp;gt;&amp;gt; FR-08.4&lt;br/&gt;[fewer than 3 experiments completed]\&quot;| UC05\n\n    %% ================= Constraint notes =================\n    %% FR-08.1: the six dimensions are procedural accuracy, safety compliance,\n    %%          reagent management, time efficiency, conceptual understanding\n    %%          and error recovery.\n    %% FR-08.2: a report is presented within 5 seconds of the teacher request.\n    %% FR-08.6 and SR-08: a student is never shown the dimension values,\n    %%          classification or assessment record of another student.\n\n    %% ================= Styling (outline only, no fill colour) =================\n    classDef actor fill:#ffffff,stroke:#000000,stroke-width:1.5px,color:#000000\n    classDef ext fill:#ffffff,stroke:#000000,stroke-width:1.5px,stroke-dasharray:5 4,color:#000000\n    classDef uc fill:#ffffff,stroke:#000000,stroke-width:1.5px,color:#000000\n\n    class Teacher,Student actor\n    class Gemini ext\n    class UC05,SCOPE,ELIG,DECL,DIM,CLASSIFY,STORE,UC13,OWN uc\n\n    style SYS fill:#ffffff,stroke:#000000,stroke-width:1.5px,color:#000000\n&quot;,&#xa;  &quot;config&quot;: null&#xa;}" id="26">
+          <mxCell connectable="0" parent="1" style="group;transparentBounds=1;editIcon=1;lockedGroup=0;groupPadding=10;" vertex="1">
+            <mxGeometry as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="Beaker Breakers Studio (AI Readiness Reporting Scope)" mermaidId="n:SYS" mermaidBaseStyle="html=1;whiteSpace=wrap;strokeWidth=1.5;verticalAlign=top;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" mermaidBaseValue="Beaker Breakers Studio (AI Readiness Reporting Scope)" id="2">
+          <mxCell parent="26" style="html=1;whiteSpace=wrap;strokeWidth=1.5;verticalAlign=top;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;container=0;" vertex="1">
+            <mxGeometry height="624" width="940" x="410" y="120" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="Gemini API&#xa;&amp;lt;&amp;lt;external&amp;gt;&amp;gt;" mermaidId="n:Gemini" mermaidBaseStyle="html=1;whiteSpace=wrap;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;dashed=1;dashPattern=5 4;fixDash=1;" mermaidBaseValue="Gemini API&#xa;&amp;lt;&amp;lt;external&amp;gt;&amp;gt;" id="14">
+          <mxCell parent="26" style="html=1;whiteSpace=wrap;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;dashed=1;dashPattern=5 4;fixDash=1;container=0;" vertex="1">
+            <mxGeometry height="73" width="153" x="1378" y="351" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="" mermaidId="e:Teacher-&gt;UC05#0" mermaidBaseStyle="curved=1;startArrow=none;endArrow=none;strokeColor=#000000;exitX=1;exitY=0.93;entryX=0.35;entryY=0;" mermaidBaseValue="" id="15">
+          <mxCell edge="1" parent="26" source="mBcvLq-1e8fYP3MSfD9--26" style="curved=1;startArrow=none;endArrow=none;strokeColor=#000000;exitX=1;exitY=0.3333333333333333;entryX=0.35;entryY=0;exitDx=0;exitDy=0;exitPerimeter=0;" target="3">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points">
+                <mxPoint x="410" y="200" />
+              </Array>
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <UserObject label="" mermaidId="e:Student-&gt;UC13#0" mermaidBaseStyle="curved=1;startArrow=none;endArrow=none;strokeColor=#000000;exitX=0.98;exitY=0;entryX=0;entryY=0.51;" mermaidBaseValue="" id="16">
+          <mxCell edge="1" parent="26" source="mBcvLq-1e8fYP3MSfD9--27" style="curved=1;startArrow=none;endArrow=none;strokeColor=#000000;exitX=1;exitY=0.3333333333333333;entryX=0;entryY=0.51;exitDx=0;exitDy=0;exitPerimeter=0;" target="10">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points">
+                <mxPoint x="430" y="610" />
+              </Array>
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <UserObject label="" mermaidId="e:DIM-&gt;Gemini#0" mermaidBaseStyle="curved=1;startArrow=none;endArrow=none;strokeColor=#000000;exitX=1;exitY=0.51;entryX=0.06;entryY=0;" mermaidBaseValue="" id="17">
+          <mxCell edge="1" parent="26" source="7" style="curved=1;startArrow=none;endArrow=none;strokeColor=#000000;exitX=1;exitY=0.51;entryX=0.06;entryY=0;" target="14">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points">
+                <mxPoint x="1328" y="333" />
+                <mxPoint x="1353" y="333" />
+              </Array>
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <UserObject label="" mermaidId="e:CLASSIFY-&gt;Gemini#0" mermaidBaseStyle="curved=1;startArrow=none;endArrow=none;strokeColor=#000000;exitX=1;exitY=0.51;entryX=0;entryY=1;" mermaidBaseValue="" id="18">
+          <mxCell edge="1" parent="26" source="8" style="curved=1;startArrow=none;endArrow=none;strokeColor=#000000;exitX=1;exitY=0.51;entryX=0;entryY=1;" target="14">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points">
+                <mxPoint x="1328" y="436" />
+                <mxPoint x="1353" y="436" />
+              </Array>
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <mxCell id="mBcvLq-1e8fYP3MSfD9--26" parent="26" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" value="&lt;span style=&quot;font-family: &amp;quot;Trebuchet MS&amp;quot;, Verdana, Arial, sans-serif; font-size: 16px; white-space: normal;&quot;&gt;Teacher&lt;/span&gt;" vertex="1">
+          <mxGeometry height="60" width="30" x="320" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="mBcvLq-1e8fYP3MSfD9--27" parent="26" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" value="&lt;span style=&quot;font-family: &amp;quot;Trebuchet MS&amp;quot;, Verdana, Arial, sans-serif; font-size: 16px; white-space: normal;&quot;&gt;Student&lt;/span&gt;" vertex="1">
+          <mxGeometry height="60" width="30" x="330" y="520" as="geometry" />
+        </mxCell>
+        <UserObject label="UC-05&#xa;Generate AI Readiness Report" mermaidId="n:UC05" mermaidBaseStyle="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" mermaidBaseValue="UC-05&#xa;Generate AI Readiness Report" id="3">
+          <mxCell parent="26" style="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;container=0;" vertex="1">
+            <mxGeometry height="53" width="235" x="582" y="357" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="Restrict Access to an Assigned Class" mermaidId="n:SCOPE" mermaidBaseStyle="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" mermaidBaseValue="Restrict Access to an Assigned Class" id="4">
+          <mxCell parent="26" style="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;container=0;" vertex="1">
+            <mxGeometry height="39" width="278" x="1034" y="165" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="Check the Experiment Count&#xa;of the Subject" mermaidId="n:ELIG" mermaidBaseStyle="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" mermaidBaseValue="Check the Experiment Count&#xa;of the Subject" id="5">
+          <mxCell parent="26" style="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;container=0;" vertex="1">
+            <mxGeometry height="53" width="229" x="1058" y="254" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="Decline the Report and&#xa;State the Reason" mermaidId="n:DECL" mermaidBaseStyle="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" mermaidBaseValue="Decline the Report and&#xa;State the Reason" id="6">
+          <mxCell parent="26" style="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;container=0;" vertex="1">
+            <mxGeometry height="53" width="189" x="500" y="512" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="Compute the Six&#xa;Performance Dimensions" mermaidId="n:DIM" mermaidBaseStyle="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" mermaidBaseValue="Compute the Six&#xa;Performance Dimensions" id="7">
+          <mxCell parent="26" style="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;container=0;" vertex="1">
+            <mxGeometry height="53" width="200" x="1073" y="357" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="Classify as Not Ready, Approaching&#xa;Readiness or Ready for Real Lab" mermaidId="n:CLASSIFY" mermaidBaseStyle="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" mermaidBaseValue="Classify as Not Ready, Approaching&#xa;Readiness or Ready for Real Lab" id="8">
+          <mxCell parent="26" style="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;container=0;" vertex="1">
+            <mxGeometry height="53" width="271" x="1037" y="460" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="Record the Report with Teacher, Student,&#xa;Values, Classification and Time" mermaidId="n:STORE" mermaidBaseStyle="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" mermaidBaseValue="Record the Report with Teacher, Student,&#xa;Values, Classification and Time" id="9">
+          <mxCell parent="26" style="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;container=0;" vertex="1">
+            <mxGeometry height="53" width="321" x="1012" y="563" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="&lt;br&gt;View Own Readiness Status" mermaidId="n:UC13" mermaidBaseStyle="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" mermaidBaseValue="UC-13&#xa;View Own Readiness Status" id="10">
+          <mxCell parent="26" style="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;container=0;" vertex="1">
+            <mxGeometry height="53" width="218" x="591" y="666" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="Present the Values and Classification&#xa;of the Requesting Student Only" mermaidId="n:OWN" mermaidBaseStyle="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;" mermaidBaseValue="Present the Values and Classification&#xa;of the Requesting Student Only" id="11">
+          <mxCell parent="26" style="html=1;rounded=1;whiteSpace=wrap;arcSize=50;strokeWidth=1.5;fillColor=default;strokeColor=default;fontColor=default;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;container=0;" vertex="1">
+            <mxGeometry height="53" width="287" x="1029" y="666" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;&amp;nbsp;" mermaidId="e:UC05-&gt;SCOPE#0" mermaidBaseStyle="curved=1;dashed=1;dashPattern=2 3;fixDash=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=#333333;exitX=0.62;exitY=0;entryX=0;entryY=0.51;" mermaidBaseValue="&amp;lt;&amp;lt;include&amp;gt;&amp;gt; FR-09.1" id="19">
+          <mxCell edge="1" parent="26" source="3" style="curved=1;dashed=1;dashPattern=2 3;fixDash=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=#333333;exitX=0.62;exitY=0;entryX=0;entryY=0.51;" target="4">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points">
+                <mxPoint x="915" y="185" />
+              </Array>
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <UserObject label="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;&amp;nbsp;" mermaidId="e:UC05-&gt;ELIG#0" mermaidBaseStyle="curved=1;dashed=1;dashPattern=2 3;fixDash=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=#333333;exitX=0.74;exitY=0;entryX=0;entryY=0.51;" mermaidBaseValue="&amp;lt;&amp;lt;include&amp;gt;&amp;gt; FR-08.4" id="20">
+          <mxCell edge="1" parent="26" source="3" style="curved=1;dashed=1;dashPattern=2 3;fixDash=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=#333333;exitX=0.74;exitY=0;entryX=0;entryY=0.51;" target="5">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points">
+                <mxPoint x="915" y="281" />
+              </Array>
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <UserObject label="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;&amp;nbsp;" mermaidId="e:UC05-&gt;DIM#0" mermaidBaseStyle="curved=1;dashed=1;dashPattern=2 3;fixDash=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=#333333;exitX=1;exitY=0.51;entryX=0;entryY=0.51;" mermaidBaseValue="&amp;lt;&amp;lt;include&amp;gt;&amp;gt; FR-08.1" id="21">
+          <mxCell edge="1" parent="26" source="3" style="curved=1;dashed=1;dashPattern=2 3;fixDash=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=#333333;exitX=1;exitY=0.51;entryX=0;entryY=0.51;" target="7">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points" />
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <UserObject label="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;&amp;nbsp;" mermaidId="e:UC05-&gt;CLASSIFY#0" mermaidBaseStyle="curved=1;dashed=1;dashPattern=2 3;fixDash=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=#333333;exitX=0.74;exitY=1;entryX=0;entryY=0.51;" mermaidBaseValue="&amp;lt;&amp;lt;include&amp;gt;&amp;gt; FR-08.3" id="22">
+          <mxCell edge="1" parent="26" source="3" style="curved=1;dashed=1;dashPattern=2 3;fixDash=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=#333333;exitX=0.74;exitY=1;entryX=0;entryY=0.51;" target="8">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points">
+                <mxPoint x="915" y="487" />
+              </Array>
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <UserObject label="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;&amp;nbsp;" mermaidId="e:UC05-&gt;STORE#0" mermaidBaseStyle="curved=1;dashed=1;dashPattern=2 3;fixDash=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=#333333;exitX=0.62;exitY=1;entryX=0;entryY=0.51;" mermaidBaseValue="&amp;lt;&amp;lt;include&amp;gt;&amp;gt; FR-08.5" id="23">
+          <mxCell edge="1" parent="26" source="3" style="curved=1;dashed=1;dashPattern=2 3;fixDash=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=#333333;exitX=0.62;exitY=1;entryX=0;entryY=0.51;" target="9">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points">
+                <mxPoint x="915" y="590" />
+              </Array>
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <UserObject label="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;&amp;nbsp;" mermaidId="e:UC13-&gt;OWN#0" mermaidBaseStyle="curved=1;dashed=1;dashPattern=2 3;fixDash=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=#333333;exitX=1;exitY=0.51;entryX=0;entryY=0.51;" mermaidBaseValue="&amp;lt;&amp;lt;include&amp;gt;&amp;gt; FR-08.6" id="24">
+          <mxCell edge="1" parent="26" source="10" style="curved=1;dashed=1;dashPattern=2 3;fixDash=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=#333333;exitX=1;exitY=0.51;entryX=0;entryY=0.51;" target="11">
+            <mxGeometry relative="1" as="geometry">
+              <Array as="points" />
+            </mxGeometry>
+          </mxCell>
+        </UserObject>
+        <UserObject label="&amp;lt;&amp;lt;extend&amp;gt;&amp;gt;&amp;nbsp;&lt;br&gt;[fewer than 3 experiments completed]" mermaidId="e:DECL-&gt;UC05#0" mermaidBaseStyle="curved=1;dashed=1;dashPattern=2 3;fixDash=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=#333333;exitX=1;exitY=0.51;entryX=0.37;entryY=1;" mermaidBaseValue="&amp;lt;&amp;lt;extend&amp;gt;&amp;gt; FR-08.4&#xa;[fewer than 3 experiments completed]" id="25">
+          <mxCell edge="1" parent="26" source="6" style="curved=1;dashed=1;dashPattern=2 3;fixDash=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#000000;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=#333333;exitX=1;exitY=0.51;entryX=0.37;entryY=1;" target="3">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </UserObject>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
