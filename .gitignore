@@ -1,0 +1,49 @@
+# ---- secrets ----
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+serviceAccountKey.json
+google-services.json
+GoogleService-Info.plist
+
+# ---- backend (Laravel) ----
+backend/vendor/
+backend/storage/*.key
+backend/storage/framework/cache/*
+backend/storage/framework/sessions/*
+backend/storage/framework/views/*
+backend/storage/logs/*
+backend/public/storage
+backend/.phpunit.result.cache
+
+# ---- web (Next.js) ----
+web/node_modules/
+web/.next/
+web/out/
+web/.vercel
+web/coverage/
+
+# ---- mobile (Flutter) ----
+mobile/.dart_tool/
+mobile/build/
+mobile/.flutter-plugins
+mobile/.flutter-plugins-dependencies
+mobile/ios/Pods/
+mobile/android/.gradle/
+mobile/android/local.properties
+
+# ---- editors and OS ----
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---- Office lock files ----
+~$*
+
+# ---- draw.io backups ----
+*.bkp
+.$*
