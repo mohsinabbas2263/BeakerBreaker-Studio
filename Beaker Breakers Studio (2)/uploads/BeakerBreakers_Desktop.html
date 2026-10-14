@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beaker Breakers Studio 🧪</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   CSS VARIABLES — exact prototype palette
+   ============================================================ */
+:root {
+  --sky:      #E8F4FD;
+  --mint:     #C8F7E4;
+  --lemon:    #FFF9C4;
+  --coral:    #FFD6C8;
+  --lavender: #EDE7F6;
+  --blue:     #4FC3F7;
+  --blue-d:   #29B6F6;
+  --green:    #4CAF82;
+  --green-d:  #2E7D57;
+  --orange:   #FF8A50;
+  --orange-d: #FF6D00;
+  --purple:   #9575CD;
+  --purple-d: #7E57C2;
+  --yellow:   #FFD54F;
+  --pink:     #F48FB1;
+  --red:      #EF5350;
+  --teal:     #26C6DA;
+  --text:     #2D3748;
+  --subtext:  #718096;
+  --muted:    #A0AEC0;
+  --card-shadow: 0 8px 32px rgba(0,0,0,.10);
+  --bounce:   cubic-bezier(.68,-.55,.27,1.55);
+
+  /* sidebar */
+  --sidebar-w: 260px;
+  --sidebar-bg: linear-gradient(180deg,#1a1a2e 0%,#16213e 60%,#0f3460 100%);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+body {
+  font-family:'Nunito', sans-serif;
+  background: linear-gradient(135deg,#E8F4FD 0%,#C8F7E4 50%,#FFF9C4 100%);
+  min-height:100vh;
+  color:var(--text);
+  overflow-x:hidden;
+}
+
+button { font-family:'Nunito', sans-serif; cursor:pointer; }
+
+/* ============================================================
+   LOGIN PAGE
+   ============================================================ */
+#login-page {
+  position:fixed; inset:0; z-index:9999;
+  background: linear-gradient(135deg,#E8F4FD 0%,#C8F7E4 50%,#FFF9C4 100%);
+  display:flex; align-items:center; justify-content:center;
+  padding:20px;
+}
+
+.login-wrap {
+  display:flex; gap:0; border-radius:32px; overflow:hidden;
+  box-shadow:0 24px 80px rgba(0,0,0,.18);
+  max-width:860px; width:100%; min-height:520px;
+}
+
+/* Left panel — hero */
+.login-hero {
+  flex:1;
+  background: linear-gradient(135deg,#29B6F6 0%,#9575CD 100%);
+  padding:44px 36px;
+  display:flex; flex-direction:column; justify-content:space-between;
+  position:relative; overflow:hidden;
+}
+
+.lh-bubble {
+  position:absolute; border-radius:50%;
+  background:rgba(255,255,255,.15);
+}
+
+.lh-title {
+  font-family:'Fredoka', cursive;
+  font-size:36px; font-weight:600; color:white;
+  line-height:1.2; position:relative; z-index:2;
+}
+
+.lh-sub {
+  font-size:14px; color:rgba(255,255,255,.88);
+  font-weight:700; position:relative; z-index:2; margin-top:10px;
+  line-height:1.6;
+}
+
+.lh-avatars {
+  display:flex; gap:10px; flex-wrap:wrap;
+  position:relative; z-index:2; margin-top:24px;
+}
+
+.lh-av {
+  width:52px; height:52px; border-radius:50%; background:white;
+  display:flex; align-items:center; justify-content:center;
+  font-size:26px;
+  box-shadow:0 4px 14px rgba(0,0,0,.2);
+  animation: avBounce 2.5s infinite ease-in-out;
+  border:2px solid rgba(255,255,255,.7);
+}
+.lh-av:nth-child(2){ animation-delay:.3s; }
+.lh-av:nth-child(3){ animation-delay:.6s; }
+.lh-av:nth-child(4){ animation-delay:.9s; }
+
+@keyframes avBounce { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);} }
+
+.lh-features { display:flex; flex-direction:column; gap:8px; position:relative; z-index:2; }
+.lh-feat {
+  display:flex; align-items:center; gap:10px;
+  font-size:13px; font-weight:700; color:rgba(255,255,255,.92);
+}
+.lh-feat .fi { font-size:18px; }
+
+/* Right panel — form */
+.login-form-wrap {
+  width:360px; background:white; padding:44px 36px;
+  display:flex; flex-direction:column; justify-content:center;
+}
+
+.lf-logo { font-family:'Fredoka',cursive; font-size:22px; color:var(--blue-d); font-weight:600; margin-bottom:6px; }
+.lf-title { font-family:'Fredoka',cursive; font-size:28px; color:var(--text); font-weight:600; }
+.lf-sub { font-size:13px; color:var(--subtext); font-weight:600; margin-bottom:28px; margin-top:4px; }
+
+.role-tabs {
+  display:flex; gap:6px; margin-bottom:22px;
+  background:#F7FAFC; border-radius:14px; padding:5px;
+}
+
+.role-tab {
+  flex:1; padding:8px 4px; border:none; border-radius:10px;
+  background:transparent; font-size:12px; font-weight:800;
+  color:var(--subtext); transition:.2s; display:flex;
+  align-items:center; justify-content:center; gap:5px;
+}
+.role-tab.active { background:var(--blue-d); color:white; box-shadow:0 4px 12px rgba(41,182,246,.35); }
+
+.form-group { margin-bottom:16px; }
+.form-label { font-size:12px; font-weight:800; color:var(--text); display:block; margin-bottom:6px; letter-spacing:.3px; }
+
+.form-input {
+  width:100%; padding:12px 16px; border:2px solid #E2E8F0;
+  border-radius:14px; font-size:14px; font-family:'Nunito',sans-serif;
+  font-weight:600; color:var(--text); outline:none; transition:.2s;
+  background:#FAFAFA;
+}
+.form-input:focus { border-color:var(--blue); background:white; }
+
+.form-input-wrap { position:relative; }
+.form-input-wrap .fi-icon {
+  position:absolute; left:14px; top:50%; transform:translateY(-50%);
+  font-size:16px; pointer-events:none;
+}
+.form-input-wrap .form-input { padding-left:42px; }
+
+.login-btn {
+  width:100%; padding:14px; border:none; border-radius:16px;
+  background: linear-gradient(135deg,var(--blue),var(--blue-d));
+  color:white; font-family:'Fredoka',cursive; font-size:20px; font-weight:600;
+  box-shadow:0 8px 24px rgba(79,195,247,.4);
+  transition: transform .2s var(--bounce);
+  margin-top:6px;
+}
+.login-btn:hover { transform: scale(1.03); }
+
+.login-footer { text-align:center; margin-top:18px; font-size:12px; font-weight:700; color:var(--subtext); }
+.login-footer a { color:var(--blue-d); text-decoration:none; font-weight:800; }
+
+/* ============================================================
+   APP SHELL — sidebar + main
+   ============================================================ */
+#app-shell {
+  display:none;
+  min-height:100vh;
+}
+
+#app-shell.visible { display:flex; }
+
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
+.sidebar {
+  width:var(--sidebar-w);
+  background: var(--sidebar-bg);
+  min-height:100vh;
+  display:flex; flex-direction:column;
+  position:fixed; left:0; top:0; bottom:0;
+  z-index:500;
+  box-shadow:4px 0 24px rgba(0,0,0,.15);
+  transition: width .3s ease;
+}
+
+/* Logo */
+.sb-logo {
+  padding:24px 20px 18px;
+  display:flex; align-items:center; gap:12px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.sb-logo-icon {
+  width:44px; height:44px; border-radius:14px;
+  background: linear-gradient(135deg,var(--blue),var(--purple));
+  display:flex; align-items:center; justify-content:center;
+  font-size:24px; flex-shrink:0;
+  box-shadow:0 4px 14px rgba(79,195,247,.4);
+}
+
+.sb-logo-text { flex:1; min-width:0; }
+.sb-logo-name { font-family:'Fredoka',cursive; font-size:16px; color:white; font-weight:600; line-height:1.1; }
+.sb-logo-tagline { font-size:10px; color:rgba(255,255,255,.5); font-weight:700; letter-spacing:.5px; margin-top:2px; }
+
+/* Student profile card in sidebar */
+.sb-profile {
+  margin:16px 14px;
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:18px;
+  padding:14px;
+  display:flex; align-items:center; gap:12px;
+  cursor:pointer; transition:.2s;
+}
+.sb-profile:hover { background:rgba(255,255,255,.12); }
+
+.sb-av-wrap { position:relative; flex-shrink:0; }
+.sb-av {
+  width:44px; height:44px; border-radius:50%; background:white;
+  display:flex; align-items:center; justify-content:center; font-size:24px;
+  border:2px solid rgba(79,195,247,.6);
+  box-shadow:0 4px 12px rgba(0,0,0,.3);
+}
+.sb-av-online {
+  position:absolute; bottom:1px; right:1px;
+  width:11px; height:11px; border-radius:50%;
+  background:#4CAF82; border:2px solid #16213e;
+}
+
+.sb-profile-info { flex:1; min-width:0; }
+.sb-profile-name { font-weight:800; font-size:13px; color:white; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.sb-profile-rank { font-size:10px; color:var(--yellow); font-weight:700; margin-top:2px; }
+
+.sb-profile-arrow { font-size:14px; color:rgba(255,255,255,.4); }
+
+/* XP mini bar */
+.sb-xp {
+  margin:0 14px 16px;
+  background:rgba(255,255,255,.06);
+  border-radius:12px; padding:10px 14px;
+}
+.sb-xp-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+.sb-xp-label { font-size:10px; font-weight:800; color:rgba(255,255,255,.5); letter-spacing:.6px; }
+.sb-xp-val { font-family:'Fredoka',cursive; font-size:14px; color:var(--orange); font-weight:600; }
+.sb-xp-bar { background:rgba(255,255,255,.12); border-radius:50px; height:6px; overflow:hidden; }
+.sb-xp-fill { background: linear-gradient(90deg,var(--orange),var(--yellow)); height:100%; border-radius:50px; width:62%; }
+
+/* Nav items */
+.sb-nav { flex:1; padding:0 10px; overflow-y:auto; scrollbar-width:none; }
+.sb-nav::-webkit-scrollbar { display:none; }
+
+.sb-section-label {
+  font-size:9px; font-weight:900; color:rgba(255,255,255,.3);
+  letter-spacing:1.5px; text-transform:uppercase;
+  padding:12px 10px 6px;
+}
+
+.sb-item {
+  display:flex; align-items:center; gap:12px;
+  padding:11px 14px; border-radius:14px; margin-bottom:2px;
+  cursor:pointer; transition:all .2s;
+  position:relative; border:none; background:transparent; width:100%;
+  text-align:left;
+}
+.sb-item:hover { background:rgba(255,255,255,.08); }
+.sb-item.active {
+  background: linear-gradient(135deg,rgba(79,195,247,.25),rgba(149,117,205,.2));
+  border:1px solid rgba(79,195,247,.25);
+}
+
+.sb-item-icon {
+  width:34px; height:34px; border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px; flex-shrink:0; transition:.2s;
+}
+
+.sb-item.active .sb-item-icon { transform:scale(1.1); }
+
+.sb-item-text { flex:1; }
+.sb-item-name { font-size:13px; font-weight:800; color:rgba(255,255,255,.85); }
+.sb-item.active .sb-item-name { color:white; }
+.sb-item-desc { font-size:10px; color:rgba(255,255,255,.4); font-weight:600; margin-top:1px; }
+
+.sb-item-badge {
+  background:var(--orange); color:white; font-size:10px;
+  font-weight:900; padding:2px 8px; border-radius:20px; flex-shrink:0;
+}
+
+.sb-active-bar {
+  position:absolute; left:0; top:6px; bottom:6px;
+  width:3px; border-radius:0 3px 3px 0; background:var(--blue);
+  display:none;
+}
+.sb-item.active .sb-active-bar { display:block; }
+
+/* Sidebar footer */
+.sb-footer {
+  padding:14px;
+  border-top:1px solid rgba(255,255,255,.08);
+}
+.sb-logout {
+  width:100%; padding:10px; border:1px solid rgba(239,83,80,.35);
+  border-radius:12px; background:rgba(239,83,80,.08);
+  font-size:12px; font-weight:800; color:rgba(239,83,80,.8);
+  transition:.2s; display:flex; align-items:center; justify-content:center; gap:8px;
+}
+.sb-logout:hover { background:rgba(239,83,80,.18); color:#EF5350; }
+
+/* ============================================================
+   MAIN CONTENT AREA
+   ============================================================ */
+.main-wrap {
+  margin-left:var(--sidebar-w);
+  flex:1; min-height:100vh;
+  display:flex; flex-direction:column;
+}
+
+/* Top bar */
+.topbar {
+  position:sticky; top:0; z-index:100;
+  background:rgba(232,244,253,.92); backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,255,255,.8);
+  padding:12px 28px;
+  display:flex; align-items:center; gap:16px;
+}
+
+.topbar-breadcrumb {
+  font-family:'Fredoka',cursive; font-size:20px; color:var(--text);
+  font-weight:600; flex:1;
+}
+
+.topbar-search {
+  display:flex; align-items:center; gap:8px;
+  background:white; border-radius:50px; padding:8px 16px;
+  box-shadow:0 2px 12px rgba(0,0,0,.08);
+  border:2px solid transparent; transition:.2s;
+}
+.topbar-search:focus-within { border-color:var(--blue); }
+.topbar-search input {
+  border:none; outline:none; font-family:'Nunito',sans-serif;
+  font-size:13px; font-weight:700; color:var(--text);
+  background:transparent; width:180px;
+}
+.topbar-search input::placeholder { color:var(--muted); }
+
+.topbar-notif {
+  width:38px; height:38px; border-radius:50%;
+  background:white; border:none;
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px; box-shadow:0 2px 12px rgba(0,0,0,.08);
+  position:relative; transition:.2s var(--bounce);
+}
+.topbar-notif:hover { transform:scale(1.1); }
+.notif-dot {
+  position:absolute; top:6px; right:6px;
+  width:8px; height:8px; border-radius:50%;
+  background:var(--red); border:2px solid white;
+}
+
+.topbar-profile {
+  display:flex; align-items:center; gap:10px;
+  background:white; border-radius:50px; padding:6px 14px 6px 6px;
+  box-shadow:0 2px 12px rgba(0,0,0,.08); cursor:pointer; transition:.2s;
+  border:none;
+}
+.topbar-profile:hover { box-shadow:0 4px 20px rgba(0,0,0,.12); }
+.tp-av { font-size:22px; width:32px; height:32px; border-radius:50%; background:var(--lavender); display:flex; align-items:center; justify-content:center; }
+.tp-name { font-size:13px; font-weight:800; color:var(--text); }
+
+/* ============================================================
+   PAGES
+   ============================================================ */
+.page { display:none; padding:28px; animation:fadeIn .35s ease; flex:1; }
+.page.active { display:block; }
+
+@keyframes fadeIn { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
+
+/* ============================================================
+   HOME / DASHBOARD
+   ============================================================ */
+.dashboard-grid {
+  display:grid;
+  grid-template-columns:1fr 320px;
+  gap:24px;
+}
+
+/* Hero banner */
+.dash-hero {
+  background: linear-gradient(135deg,#29B6F6 0%,#9575CD 100%);
+  border-radius:28px; padding:30px 28px; position:relative;
+  overflow:hidden; margin-bottom:24px;
+}
+
+.dash-hero-bubbles { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+.dh-bubble { position:absolute; border-radius:50%; background:rgba(255,255,255,.15); animation:floatUp 6s infinite ease-in-out; }
+@keyframes floatUp { 0%,100%{transform:translateY(0) scale(1);} 50%{transform:translateY(-16px) scale(1.05);} }
+
+.dash-hero-content { position:relative; z-index:2; }
+.dh-greeting { font-family:'Fredoka',cursive; font-size:28px; color:white; font-weight:600; }
+.dh-sub { color:rgba(255,255,255,.9); font-size:14px; font-weight:700; margin-top:4px; }
+
+.dh-stats {
+  display:flex; gap:14px; margin-top:20px; flex-wrap:wrap;
+}
+.dh-stat {
+  background:rgba(255,255,255,.2); backdrop-filter:blur(10px);
+  border-radius:14px; padding:12px 18px; border:1px solid rgba(255,255,255,.3);
+}
+.dh-stat-val { font-family:'Fredoka',cursive; font-size:24px; color:white; line-height:1; }
+.dh-stat-lbl { font-size:11px; color:rgba(255,255,255,.8); font-weight:700; margin-top:3px; }
+
+.dh-avatar-group {
+  position:absolute; right:20px; bottom:0; z-index:2;
+  display:flex; align-items:flex-end; gap:8px;
+}
+.dha {
+  border-radius:50%; background:white;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 4px 14px rgba(0,0,0,.2);
+  animation:avBounce 2.5s infinite ease-in-out;
+  border:3px solid rgba(255,255,255,.8);
+}
+
+/* Quick cards */
+.quick-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:24px; }
+.quick-card {
+  border-radius:22px; padding:20px 16px; cursor:pointer;
+  transition:all .25s var(--bounce); box-shadow:var(--card-shadow);
+  border:none; text-align:left;
+}
+.quick-card:hover { transform:translateY(-6px) scale(1.02); }
+.qc-icon { font-size:36px; display:block; margin-bottom:8px; }
+.qc-title { font-family:'Fredoka',cursive; font-weight:600; font-size:16px; color:var(--text); }
+.qc-desc  { font-size:11px; color:var(--subtext); font-weight:700; margin-top:3px; }
+.qc-blue   { background:linear-gradient(135deg,#E3F2FD,#BBDEFB); }
+.qc-green  { background:linear-gradient(135deg,#E8F5E9,#C8E6C9); }
+.qc-orange { background:linear-gradient(135deg,#FFF3E0,#FFE0B2); }
+.qc-purple { background:linear-gradient(135deg,#EDE7F6,#D1C4E9); }
+
+/* Missions */
+.section-label {
+  font-family:'Fredoka',cursive; font-weight:600; font-size:18px;
+  color:var(--text); margin-bottom:12px; display:flex; align-items:center; gap:8px;
+}
+
+.missions-list { display:flex; flex-direction:column; gap:10px; margin-bottom:24px; }
+.mission-row {
+  background:white; border-radius:16px; padding:14px 16px;
+  display:flex; align-items:center; gap:14px;
+  box-shadow:0 2px 12px rgba(0,0,0,.06);
+}
+.mission-row.done { background:linear-gradient(135deg,#E8F5E9,#C8E6C9); }
+.m-ic { font-size:28px; }
+.m-body { flex:1; }
+.m-title { font-weight:800; font-size:13px; color:var(--text); }
+.m-bar-bg { background:#E0E0E0; border-radius:50px; height:7px; margin-top:5px; overflow:hidden; }
+.m-bar-fill { background:linear-gradient(90deg,var(--green),var(--teal)); height:100%; border-radius:50px; transition:width .6s ease; }
+.m-xp { font-family:'Fredoka',cursive; font-size:16px; color:var(--orange); font-weight:600; }
+
+/* Right column */
+.right-col { display:flex; flex-direction:column; gap:20px; }
+
+/* Profile card (right sidebar) */
+.profile-card {
+  background:white; border-radius:24px; padding:24px;
+  box-shadow:var(--card-shadow); text-align:center;
+}
+.pc-header {
+  background:linear-gradient(135deg,var(--purple),#CE93D8);
+  border-radius:18px; padding:20px; margin-bottom:18px; position:relative; overflow:hidden;
+}
+.pc-av { font-size:60px; display:block; margin-bottom:8px; animation:avBounce 2.5s infinite ease-in-out; }
+.pc-name { font-family:'Fredoka',cursive; font-size:20px; color:white; font-weight:600; }
+.pc-school { font-size:11px; color:rgba(255,255,255,.85); font-weight:700; margin-top:4px; }
+.pc-badges { display:flex; gap:6px; justify-content:center; flex-wrap:wrap; margin-top:10px; }
+.pc-badge { background:rgba(255,255,255,.25); color:white; padding:4px 12px; border-radius:50px; font-size:10px; font-weight:800; }
+
+.pc-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+.pc-stat { background:#F8FAFC; border-radius:14px; padding:12px 6px; text-align:center; }
+.pc-stat-val { font-family:'Fredoka',cursive; font-size:20px; color:var(--text); }
+.pc-stat-lbl { font-size:10px; color:var(--subtext); font-weight:700; margin-top:2px; }
+
+/* Mini leaderboard */
+.mini-lb { background:white; border-radius:24px; padding:20px; box-shadow:var(--card-shadow); }
+.mlb-row {
+  display:flex; align-items:center; gap:10px; padding:8px 6px;
+  border-radius:12px; transition:.15s; cursor:pointer;
+}
+.mlb-row:hover { background:#F8FAFC; }
+.mlb-row.me { background:linear-gradient(135deg,var(--sky),#BBDEFB); }
+.mlb-rank { font-family:'Fredoka',cursive; font-size:16px; color:var(--subtext); width:22px; text-align:center; }
+.mlb-av { font-size:22px; }
+.mlb-name { flex:1; font-weight:800; font-size:13px; }
+.mlb-xp { font-family:'Fredoka',cursive; font-size:15px; color:var(--orange); }
+
+/* ============================================================
+   EXPERIMENTS PAGE
+   ============================================================ */
+.filter-row { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px; }
+.filter-pill {
+  padding:8px 18px; border-radius:50px; border:2px solid #E0E0E0;
+  background:white; font-size:12px; font-weight:800; color:var(--subtext);
+  transition:.2s; cursor:pointer;
+}
+.filter-pill:hover, .filter-pill.active { background:var(--blue); border-color:var(--blue); color:white; }
+
+.exp-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:18px; }
+.exp-card {
+  background:white; border-radius:22px; overflow:hidden;
+  box-shadow:var(--card-shadow); cursor:pointer;
+  transition:all .25s var(--bounce); border:2px solid transparent;
+}
+.exp-card:hover { transform:translateY(-6px); border-color:var(--blue); }
+.exp-thumb {
+  height:110px; display:flex; align-items:center; justify-content:center;
+  font-size:54px; position:relative;
+}
+.exp-badge {
+  position:absolute; top:10px; right:10px; background:var(--orange);
+  color:white; font-size:10px; font-weight:900; padding:3px 10px; border-radius:50px;
+}
+.exp-info { padding:14px; }
+.exp-title { font-family:'Fredoka',cursive; font-size:16px; color:var(--text); line-height:1.2; font-weight:600; }
+.exp-meta { display:flex; gap:6px; margin-top:8px; flex-wrap:wrap; }
+.exp-tag { background:var(--sky); color:var(--blue-d); font-size:10px; font-weight:800; padding:3px 8px; border-radius:50px; }
+.exp-tag.locked { background:#F5F5F5; color:#BDBDBD; }
+
+/* ============================================================
+   SAFETY PAGE
+   ============================================================ */
+.safety-intro {
+  background:linear-gradient(135deg,#FFF3E0,#FFE0B2);
+  border-radius:24px; padding:22px; margin-bottom:22px;
+  display:flex; gap:14px; align-items:center; box-shadow:var(--card-shadow);
+}
+.safety-icon { font-size:56px; flex-shrink:0; }
+.safety-intro h3 { font-family:'Fredoka',cursive; font-size:20px; color:var(--orange-d); font-weight:600; }
+.safety-intro p { font-size:13px; color:var(--text); font-weight:600; margin-top:4px; line-height:1.5; }
+
+.tier-list { display:flex; flex-direction:column; gap:12px; max-width:700px; }
+.tier-card {
+  background:white; border-radius:20px; padding:18px;
+  display:flex; align-items:center; gap:16px;
+  box-shadow:var(--card-shadow); cursor:pointer;
+  transition:all .2s var(--bounce); border:2px solid transparent;
+}
+.tier-card:hover { transform:translateX(6px); border-color:var(--green); }
+.tier-card.locked { opacity:.55; cursor:not-allowed; }
+.tier-card.locked:hover { transform:none; border-color:transparent; }
+.tier-card.completed { border-color:var(--green); background:linear-gradient(135deg,white,#E8F5E9); }
+.tier-num {
+  width:52px; height:52px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Fredoka',cursive; font-size:22px; color:white; flex-shrink:0; font-weight:600;
+}
+.tier-num.t1 { background:linear-gradient(135deg,#FFD54F,#FF8A50); }
+.tier-num.t2 { background:linear-gradient(135deg,#4FC3F7,#29B6F6); }
+.tier-num.t3 { background:linear-gradient(135deg,#81C784,#4CAF50); }
+.tier-num.t4 { background:linear-gradient(135deg,#CE93D8,#9575CD); }
+.tier-info { flex:1; }
+.tier-title { font-family:'Fredoka',cursive; font-size:17px; color:var(--text); font-weight:600; }
+.tier-desc { font-size:12px; color:var(--subtext); font-weight:600; margin-top:3px; }
+.tier-progress { background:#E0E0E0; border-radius:50px; height:8px; margin-top:8px; overflow:hidden; }
+.tier-fill { background:var(--green); height:100%; border-radius:50px; transition:width 1s ease; }
+.tier-status { font-size:24px; flex-shrink:0; }
+
+/* ============================================================
+   LEADERBOARD
+   ============================================================ */
+.lb-podium { display:flex; align-items:flex-end; justify-content:center; gap:12px; margin-bottom:28px; }
+.podium-item { flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; max-width:130px; }
+.podium-av {
+  font-size:38px; background:white; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 4px 14px rgba(0,0,0,.12); border:3px solid transparent;
+}
+.rank1 .podium-av { border-color:var(--yellow); width:72px; height:72px; font-size:44px; }
+.rank2 .podium-av { border-color:#B0BEC5; width:60px; height:60px; }
+.rank3 .podium-av { border-color:#FFAB40; width:60px; height:60px; }
+.podium-name { font-family:'Fredoka',cursive; font-size:14px; font-weight:600; }
+.podium-xp { font-size:12px; font-weight:800; color:var(--orange); }
+.podium-stand {
+  border-radius:14px 14px 0 0; width:100%;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Fredoka',cursive; font-size:28px; color:white; padding:10px 0; font-weight:600;
+}
+.rank1 .podium-stand { background:linear-gradient(135deg,#FFD54F,#FFA726); height:84px; }
+.rank2 .podium-stand { background:linear-gradient(135deg,#90A4AE,#607D8B); height:64px; }
+.rank3 .podium-stand { background:linear-gradient(135deg,#FFAB40,#FF6D00); height:48px; }
+
+.lb-list { display:flex; flex-direction:column; gap:10px; max-width:700px; }
+.lb-row {
+  background:white; border-radius:16px; padding:14px 18px;
+  display:flex; align-items:center; gap:14px;
+  box-shadow:0 2px 12px rgba(0,0,0,.07); transition:.2s;
+}
+.lb-row:hover { transform:translateX(4px); }
+.lb-row.me { border:2px solid var(--blue); background:var(--sky); }
+.lb-rank { font-family:'Fredoka',cursive; font-size:20px; color:var(--subtext); width:28px; text-align:center; }
+.lb-av { font-size:28px; }
+.lb-name { flex:1; font-weight:800; font-size:14px; }
+.lb-pts { font-family:'Fredoka',cursive; font-size:18px; color:var(--orange); }
+.lb-badge { font-size:18px; }
+
+/* ============================================================
+   PROFILE PAGE (full)
+   ============================================================ */
+.profile-page-grid { display:grid; grid-template-columns:320px 1fr; gap:24px; }
+
+.profile-left {}
+.profile-header-card {
+  background:linear-gradient(135deg,var(--purple),#CE93D8);
+  border-radius:24px; padding:28px 22px; text-align:center; margin-bottom:18px;
+  position:relative; overflow:hidden;
+}
+.profile-header-card::before { content:''; position:absolute; width:200px; height:200px; background:rgba(255,255,255,.08); border-radius:50%; top:-60px; left:-40px; }
+.ph-av { font-size:80px; display:block; animation:avBounce 2.5s infinite ease-in-out; }
+.ph-name { font-family:'Fredoka',cursive; font-size:24px; color:white; font-weight:600; margin-top:8px; }
+.ph-school { font-size:12px; color:rgba(255,255,255,.85); font-weight:700; margin-top:4px; }
+.ph-badges { display:flex; gap:6px; justify-content:center; flex-wrap:wrap; margin-top:12px; }
+.ph-badge { background:rgba(255,255,255,.25); color:white; padding:5px 14px; border-radius:50px; font-size:11px; font-weight:800; }
+
+/* Avatar chooser */
+.av-chooser { background:white; border-radius:22px; padding:18px; box-shadow:var(--card-shadow); margin-bottom:18px; }
+.av-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:12px; }
+.av-opt {
+  border-radius:16px; padding:8px 4px; border:2px solid transparent;
+  background:#F8FAFC; cursor:pointer; transition:all .2s var(--bounce);
+  display:flex; flex-direction:column; align-items:center; gap:4px; border:none;
+}
+.av-opt:hover { transform:translateY(-4px); background:var(--sky); }
+.av-opt.selected { outline:2px solid var(--blue); background:var(--sky); }
+.av-emoji { font-size:28px; }
+.av-name-lbl { font-size:9px; font-weight:800; color:var(--subtext); }
+
+/* AI readiness */
+.readiness-card {
+  background:linear-gradient(135deg,#E8F5E9,#DCEDC8);
+  border-radius:22px; padding:20px; box-shadow:var(--card-shadow);
+}
+.readiness-card h4 { font-family:'Fredoka',cursive; font-size:18px; color:var(--green-d); font-weight:600; }
+.readiness-card p { font-size:13px; color:var(--text); font-weight:600; margin-top:8px; line-height:1.55; }
+.rd-chips { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+.rd-chip { background:white; border-radius:50px; padding:5px 12px; font-size:11px; font-weight:900; }
+
+/* Profile right */
+.profile-right {}
+
+.stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:22px; }
+.stat-card { background:white; border-radius:20px; padding:18px 12px; text-align:center; box-shadow:var(--card-shadow); }
+.stat-icon { font-size:28px; }
+.stat-val { font-family:'Fredoka',cursive; font-size:26px; color:var(--text); margin-top:4px; font-weight:600; }
+.stat-lbl { font-size:11px; color:var(--subtext); font-weight:700; margin-top:2px; }
+
+.badge-chips { display:flex; flex-wrap:wrap; gap:10px; }
+.badge-chip {
+  background:white; border-radius:50px; padding:8px 16px;
+  display:flex; align-items:center; gap:6px; font-size:13px; font-weight:700;
+  box-shadow:0 2px 10px rgba(0,0,0,.08); transition:all .2s var(--bounce);
+}
+.badge-chip:hover { transform:scale(1.06); }
+.bc-icon { font-size:18px; }
+
+/* ============================================================
+   AR PAGE CTA
+   ============================================================ */
+.ar-cta-big {
+  background:linear-gradient(135deg,#00BCD4,#0097A7);
+  border-radius:24px; padding:28px; display:flex; align-items:center; gap:20px;
+  box-shadow:0 12px 36px rgba(0,188,212,.4); cursor:pointer;
+  transition:transform .2s var(--bounce); border:none; width:100%; text-align:left;
+  margin-bottom:22px;
+}
+.ar-cta-big:hover { transform:scale(1.01); }
+.ar-cta-icon { font-size:64px; filter:drop-shadow(0 4px 8px rgba(0,0,0,.2)); }
+.ar-cta-body { flex:1; }
+.ar-cta-title { font-family:'Fredoka',cursive; font-size:26px; color:white; font-weight:600; }
+.ar-new { background:var(--yellow); color:#7a5a00; font-size:11px; padding:3px 10px; border-radius:20px; font-weight:900; margin-left:8px; vertical-align:middle; }
+.ar-cta-sub { font-size:14px; color:rgba(255,255,255,.9); font-weight:700; margin-top:4px; }
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+.toast {
+  position:fixed; bottom:30px; right:30px;
+  background:white; border-radius:16px; padding:14px 20px;
+  box-shadow:0 8px 32px rgba(0,0,0,.18);
+  display:flex; align-items:center; gap:10px;
+  font-weight:800; font-size:14px; z-index:9000;
+  opacity:0; transform:translateX(30px);
+  transition:all .35s var(--bounce);
+  border:2px solid var(--green); max-width:320px;
+}
+.toast.show { opacity:1; transform:translateX(0); }
+.toast-icon { font-size:22px; }
+
+/* Confetti */
+.confetti-wrap { position:fixed; inset:0; pointer-events:none; z-index:9998; display:none; }
+.confetti-wrap.show { display:block; }
+.conf-piece { position:absolute; top:-20px; width:10px; height:10px; border-radius:2px; animation:confFall 2.5s ease-in forwards; }
+@keyframes confFall { 0%{transform:translateY(0) rotate(0deg);opacity:1;} 100%{transform:translateY(110vh) rotate(720deg);opacity:0;} }
+
+/* Scrollbar */
+::-webkit-scrollbar { width:6px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:rgba(0,0,0,.15); border-radius:99px; }
+
+/* Responsive placeholder */
+@media(max-width:1100px) {
+  .dashboard-grid { grid-template-columns:1fr; }
+  .profile-page-grid { grid-template-columns:1fr; }
+  .quick-grid { grid-template-columns:repeat(2,1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     LOGIN PAGE
+     ============================================================ -->
+<div id="login-page">
+  <div class="login-wrap">
+    <!-- Left hero panel -->
+    <div class="login-hero">
+      <div class="lh-bubble" style="width:120px;height:120px;top:-30px;left:-30px;animation:floatUp 5s infinite;"></div>
+      <div class="lh-bubble" style="width:80px;height:80px;bottom:40px;right:-20px;animation:floatUp 7s infinite 1s;"></div>
+      <div class="lh-bubble" style="width:50px;height:50px;top:40%;left:20%;animation:floatUp 6s infinite .5s;"></div>
+
+      <div>
+        <div class="lh-title">🧪 Beaker<br>Breakers<br>Studio</div>
+        <div class="lh-sub">AI-Powered Virtual Chemistry Lab<br>for Secondary Schools 🔬</div>
+      </div>
+
+      <div class="lh-avatars">
+        <div class="lh-av">🦊</div>
+        <div class="lh-av">🐸</div>
+        <div class="lh-av">🦋</div>
+        <div class="lh-av">🐉</div>
+      </div>
+
+      <div class="lh-features">
+        <div class="lh-feat"><span class="fi">🕶️</span> AR Mode — Chemistry in your real room</div>
+        <div class="lh-feat"><span class="fi">🤖</span> AI Guidance — Step-by-step help</div>
+        <div class="lh-feat"><span class="fi">🛡️</span> 4-Tier Safety Certification</div>
+        <div class="lh-feat"><span class="fi">🏆</span> XP, Badges & Leaderboards</div>
+      </div>
+    </div>
+
+    <!-- Right form -->
+    <div class="login-form-wrap">
+      <div class="lf-logo">🧪 Beaker Breakers</div>
+      <div class="lf-title">Welcome back!</div>
+      <div class="lf-sub">Sign in to continue your science journey</div>
+
+      <!-- Role tabs -->
+      <div class="role-tabs">
+        <button class="role-tab active" onclick="setRole(this,'student')">🎒 Student</button>
+        <button class="role-tab" onclick="setRole(this,'teacher')">📋 Teacher</button>
+        <button class="role-tab" onclick="setRole(this,'admin')">⚙️ Admin</button>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">SCHOOL ID / EMAIL</label>
+        <div class="form-input-wrap">
+          <span class="fi-icon">🏫</span>
+          <input class="form-input" type="text" placeholder="e.g. BSCS012313003" id="login-id">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">PASSWORD</label>
+        <div class="form-input-wrap">
+          <span class="fi-icon">🔒</span>
+          <input class="form-input" type="password" placeholder="Enter your password" id="login-pass">
+        </div>
+      </div>
+
+      <button class="login-btn" onclick="doLogin()">🚀 Sign In &amp; Start Learning</button>
+
+      <div class="login-footer">
+        Forgot password? <a href="#">Reset here</a><br><br>
+        New school? <a href="#">Register Institution</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     CONFETTI + TOAST
+     ============================================================ -->
+<div class="confetti-wrap" id="confetti"></div>
+<div class="toast" id="toast">
+  <span class="toast-icon" id="toast-icon">🎉</span>
+  <span id="toast-text">Welcome!</span>
+</div>
+
+<!-- ============================================================
+     APP SHELL
+     ============================================================ -->
+<div id="app-shell">
+
+  <!-- ─── SIDEBAR ─── -->
+  <aside class="sidebar">
+    <!-- Logo -->
+    <div class="sb-logo">
+      <div class="sb-logo-icon">🧪</div>
+      <div class="sb-logo-text">
+        <div class="sb-logo-name">Beaker Breakers</div>
+        <div class="sb-logo-tagline">STUDIO • BSCS 2023–27</div>
+      </div>
+    </div>
+
+    <!-- Student profile -->
+    <div class="sb-profile" onclick="navTo('profile')">
+      <div class="sb-av-wrap">
+        <div class="sb-av" id="sb-av-el">🦊</div>
+        <div class="sb-av-online"></div>
+      </div>
+      <div class="sb-profile-info">
+        <div class="sb-profile-name" id="sb-name">Scientist Rabail</div>
+        <div class="sb-profile-rank">⭐ Junior Chemist</div>
+      </div>
+      <div class="sb-profile-arrow">›</div>
+    </div>
+
+    <!-- XP bar -->
+    <div class="sb-xp">
+      <div class="sb-xp-top">
+        <span class="sb-xp-label">XP PROGRESS</span>
+        <span class="sb-xp-val">620 / 1000</span>
+      </div>
+      <div class="sb-xp-bar"><div class="sb-xp-fill"></div></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="sb-nav">
+      <div class="sb-section-label">Main</div>
+
+      <button class="sb-item active" id="nav-home" onclick="navTo('home')">
+        <div class="sb-active-bar"></div>
+        <div class="sb-item-icon" style="background:rgba(79,195,247,.18);">🏠</div>
+        <div class="sb-item-text">
+          <div class="sb-item-name">Dashboard</div>
+          <div class="sb-item-desc">Overview & missions</div>
+        </div>
+      </button>
+
+      <button class="sb-item" id="nav-experiments" onclick="navTo('experiments')">
+        <div class="sb-active-bar"></div>
+        <div class="sb-item-icon" style="background:rgba(76,175,130,.18);">🔬</div>
+        <div class="sb-item-text">
+          <div class="sb-item-name">Experiments</div>
+          <div class="sb-item-desc">30+ virtual labs</div>
+        </div>
+        <span class="sb-item-badge">NEW</span>
+      </button>
+
+      <button class="sb-item" id="nav-ar" onclick="navTo('ar')">
+        <div class="sb-active-bar"></div>
+        <div class="sb-item-icon" style="background:rgba(38,198,218,.18);">🕶️</div>
+        <div class="sb-item-text">
+          <div class="sb-item-name">AR Mode</div>
+          <div class="sb-item-desc">Chemistry in your room</div>
+        </div>
+      </button>
+
+      <div class="sb-section-label">Learning</div>
+
+      <button class="sb-item" id="nav-safety" onclick="navTo('safety')">
+        <div class="sb-active-bar"></div>
+        <div class="sb-item-icon" style="background:rgba(255,138,80,.18);">🛡️</div>
+        <div class="sb-item-text">
+          <div class="sb-item-name">Safety Training</div>
+          <div class="sb-item-desc">4-tier certification</div>
+        </div>
+      </button>
+
+      <button class="sb-item" id="nav-leaderboard" onclick="navTo('leaderboard')">
+        <div class="sb-active-bar"></div>
+        <div class="sb-item-icon" style="background:rgba(255,213,79,.18);">🏆</div>
+        <div class="sb-item-text">
+          <div class="sb-item-name">Leaderboard</div>
+          <div class="sb-item-desc">Top scientists</div>
+        </div>
+      </button>
+
+      <div class="sb-section-label">Account</div>
+
+      <button class="sb-item" id="nav-profile" onclick="navTo('profile')">
+        <div class="sb-active-bar"></div>
+        <div class="sb-item-icon" style="background:rgba(149,117,205,.18);">👤</div>
+        <div class="sb-item-text">
+          <div class="sb-item-name">My Profile</div>
+          <div class="sb-item-desc">Badges & stats</div>
+        </div>
+      </button>
+    </nav>
+
+    <!-- Logout -->
+    <div class="sb-footer">
+      <button class="sb-logout" onclick="doLogout()">🚪 Sign Out</button>
+    </div>
+  </aside>
+
+  <!-- ─── MAIN CONTENT ─── -->
+  <div class="main-wrap">
+
+    <!-- Top bar -->
+    <div class="topbar">
+      <div class="topbar-breadcrumb" id="topbar-title">🏠 Dashboard</div>
+      <div class="topbar-search">
+        <span>🔍</span>
+        <input placeholder="Search experiments, badges…">
+      </div>
+      <button class="topbar-notif">🔔<div class="notif-dot"></div></button>
+      <button class="topbar-profile" onclick="navTo('profile')">
+        <div class="tp-av" id="tp-av">🦊</div>
+        <div class="tp-name" id="tp-name">Rabail</div>
+      </button>
+    </div>
+
+    <!-- ══════ HOME / DASHBOARD ══════ -->
+    <div class="page active" id="page-home">
+
+      <!-- Hero -->
+      <div class="dash-hero">
+        <div class="dash-hero-bubbles">
+          <div class="dh-bubble" style="width:70px;height:70px;top:10%;left:5%;animation-delay:0s;"></div>
+          <div class="dh-bubble" style="width:50px;height:50px;top:60%;left:18%;animation-delay:1s;"></div>
+          <div class="dh-bubble" style="width:40px;height:40px;top:30%;left:35%;animation-delay:2s;"></div>
+        </div>
+        <div class="dash-hero-content">
+          <div class="dh-greeting" id="hero-greeting">👋 Good morning, Scientist Rabail!</div>
+          <div class="dh-sub">Ready to discover something amazing today? 🔬✨</div>
+          <div class="dh-stats">
+            <div class="dh-stat"><div class="dh-stat-val">620</div><div class="dh-stat-lbl">Total XP</div></div>
+            <div class="dh-stat"><div class="dh-stat-val">8</div><div class="dh-stat-lbl">Experiments</div></div>
+            <div class="dh-stat"><div class="dh-stat-val">🔥 5</div><div class="dh-stat-lbl">Day Streak</div></div>
+            <div class="dh-stat"><div class="dh-stat-val">#6</div><div class="dh-stat-lbl">Class Rank</div></div>
+          </div>
+        </div>
+        <div class="dh-avatar-group">
+          <div class="dha" style="width:80px;height:80px;font-size:42px;animation-delay:0s;">🧪</div>
+          <div class="dha" style="width:64px;height:64px;font-size:32px;animation-delay:.4s;">🔬</div>
+          <div class="dha" style="width:50px;height:50px;font-size:24px;animation-delay:.8s;">⚗️</div>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        <div>
+          <!-- Quick cards -->
+          <div class="section-label">🚀 What do you want to do?</div>
+          <div class="quick-grid" style="margin-bottom:24px;">
+            <button class="quick-card qc-blue" onclick="navTo('experiments')">
+              <span class="qc-icon">🔬</span>
+              <div class="qc-title">Experiments</div>
+              <div class="qc-desc">30+ fun labs</div>
+            </button>
+            <button class="quick-card qc-green" onclick="navTo('safety')">
+              <span class="qc-icon">🛡️</span>
+              <div class="qc-title">Safety Training</div>
+              <div class="qc-desc">Get certified</div>
+            </button>
+            <button class="quick-card qc-orange" onclick="navTo('leaderboard')">
+              <span class="qc-icon">🏆</span>
+              <div class="qc-title">Leaderboard</div>
+              <div class="qc-desc">Top scientists</div>
+            </button>
+            <button class="quick-card qc-purple" onclick="navTo('ar')">
+              <span class="qc-icon">🕶️</span>
+              <div class="qc-title">AR Mode</div>
+              <div class="qc-desc">Try it now!</div>
+            </button>
+          </div>
+
+          <!-- Daily Missions -->
+          <div class="section-label">⭐ Daily Missions</div>
+          <div class="missions-list">
+            <div class="mission-row">
+              <div class="m-ic">🧪</div>
+              <div class="m-body">
+                <div class="m-title">Complete 1 experiment</div>
+                <div class="m-bar-bg"><div class="m-bar-fill" style="width:0%"></div></div>
+              </div>
+              <div class="m-xp">+30 XP</div>
+            </div>
+            <div class="mission-row">
+              <div class="m-ic">🧠</div>
+              <div class="m-body">
+                <div class="m-title">Answer 3 safety quiz questions</div>
+                <div class="m-bar-bg"><div class="m-bar-fill" style="width:33%"></div></div>
+              </div>
+              <div class="m-xp">+20 XP</div>
+            </div>
+            <div class="mission-row done">
+              <div class="m-ic">🕶️</div>
+              <div class="m-body">
+                <div class="m-title">Try AR Mode once ✅</div>
+                <div class="m-bar-bg"><div class="m-bar-fill" style="width:100%"></div></div>
+              </div>
+              <div class="m-xp">+50 XP</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right column -->
+        <div class="right-col">
+          <!-- Profile card -->
+          <div class="profile-card">
+            <div class="pc-header">
+              <span class="pc-av" id="dash-av">🦊</span>
+              <div class="pc-name" id="dash-name">Scientist Rabail</div>
+              <div class="pc-school">🏫 Univ. of Chenab, Gujrat</div>
+              <div class="pc-badges">
+                <span class="pc-badge">⭐ Junior Chemist</span>
+                <span class="pc-badge">🛡️ Tier 1</span>
+              </div>
+            </div>
+            <div class="pc-stats">
+              <div class="pc-stat"><div class="pc-stat-val">620</div><div class="pc-stat-lbl">XP</div></div>
+              <div class="pc-stat"><div class="pc-stat-val">12</div><div class="pc-stat-lbl">Badges</div></div>
+              <div class="pc-stat"><div class="pc-stat-val">#6</div><div class="pc-stat-lbl">Rank</div></div>
+            </div>
+          </div>
+
+          <!-- Mini leaderboard -->
+          <div class="mini-lb">
+            <div class="section-label" style="font-size:15px;margin-bottom:10px;">🏅 Class Ranking</div>
+            <div class="mlb-row"><div class="mlb-rank">1</div><div class="mlb-av">🦁</div><div class="mlb-name">Fatima K.</div><div class="mlb-xp">1,850</div></div>
+            <div class="mlb-row"><div class="mlb-rank">2</div><div class="mlb-av">🐉</div><div class="mlb-name">Ahmed S.</div><div class="mlb-xp">1,240</div></div>
+            <div class="mlb-row"><div class="mlb-rank">3</div><div class="mlb-av">🦋</div><div class="mlb-name">Sara R.</div><div class="mlb-xp">980</div></div>
+            <div class="mlb-row me"><div class="mlb-rank">6</div><div class="mlb-av" id="mlb-av">🦊</div><div class="mlb-name">You 🎉</div><div class="mlb-xp">620</div></div>
+            <div class="mlb-row"><div class="mlb-rank">7</div><div class="mlb-av">🦄</div><div class="mlb-name">Omar T.</div><div class="mlb-xp">580</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ EXPERIMENTS ══════ -->
+    <div class="page" id="page-experiments">
+      <div class="section-label" style="font-size:24px;margin-bottom:18px;">🔬 Experiments</div>
+
+      <div class="filter-row">
+        <button class="filter-pill active" onclick="setFilter(this)">All</button>
+        <button class="filter-pill" onclick="setFilter(this)">🔥 Reactions</button>
+        <button class="filter-pill" onclick="setFilter(this)">💧 Solutions</button>
+        <button class="filter-pill" onclick="setFilter(this)">⚗️ Mixtures</button>
+        <button class="filter-pill" onclick="setFilter(this)">🌡️ Heat</button>
+        <button class="filter-pill" onclick="setFilter(this)">⭐ Favourites</button>
+      </div>
+
+      <div class="exp-grid">
+        <div class="exp-card" onclick="showToast('🌋 Opening Volcano Eruption!','🌋')">
+          <div class="exp-thumb" style="background:linear-gradient(135deg,#FFF3E0,#FFE0B2);">🌋<span class="exp-badge">HOT</span></div>
+          <div class="exp-info">
+            <div class="exp-title">Volcano Eruption</div>
+            <div class="exp-meta"><span class="exp-tag">⭐ Easy</span><span class="exp-tag">🔥 Acid+Base</span></div>
+          </div>
+        </div>
+        <div class="exp-card" onclick="showToast('🔵 Opening Blue Bottle Magic!','🔵')">
+          <div class="exp-thumb" style="background:linear-gradient(135deg,#E3F2FD,#BBDEFB);">🔵<span class="exp-badge" style="background:var(--blue);">NEW</span></div>
+          <div class="exp-info">
+            <div class="exp-title">Blue Bottle Magic</div>
+            <div class="exp-meta"><span class="exp-tag">⭐⭐ Medium</span><span class="exp-tag">💧 Redox</span></div>
+          </div>
+        </div>
+        <div class="exp-card" onclick="showToast('🌿 Opening Chromatography!','🌿')">
+          <div class="exp-thumb" style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);">🌿</div>
+          <div class="exp-info">
+            <div class="exp-title">Chromatography</div>
+            <div class="exp-meta"><span class="exp-tag">⭐ Easy</span><span class="exp-tag">🎨 Colors</span></div>
+          </div>
+        </div>
+        <div class="exp-card" onclick="showToast('🧊 Opening Crystal Growing!','🧊')">
+          <div class="exp-thumb" style="background:linear-gradient(135deg,#FCE4EC,#F8BBD9);">🧊</div>
+          <div class="exp-info">
+            <div class="exp-title">Crystal Growing</div>
+            <div class="exp-meta"><span class="exp-tag">⭐⭐ Medium</span><span class="exp-tag">❄️ Crystals</span></div>
+          </div>
+        </div>
+        <div class="exp-card" style="opacity:.55;cursor:not-allowed;">
+          <div class="exp-thumb" style="background:#F5F5F5;">⚗️</div>
+          <div class="exp-info">
+            <div class="exp-title" style="color:#BDBDBD;">pH Indicators</div>
+            <div class="exp-meta"><span class="exp-tag locked">🔒 Locked</span></div>
+          </div>
+        </div>
+        <div class="exp-card" style="opacity:.55;cursor:not-allowed;">
+          <div class="exp-thumb" style="background:#F5F5F5;">🌊</div>
+          <div class="exp-info">
+            <div class="exp-title" style="color:#BDBDBD;">Electrolysis</div>
+            <div class="exp-meta"><span class="exp-tag locked">🔒 Locked</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ AR MODE ══════ -->
+    <div class="page" id="page-ar">
+      <div class="section-label" style="font-size:24px;margin-bottom:18px;">🕶️ AR Mode</div>
+
+      <button class="ar-cta-big" onclick="triggerConfetti();showToast('🕶️ AR Mode launching! Point your camera at a flat surface!','🕶️')">
+        <div class="ar-cta-icon">🕶️</div>
+        <div class="ar-cta-body">
+          <div class="ar-cta-title">Launch AR Mode <span class="ar-new">NEW ✨</span></div>
+          <div class="ar-cta-sub">See chemistry come alive in your real room — just point your camera!</div>
+        </div>
+        <span style="font-size:36px;color:rgba(255,255,255,.8);">›</span>
+      </button>
+
+      <div class="quick-grid" style="max-width:700px;">
+        <div class="quick-card qc-blue" style="cursor:default;">
+          <span class="qc-icon">🌋</span>
+          <div class="qc-title">Volcano Eruption</div>
+          <div class="qc-desc">AR Ready</div>
+        </div>
+        <div class="quick-card qc-green" style="cursor:default;">
+          <span class="qc-icon">🔵</span>
+          <div class="qc-title">Blue Bottle</div>
+          <div class="qc-desc">AR Ready</div>
+        </div>
+        <div class="quick-card qc-orange" style="cursor:default;opacity:.55;">
+          <span class="qc-icon">⚗️</span>
+          <div class="qc-title">pH Indicators</div>
+          <div class="qc-desc">🔒 Locked</div>
+        </div>
+        <div class="quick-card qc-purple" style="cursor:default;opacity:.55;">
+          <span class="qc-icon">🧊</span>
+          <div class="qc-title">Crystals</div>
+          <div class="qc-desc">🔒 Locked</div>
+        </div>
+      </div>
+
+      <div style="background:linear-gradient(135deg,var(--lavender),#D1C4E9);border-radius:22px;padding:22px;max-width:700px;margin-top:22px;display:flex;gap:16px;align-items:center;">
+        <div style="font-size:52px;">🤖</div>
+        <div>
+          <div style="font-family:'Fredoka',cursive;font-size:18px;color:var(--purple-d);font-weight:600;">Meet Beaky — Your AR Assistant</div>
+          <div style="font-size:13px;color:var(--text);font-weight:600;margin-top:4px;line-height:1.5;">A 3D avatar AI assistant that appears in your real environment and guides you through each experiment step with voice instructions!</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ SAFETY TRAINING ══════ -->
+    <div class="page" id="page-safety">
+      <div class="section-label" style="font-size:24px;margin-bottom:18px;">🛡️ Safety Training</div>
+
+      <div class="safety-intro">
+        <div class="safety-icon">🦺</div>
+        <div>
+          <h3>Stay Safe, Do Science!</h3>
+          <p>Complete all 4 safety tiers at 80%+ to earn your <strong>Digital Certificate 🎓</strong> and unlock every experiment!</p>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 300px;gap:24px;">
+        <div class="tier-list">
+          <div class="tier-card completed" onclick="showToast('✅ Tier 1 already completed!','✅')">
+            <div class="tier-num t1">1</div>
+            <div class="tier-info">
+              <div class="tier-title">🧯 Basic Lab Rules</div>
+              <div class="tier-desc">Never eat in the lab • Wear goggles • Stay calm</div>
+              <div class="tier-progress"><div class="tier-fill" style="width:100%;"></div></div>
+            </div>
+            <div class="tier-status">✅</div>
+          </div>
+          <div class="tier-card" onclick="showToast('🔬 Starting Tier 2 Quiz!','🔬')">
+            <div class="tier-num t2">2</div>
+            <div class="tier-info">
+              <div class="tier-title">🧪 Chemical Handling</div>
+              <div class="tier-desc">Read labels • Never mix unknown chemicals • Dispose safely</div>
+              <div class="tier-progress"><div class="tier-fill" style="width:60%;background:var(--blue-d);"></div></div>
+            </div>
+            <div class="tier-status">⏳</div>
+          </div>
+          <div class="tier-card locked">
+            <div class="tier-num t3">3</div>
+            <div class="tier-info">
+              <div class="tier-title">🔥 Fire &amp; Heat Safety</div>
+              <div class="tier-desc">Handling hot equipment • Emergency procedures</div>
+              <div class="tier-progress"><div class="tier-fill" style="width:0%;"></div></div>
+            </div>
+            <div class="tier-status">🔒</div>
+          </div>
+          <div class="tier-card locked">
+            <div class="tier-num t4">4</div>
+            <div class="tier-info">
+              <div class="tier-title">⚕️ First Aid &amp; Emergency</div>
+              <div class="tier-desc">Spill response • Eye wash station • Emergency exits</div>
+              <div class="tier-progress"><div class="tier-fill" style="width:0%;"></div></div>
+            </div>
+            <div class="tier-status">🔒</div>
+          </div>
+        </div>
+
+        <!-- Certificate card -->
+        <div style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);border-radius:24px;padding:24px;text-align:center;box-shadow:var(--card-shadow);height:fit-content;">
+          <div style="font-size:56px;margin-bottom:8px;">🎓</div>
+          <div style="font-family:'Fredoka',cursive;font-size:18px;color:var(--green-d);font-weight:600;">Safety Certificate</div>
+          <div style="font-size:12px;color:var(--subtext);font-weight:600;margin-top:6px;line-height:1.5;">Complete all 4 tiers to earn your certificate and show your teacher!</div>
+          <div style="margin-top:14px;background:white;border-radius:12px;padding:10px;font-size:12px;color:#BDBDBD;font-weight:700;">🔒 Complete Tiers 2, 3 &amp; 4 to unlock</div>
+          <div style="margin-top:14px;background:white;border-radius:12px;padding:14px;">
+            <div style="font-size:11px;font-weight:800;color:var(--subtext);margin-bottom:8px;">OVERALL PROGRESS</div>
+            <div style="background:#E0E0E0;border-radius:50px;height:10px;overflow:hidden;">
+              <div style="width:25%;height:100%;background:linear-gradient(90deg,var(--green),var(--teal));border-radius:50px;"></div>
+            </div>
+            <div style="font-family:'Fredoka',cursive;font-size:18px;color:var(--green-d);margin-top:8px;font-weight:600;">1 / 4 Tiers</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ LEADERBOARD ══════ -->
+    <div class="page" id="page-leaderboard">
+      <div class="section-label" style="font-size:24px;margin-bottom:18px;">🏆 Leaderboard</div>
+
+      <!-- Podium -->
+      <div class="lb-podium" style="max-width:500px;margin-left:auto;margin-right:auto;margin-bottom:32px;">
+        <div class="podium-item rank2">
+          <div class="podium-av" style="width:60px;height:60px;font-size:32px;">🐉</div>
+          <div class="podium-name">Ahmed S.</div>
+          <div class="podium-xp">1,240 XP</div>
+          <div class="podium-stand">🥈</div>
+        </div>
+        <div class="podium-item rank1">
+          <div class="podium-av" style="width:72px;height:72px;font-size:40px;">🦁</div>
+          <div class="podium-name">Fatima K.</div>
+          <div class="podium-xp">1,850 XP</div>
+          <div class="podium-stand">🥇</div>
+        </div>
+        <div class="podium-item rank3">
+          <div class="podium-av" style="width:60px;height:60px;font-size:32px;">🦋</div>
+          <div class="podium-name">Sara R.</div>
+          <div class="podium-xp">980 XP</div>
+          <div class="podium-stand">🥉</div>
+        </div>
+      </div>
+
+      <div class="lb-list">
+        <div class="lb-row"><div class="lb-rank">4</div><div class="lb-av">🐸</div><div class="lb-name">Mohsin A.</div><div class="lb-pts">920 XP</div><div class="lb-badge">🔬</div></div>
+        <div class="lb-row"><div class="lb-rank">5</div><div class="lb-av">🐝</div><div class="lb-name">Zara M.</div><div class="lb-pts">810 XP</div><div class="lb-badge">⚗️</div></div>
+        <div class="lb-row me"><div class="lb-rank">6</div><div class="lb-av" id="lb-my-av">🦊</div><div class="lb-name">You 🎉</div><div class="lb-pts">620 XP</div><div class="lb-badge">🌟</div></div>
+        <div class="lb-row"><div class="lb-rank">7</div><div class="lb-av">🦄</div><div class="lb-name">Omar T.</div><div class="lb-pts">580 XP</div><div class="lb-badge">🧪</div></div>
+        <div class="lb-row"><div class="lb-rank">8</div><div class="lb-av">🐧</div><div class="lb-name">Hira N.</div><div class="lb-pts">420 XP</div><div class="lb-badge">🌡️</div></div>
+      </div>
+    </div>
+
+    <!-- ══════ PROFILE ══════ -->
+    <div class="page" id="page-profile">
+      <div class="section-label" style="font-size:24px;margin-bottom:18px;">👤 My Profile</div>
+
+      <div class="profile-page-grid">
+        <!-- Left -->
+        <div>
+          <div class="profile-header-card">
+            <span class="ph-av" id="prof-av">🦊</span>
+            <div class="ph-name" id="prof-name">Scientist Rabail</div>
+            <div class="ph-school">🏫 The University of Chenab, Gujrat</div>
+            <div class="ph-badges">
+              <span class="ph-badge">⭐ Junior Chemist</span>
+              <span class="ph-badge">🛡️ Tier 1 Certified</span>
+            </div>
+          </div>
+
+          <!-- Avatar chooser -->
+          <div class="av-chooser">
+            <div class="section-label" style="font-size:15px;margin-bottom:0;">🎭 Choose Your Avatar</div>
+            <div class="av-grid" id="av-grid">
+              <button class="av-opt selected" onclick="selectAvatar(this,'🦊','Foxy')"><span class="av-emoji">🦊</span><span class="av-name-lbl">Foxy</span></button>
+              <button class="av-opt" onclick="selectAvatar(this,'🐝','Buzzy')"><span class="av-emoji">🐝</span><span class="av-name-lbl">Buzzy</span></button>
+              <button class="av-opt" onclick="selectAvatar(this,'🐸','Ribbit')"><span class="av-emoji">🐸</span><span class="av-name-lbl">Ribbit</span></button>
+              <button class="av-opt" onclick="selectAvatar(this,'🦋','Flutter')"><span class="av-emoji">🦋</span><span class="av-name-lbl">Flutter</span></button>
+              <button class="av-opt" onclick="selectAvatar(this,'🐉','Draco')"><span class="av-emoji">🐉</span><span class="av-name-lbl">Draco</span></button>
+              <button class="av-opt" onclick="selectAvatar(this,'🦄','Sparky')"><span class="av-emoji">🦄</span><span class="av-name-lbl">Sparky</span></button>
+              <button class="av-opt" onclick="selectAvatar(this,'🐧','Pingu')"><span class="av-emoji">🐧</span><span class="av-name-lbl">Pingu</span></button>
+              <button class="av-opt" onclick="selectAvatar(this,'🦁','Leo')"><span class="av-emoji">🦁</span><span class="av-name-lbl">Leo</span></button>
+            </div>
+          </div>
+
+          <!-- AI Readiness -->
+          <div class="readiness-card" style="margin-top:18px;">
+            <h4>🤖 AI Readiness Report</h4>
+            <p><strong>Status: 🟡 Approaching Readiness</strong><br>Great progress in Procedural Accuracy and Safety Compliance! Complete Tier 2 &amp; 3 safety training to be <strong>Ready for Real Lab!</strong></p>
+            <div class="rd-chips">
+              <span class="rd-chip" style="color:var(--green-d);">✅ Safety: 90%</span>
+              <span class="rd-chip" style="color:var(--blue-d);">✅ Accuracy: 87%</span>
+              <span class="rd-chip" style="color:var(--orange);">⏳ Certification: 50%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right -->
+        <div class="profile-right">
+          <div class="stats-grid">
+            <div class="stat-card"><div class="stat-icon">⚡</div><div class="stat-val">620</div><div class="stat-lbl">Total XP</div></div>
+            <div class="stat-card"><div class="stat-icon">🔬</div><div class="stat-val">8</div><div class="stat-lbl">Experiments</div></div>
+            <div class="stat-card"><div class="stat-icon">🔥</div><div class="stat-val">5</div><div class="stat-lbl">Day Streak</div></div>
+            <div class="stat-card"><div class="stat-icon">🏅</div><div class="stat-val">12</div><div class="stat-lbl">Badges</div></div>
+            <div class="stat-card"><div class="stat-icon">🎯</div><div class="stat-val">87%</div><div class="stat-lbl">Accuracy</div></div>
+            <div class="stat-card"><div class="stat-icon">🏆</div><div class="stat-val">#6</div><div class="stat-lbl">Class Rank</div></div>
+          </div>
+
+          <div class="section-label" style="margin-bottom:12px;">🎖️ My Badges</div>
+          <div class="badge-chips">
+            <div class="badge-chip" style="background:#FFF9C4;"><span class="bc-icon">🌋</span>Volcano Master</div>
+            <div class="badge-chip" style="background:#E3F2FD;"><span class="bc-icon">🔬</span>Lab Explorer</div>
+            <div class="badge-chip" style="background:#E8F5E9;"><span class="bc-icon">🛡️</span>Safety First</div>
+            <div class="badge-chip" style="background:#FCE4EC;"><span class="bc-icon">🔥</span>5-Day Streak</div>
+            <div class="badge-chip" style="background:#EDE7F6;"><span class="bc-icon">⚡</span>Speed Scientist</div>
+            <div class="badge-chip" style="background:#E0F7FA;"><span class="bc-icon">💎</span>Crystal Grower</div>
+            <div class="badge-chip" style="opacity:.4;filter:grayscale(.8);"><span class="bc-icon">🤖</span>AI Master</div>
+            <div class="badge-chip" style="opacity:.4;filter:grayscale(.8);"><span class="bc-icon">🕶️</span>AR Pioneer</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end main-wrap -->
+</div><!-- end app-shell -->
+
+<script>
+// ── State ──────────────────────────────────────────
+let currentAvatar = '🦊';
+let currentName   = 'Scientist Rabail';
+let currentRole   = 'student';
+
+// ── Role selector ──────────────────────────────────
+function setRole(btn, role) {
+  document.querySelectorAll('.role-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentRole = role;
+  const placeholders = { student:'e.g. BSCS012313003', teacher:'e.g. TCH-001', admin:'e.g. ADMIN-001' };
+  document.getElementById('login-id').placeholder = placeholders[role];
+}
+
+// ── Login ──────────────────────────────────────────
+function doLogin() {
+  const id   = document.getElementById('login-id').value.trim();
+  const pass = document.getElementById('login-pass').value;
+  if (!id || !pass) {
+    shakeForm();
+    return;
+  }
+
+  const loginBtn = document.querySelector('.login-btn');
+  loginBtn.textContent = '⏳ Signing in…';
+  loginBtn.style.opacity = '.7';
+
+  setTimeout(() => {
+    document.getElementById('login-page').style.display = 'none';
+    document.getElementById('app-shell').classList.add('visible');
+    showToast(`🎉 Welcome back, ${currentRole === 'student' ? 'Scientist' : currentRole === 'teacher' ? 'Teacher' : 'Admin'}! Let's do science!`, '🎉');
+    triggerConfetti();
+    loginBtn.textContent = '🚀 Sign In & Start Learning';
+    loginBtn.style.opacity = '1';
+  }, 900);
+}
+
+function shakeForm() {
+  const wrap = document.querySelector('.login-form-wrap');
+  wrap.style.animation = 'none';
+  wrap.offsetHeight;
+  wrap.style.animation = 'shake .4s ease';
+  setTimeout(() => wrap.style.animation = '', 400);
+}
+
+// inject shake keyframe
+const shakeStyle = document.createElement('style');
+shakeStyle.textContent = '@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-8px);}75%{transform:translateX(8px);}}';
+document.head.appendChild(shakeStyle);
+
+// Enter key support
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('login-page').style.display !== 'none') doLogin();
+});
+
+// ── Logout ─────────────────────────────────────────
+function doLogout() {
+  if (!confirm('Sign out of Beaker Breakers Studio?')) return;
+  document.getElementById('app-shell').classList.remove('visible');
+  document.getElementById('login-page').style.display = 'flex';
+  document.getElementById('login-id').value = '';
+  document.getElementById('login-pass').value = '';
+}
+
+// ── Navigation ─────────────────────────────────────
+const PAGE_META = {
+  home:        { title:'🏠 Dashboard',         nav:'nav-home' },
+  experiments: { title:'🔬 Experiments',        nav:'nav-experiments' },
+  ar:          { title:'🕶️ AR Mode',           nav:'nav-ar' },
+  safety:      { title:'🛡️ Safety Training',   nav:'nav-safety' },
+  leaderboard: { title:'🏆 Leaderboard',        nav:'nav-leaderboard' },
+  profile:     { title:'👤 My Profile',         nav:'nav-profile' },
+};
+
+function navTo(page) {
+  // Hide all pages
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(b => b.classList.remove('active'));
+
+  // Show target
+  const pageEl = document.getElementById('page-' + page);
+  if (pageEl) pageEl.classList.add('active');
+
+  const meta = PAGE_META[page];
+  if (meta) {
+    document.getElementById('topbar-title').textContent = meta.title;
+    const navEl = document.getElementById(meta.nav);
+    if (navEl) navEl.classList.add('active');
+  }
+
+  window.scrollTo(0, 0);
+}
+
+// ── Avatar selection ───────────────────────────────
+function selectAvatar(btn, emoji, name) {
+  document.querySelectorAll('.av-opt').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  currentAvatar = emoji;
+
+  // Update everywhere
+  document.getElementById('sb-av-el').textContent   = emoji;
+  document.getElementById('prof-av').textContent     = emoji;
+  document.getElementById('dash-av').textContent     = emoji;
+  document.getElementById('tp-av').textContent       = emoji;
+  document.getElementById('mlb-av').textContent      = emoji;
+  if (document.getElementById('lb-my-av'))
+    document.getElementById('lb-my-av').textContent  = emoji;
+
+  showToast(`${emoji} ${name} selected! Ready to science? 🔬`, emoji);
+}
+
+// ── Filter pills ───────────────────────────────────
+function setFilter(pill) {
+  document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+  pill.classList.add('active');
+}
+
+// ── Toast ──────────────────────────────────────────
+function showToast(msg, icon='🎉') {
+  const toast = document.getElementById('toast');
+  document.getElementById('toast-text').textContent = msg;
+  document.getElementById('toast-icon').textContent = icon;
+  toast.classList.add('show');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// ── Confetti ───────────────────────────────────────
+function triggerConfetti() {
+  const wrap = document.getElementById('confetti');
+  wrap.innerHTML = '';
+  wrap.classList.add('show');
+  const cols = ['#FFD54F','#4FC3F7','#EF5350','#66BB6A','#CE93D8','#FF8A50','#26C6DA','#F48FB1'];
+  for (let i = 0; i < 70; i++) {
+    const el = document.createElement('div');
+    el.className = 'conf-piece';
+    el.style.cssText = `left:${Math.random()*100}vw;background:${cols[~~(Math.random()*cols.length)]};width:${Math.random()*10+6}px;height:${Math.random()*10+6}px;border-radius:${Math.random()>.5?'50%':'2px'};animation-delay:${Math.random()*1.5}s;animation-duration:${Math.random()*1.5+2}s`;
+    wrap.appendChild(el);
+  }
+  setTimeout(() => { wrap.classList.remove('show'); wrap.innerHTML=''; }, 4500);
+}
+
+// ── Greeting ───────────────────────────────────────
+const hr = new Date().getHours();
+const greet = hr < 12 ? 'Good morning' : hr < 17 ? 'Good afternoon' : 'Good evening';
+document.getElementById('hero-greeting').textContent = `👋 ${greet}, ${currentName}!`;
+</script>
+</body>
+</html>

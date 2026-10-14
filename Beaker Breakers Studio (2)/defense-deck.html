@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beaker Breakers Studio — FYP Defense</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#F7FBFF;
+    --ink:#0E1A2B;
+    --ink-2:#1F3553;
+    --mute:#64748B;
+    --line:#DCE7F5;
+
+    --blue:#29B6F6;
+    --blue-d:#0288D1;
+    --teal:#26C6DA;
+    --green:#4CAF82;
+    --green-d:#2E7D57;
+    --orange:#FF8A50;
+    --orange-d:#FF6D00;
+    --purple:#7E57C2;
+    --purple-d:#5E35B1;
+    --yellow:#FFD54F;
+    --pink:#F48FB1;
+    --lemon:#FFF4C4;
+    --sky:#E7F5FE;
+    --mint:#E6F7EF;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html,body { background:#0a1220; font-family:'Nunito',sans-serif; color:var(--ink); }
+
+  deck-stage > section {
+    width:1920px; height:1080px;
+    position:relative; overflow:hidden;
+    background: var(--bg);
+  }
+
+  /* ——— Shared frame chrome ——— */
+  .frame {
+    position:absolute; inset:0;
+    padding:88px 104px;
+    display:flex; flex-direction:column;
+  }
+  .brand {
+    position:absolute; top:44px; left:104px;
+    display:flex; align-items:center; gap:14px;
+    font-family:'Fredoka',sans-serif; font-weight:600;
+    font-size:22px; color:var(--ink-2); letter-spacing:.3px;
+  }
+  .brand .dot { width:14px; height:14px; border-radius:50%; background:linear-gradient(135deg,var(--blue),var(--purple)); box-shadow:0 0 0 4px #DCEEFB;}
+  .page-num {
+    position:absolute; right:104px; top:44px;
+    font-family:'JetBrains Mono',monospace; font-size:16px; color:var(--mute);
+    letter-spacing:2px;
+  }
+  .page-num b { color:var(--ink); font-weight:700; }
+  .pill {
+    display:inline-flex; align-items:center; gap:10px;
+    background:#fff; border:2px solid var(--line);
+    padding:8px 18px; border-radius:999px;
+    font-weight:900; font-size:16px; color:var(--ink-2);
+    letter-spacing:1.2px; text-transform:uppercase;
+    box-shadow:0 2px 10px rgba(15,30,60,.06);
+  }
+  .pill .sq { width:10px; height:10px; border-radius:3px; background:var(--orange);}
+  .h-title {
+    font-family:'Fredoka',sans-serif; font-weight:600;
+    font-size:108px; line-height:1.02; letter-spacing:-2px;
+    color:var(--ink);
+  }
+  .h-title em { font-style:normal; color:var(--blue-d); }
+  .h-sub {
+    font-size:28px; font-weight:700; color:var(--mute);
+    line-height:1.45; max-width:1200px;
+  }
+  .divider { width:120px; height:6px; background:linear-gradient(90deg,var(--orange),var(--yellow)); border-radius:3px; }
+
+  /* ——— Slide 1: Title ——— */
+  .title-slide {
+    background:
+      radial-gradient(1200px 900px at 82% 18%, #E3F3FF 0%, transparent 60%),
+      radial-gradient(900px 700px at 12% 88%, #FFF2D8 0%, transparent 60%),
+      linear-gradient(135deg,#F5FAFF,#FFFFFF 40%,#F7F3FF);
+  }
+  .ts-grid {
+    position:absolute; inset:0; opacity:.35;
+    background-image:
+      linear-gradient(rgba(14,26,43,.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(14,26,43,.06) 1px, transparent 1px);
+    background-size:60px 60px;
+  }
+  .ts-hero {
+    position:absolute; right:-40px; top:0; bottom:0;
+    width:860px; display:flex; align-items:center; justify-content:center;
+  }
+  .ts-blob {
+    position:relative; width:640px; height:640px; border-radius:50%;
+    background:
+      radial-gradient(circle at 35% 30%, #FFF, #E3F2FD 60%, #BBE0FB 100%);
+    box-shadow: 0 60px 120px -30px rgba(41,182,246,.4), inset 0 -40px 80px rgba(79,195,247,.2);
+  }
+  .ts-emoji-l {
+    position:absolute; font-size:360px; left:50%; top:50%;
+    transform:translate(-50%,-52%);
+    filter: drop-shadow(0 30px 40px rgba(15,30,60,.25));
+  }
+  .ts-bubble { position:absolute; border-radius:50%; border:6px solid #fff;
+    box-shadow:0 10px 30px rgba(41,182,246,.35); }
+  .ts-bubble.a { width:90px; height:90px; top:80px; right:120px; background:linear-gradient(135deg,#FFE082,#FFB74D);}
+  .ts-bubble.b { width:130px; height:130px; bottom:60px; right:80px; background:linear-gradient(135deg,#A5D6A7,#66BB6A);}
+  .ts-bubble.c { width:70px; height:70px; bottom:220px; left:80px; background:linear-gradient(135deg,#F48FB1,#EC407A);}
+  .ts-bubble.d { width:110px; height:110px; top:220px; left:-10px; background:linear-gradient(135deg,#90CAF9,#42A5F5);}
+
+  .ts-left { position:relative; max-width:1000px; align-self:center; z-index:2; }
+  .ts-tag {
+    display:inline-flex; align-items:center; gap:12px;
+    background:linear-gradient(135deg,#0E1A2B,#1F3553);
+    color:#FFD54F; padding:10px 22px; border-radius:999px;
+    font-family:'JetBrains Mono',monospace; font-weight:700; font-size:18px;
+    letter-spacing:2px; text-transform:uppercase;
+  }
+  .ts-tag .dot { width:10px; height:10px; border-radius:50%; background:#FFD54F; box-shadow:0 0 12px #FFD54F;}
+  .ts-name {
+    font-family:'Fredoka',sans-serif; font-weight:600;
+    font-size:156px; line-height:.95; letter-spacing:-4px;
+    color:var(--ink); margin-top:28px;
+  }
+  .ts-name .b1 { color:var(--blue-d); }
+  .ts-name .b2 { color:var(--orange-d); }
+  .ts-tag2 {
+    font-family:'Fredoka',sans-serif; font-weight:500;
+    font-size:36px; color:var(--ink-2); margin-top:18px; line-height:1.25;
+    max-width:900px;
+  }
+  .ts-tag2 b { background:linear-gradient(120deg,transparent 0 60%, #FFE082 60% 100%); padding:0 6px; }
+  .ts-meta {
+    margin-top:64px; display:flex; gap:32px; flex-wrap:wrap;
+  }
+  .ts-meta .cell {
+    background:#fff; border:2px solid var(--line); border-radius:20px;
+    padding:18px 26px; box-shadow:0 6px 20px rgba(15,30,60,.06);
+    min-width:230px;
+  }
+  .ts-meta .k { font-size:13px; letter-spacing:2px; color:var(--mute); font-weight:900; text-transform:uppercase;}
+  .ts-meta .v { font-family:'Fredoka',sans-serif; font-weight:600; font-size:26px; color:var(--ink); margin-top:4px;}
+
+  /* ——— section heading pill ——— */
+  .section-index {
+    display:inline-block;
+    font-family:'JetBrains Mono',monospace; font-weight:700; font-size:20px;
+    color:var(--mute); letter-spacing:3px;
+  }
+  .eyebrow {
+    display:flex; align-items:center; gap:18px;
+    font-family:'JetBrains Mono',monospace; font-weight:700; font-size:18px;
+    color:var(--orange-d); letter-spacing:3px; text-transform:uppercase;
+  }
+  .eyebrow .line { width:52px; height:3px; background:var(--orange); border-radius:2px;}
+
+  /* ——— generic layouts ——— */
+  .two-col { display:grid; grid-template-columns:1fr 1fr; gap:72px; margin-top:60px; flex:1; }
+  .row { display:flex; gap:28px; flex-wrap:wrap; }
+
+  .card {
+    background:#fff; border-radius:28px; padding:38px;
+    border:2px solid var(--line);
+    box-shadow:0 14px 40px -20px rgba(15,30,60,.2);
+  }
+  .card .ic { font-size:56px; }
+  .card h4 {
+    font-family:'Fredoka',sans-serif; font-weight:600; font-size:30px;
+    color:var(--ink); margin-top:12px;
+  }
+  .card p { font-size:20px; color:var(--ink-2); line-height:1.55; margin-top:10px; font-weight:600;}
+
+  /* ——— problem slide ——— */
+  .pr-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:26px; margin-top:50px; }
+  .pr-item {
+    background:#fff; border-radius:24px; padding:30px 28px;
+    border:2px solid var(--line);
+    box-shadow:0 10px 30px -15px rgba(15,30,60,.2);
+    display:flex; gap:20px; align-items:flex-start;
+  }
+  .pr-item .bx {
+    width:64px; height:64px; border-radius:16px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-size:32px;
+  }
+  .pr-item h5 { font-family:'Fredoka',sans-serif; font-weight:600; font-size:22px; margin-bottom:8px; color:var(--ink);}
+  .pr-item p { font-size:17px; font-weight:600; color:var(--ink-2); line-height:1.45;}
+  .pr-stat {
+    margin-top:44px;
+    background:linear-gradient(135deg,var(--ink),var(--ink-2));
+    color:white; border-radius:24px; padding:38px 48px;
+    display:flex; align-items:center; gap:48px;
+  }
+  .pr-stat .big { font-family:'Fredoka',sans-serif; font-weight:600; font-size:96px; color:var(--yellow); line-height:1; }
+  .pr-stat p { font-size:22px; font-weight:700; line-height:1.45; opacity:.95; max-width:900px;}
+
+  /* ——— lit review table ——— */
+  .lit-table {
+    margin-top:40px; background:#fff; border-radius:24px; overflow:hidden;
+    border:2px solid var(--line);
+    box-shadow:0 10px 30px -15px rgba(15,30,60,.2);
+  }
+  .lit-row {
+    display:grid; grid-template-columns:2.2fr repeat(6,1fr); align-items:center;
+    padding:14px 22px; font-size:17px; font-weight:700; color:var(--ink-2);
+    border-bottom:1.5px solid var(--line);
+  }
+  .lit-row:last-child{ border-bottom:none; }
+  .lit-row.head { background:var(--ink); color:white; font-family:'Fredoka',sans-serif; font-size:18px; }
+  .lit-row.head > div { text-align:center; }
+  .lit-row.head > div:first-child { text-align:left;}
+  .lit-row.ours { background:linear-gradient(90deg,#FFF9E6,#FFFDE7); }
+  .lit-row.ours > div:first-child { color:var(--orange-d); font-family:'Fredoka',sans-serif; font-weight:600; font-size:20px;}
+  .lit-row > div { text-align:center; font-size:22px; }
+  .lit-row > div:first-child { text-align:left; font-size:17px; font-weight:700; }
+  .tick { color:var(--green); }
+  .cross { color:#EF5350; }
+  .tilde { color:#FF9800; }
+
+  /* ——— contribution tiles ——— */
+  .contrib-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:26px; margin-top:50px; }
+  .contrib-tile {
+    border-radius:24px; padding:34px 30px;
+    position:relative; overflow:hidden;
+    color:var(--ink); min-height:290px;
+  }
+  .contrib-tile .num {
+    position:absolute; right:22px; top:14px;
+    font-family:'Fredoka',sans-serif; font-weight:600; font-size:72px;
+    color:rgba(15,30,60,.12); line-height:1;
+  }
+  .contrib-tile .ic { font-size:56px; }
+  .contrib-tile h5 { font-family:'Fredoka',sans-serif; font-weight:600; font-size:26px; margin-top:14px;}
+  .contrib-tile p { font-size:18px; font-weight:700; color:var(--ink-2); margin-top:12px; line-height:1.45; }
+  .t-sky { background:linear-gradient(135deg,#E3F2FD,#BBDEFB);}
+  .t-mint { background:linear-gradient(135deg,#E8F5E9,#C8E6C9);}
+  .t-peach { background:linear-gradient(135deg,#FFF3E0,#FFCC80);}
+  .t-lav { background:linear-gradient(135deg,#EDE7F6,#D1C4E9);}
+  .t-lem { background:linear-gradient(135deg,#FFFDE7,#FFF59D);}
+  .t-pink { background:linear-gradient(135deg,#FCE4EC,#F8BBD9);}
+
+  /* ——— objectives ——— */
+  .obj-list { margin-top:50px; display:grid; grid-template-columns:1fr 1fr; gap:22px; }
+  .obj-item {
+    background:#fff; border-radius:22px; padding:24px 26px;
+    border:2px solid var(--line);
+    display:flex; gap:22px; align-items:center;
+    box-shadow:0 10px 30px -15px rgba(15,30,60,.18);
+  }
+  .obj-item .n {
+    width:62px; height:62px; flex-shrink:0; border-radius:50%;
+    background:linear-gradient(135deg,var(--blue),var(--purple));
+    color:white; font-family:'Fredoka',sans-serif; font-weight:600; font-size:30px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .obj-item h5 { font-family:'Fredoka',sans-serif; font-weight:600; font-size:22px; color:var(--ink); line-height:1.2;}
+  .obj-item p { font-size:16px; font-weight:700; color:var(--mute); margin-top:4px; line-height:1.35;}
+
+  /* ——— req slide ——— */
+  .req-col h4 { font-family:'Fredoka',sans-serif; font-weight:600; font-size:36px; color:var(--ink); display:flex; align-items:center; gap:14px;}
+  .req-col .tag { font-size:14px; background:var(--sky); color:var(--blue-d); padding:4px 12px; border-radius:12px; font-weight:900; letter-spacing:1px;}
+  .req-list { list-style:none; padding:0; margin-top:22px; display:flex; flex-direction:column; gap:14px;}
+  .req-list li {
+    background:#fff; border:2px solid var(--line); border-radius:18px;
+    padding:18px 22px; display:flex; gap:18px; align-items:flex-start;
+    font-size:19px; font-weight:700; color:var(--ink-2); line-height:1.4;
+    box-shadow:0 6px 20px -10px rgba(15,30,60,.15);
+  }
+  .req-list li .k { width:30px; font-family:'JetBrains Mono',monospace; font-weight:800; color:var(--orange-d); flex-shrink:0;}
+
+  /* ——— tech slide ——— */
+  .tech-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:22px; margin-top:44px;}
+  .tech-cat { font-family:'Fredoka',sans-serif; font-weight:600; font-size:22px; color:var(--ink); margin-bottom:14px; display:flex; align-items:center; gap:10px;}
+  .tech-cat::before { content:''; width:10px; height:10px; border-radius:3px; background:var(--orange);}
+  .tech-chip {
+    background:#fff; border:2px solid var(--line); border-radius:16px;
+    padding:14px 18px; font-weight:800; font-size:18px; color:var(--ink-2);
+    display:flex; align-items:center; gap:12px; margin-bottom:10px;
+    box-shadow:0 4px 14px -8px rgba(15,30,60,.2);
+  }
+  .tech-chip .ic { font-size:28px;}
+
+  /* ——— architecture layers ——— */
+  .arch { margin-top:36px; display:flex; flex-direction:column; gap:18px; }
+  .layer {
+    background:#fff; border:2px solid var(--line); border-radius:22px;
+    padding:24px 30px; display:grid; grid-template-columns:240px 1fr 260px;
+    align-items:center; gap:28px;
+    box-shadow:0 8px 28px -15px rgba(15,30,60,.2);
+  }
+  .layer .tag {
+    display:inline-flex; align-items:center; gap:12px;
+    padding:8px 18px; border-radius:999px; font-family:'Fredoka',sans-serif; font-weight:600; font-size:22px;
+    color:white;
+  }
+  .layer.l1 .tag{ background:var(--blue-d);} .layer.l2 .tag{ background:var(--purple-d);}
+  .layer.l3 .tag{ background:var(--green-d);} .layer.l4 .tag{ background:var(--orange-d);}
+  .layer .body { font-size:19px; font-weight:700; color:var(--ink-2); line-height:1.4;}
+  .layer .tech { display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;}
+  .layer .tech span { background:#F1F6FB; color:var(--ink-2); font-size:14px; font-weight:900; padding:6px 12px; border-radius:10px; border:1.5px solid var(--line);}
+
+  /* ——— conclusion ——— */
+  .cc-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:26px; margin-top:50px;}
+  .cc-stat {
+    background:#fff; border-radius:24px; padding:36px 32px;
+    border:2px solid var(--line); text-align:center;
+    box-shadow:0 14px 40px -20px rgba(15,30,60,.2);
+  }
+  .cc-stat .big { font-family:'Fredoka',sans-serif; font-weight:600; font-size:92px; line-height:1;
+    background:linear-gradient(135deg,var(--blue-d),var(--purple-d));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .cc-stat .lbl { font-family:'Fredoka',sans-serif; font-weight:600; font-size:22px; color:var(--ink); margin-top:12px;}
+  .cc-stat p { font-size:17px; font-weight:700; color:var(--mute); margin-top:8px; line-height:1.4;}
+
+  .qa {
+    margin-top:60px; display:flex; gap:26px; align-items:stretch;
+  }
+  .qa .big {
+    flex:1; background:linear-gradient(135deg,var(--orange),var(--orange-d));
+    color:white; border-radius:28px; padding:44px;
+    box-shadow:0 20px 50px -15px rgba(255,138,80,.5);
+  }
+  .qa .big h3 { font-family:'Fredoka',sans-serif; font-weight:600; font-size:52px; line-height:1.05;}
+  .qa .big p { font-size:22px; font-weight:700; margin-top:14px; opacity:.95; line-height:1.45;}
+  .qa .side {
+    flex:1; background:linear-gradient(135deg,var(--ink),var(--ink-2));
+    color:white; border-radius:28px; padding:44px;
+    display:flex; flex-direction:column; justify-content:center;
+  }
+  .qa .side h4 { font-family:'Fredoka',sans-serif; font-weight:600; font-size:36px; color:var(--yellow);}
+  .qa .side p { font-size:20px; font-weight:700; margin-top:14px; line-height:1.5; opacity:.92;}
+
+  /* ——— thank-you ——— */
+  .ty-slide {
+    background:
+      radial-gradient(900px 700px at 80% 20%, #FFF2D8 0%, transparent 60%),
+      radial-gradient(700px 600px at 20% 80%, #E3F3FF 0%, transparent 60%),
+      linear-gradient(135deg,#0E1A2B,#1F3553);
+    color:white;
+  }
+  .ty-slide .frame { color:white; }
+  .ty-slide .h-title { color:white; font-size:200px;}
+  .ty-slide .h-title em { color:var(--yellow); }
+  .ty-slide .h-sub { color:rgba(255,255,255,.82); font-size:30px; margin-top:34px;}
+  .ty-emoji { position:absolute; right:120px; bottom:120px; font-size:420px; filter:drop-shadow(0 30px 40px rgba(0,0,0,.35));}
+  .ty-chips { margin-top:60px; display:flex; gap:16px; flex-wrap:wrap;}
+  .ty-chips span {
+    background:rgba(255,255,255,.1); border:1.5px solid rgba(255,255,255,.25);
+    backdrop-filter:blur(20px);
+    color:white; padding:12px 24px; border-radius:999px;
+    font-family:'Fredoka',sans-serif; font-weight:500; font-size:22px;
+  }
+
+  /* text helpers */
+  .k-mono { font-family:'JetBrains Mono',monospace; }
+</style>
+</head>
+<body>
+
+<script type="application/json" id="speaker-notes">
+[
+  "Good morning respected supervisors and evaluators. My name is Rabail Mehboob and together with Syed Mohsin Abbas I present our Final Year Project — Beaker Breakers Studio — an AI-powered gamified virtual chemistry lab with augmented reality, built for secondary schools. Our supervisor is Ms. Mehk Fatima and co-supervisor is Dr. Waqas Ahmed.",
+  "Chemistry education depends on hands-on experiments, but in most secondary schools students never get that experience. The core idea of Beaker Breakers Studio is to bring the laboratory to the student — safely, on any device — by combining AI tutoring, gamified missions and mobile AR. It's a single platform that schools can deploy for their students, teachers and administrators.",
+  "Here is why this project matters. Practical chemistry in schools is blocked by five real barriers: safety risks for junior students, high cost of reagents, legal bans on hazardous chemicals, under-equipped labs that make students passive observers, and almost no formal safety competency check. Existing virtual platforms like Labster, PhET, PraxiLabs and OLabs help, but none of them combine AI, AR, gamification and a school-wide safety certificate in one system.",
+  "We studied four major virtual lab platforms. Labster is excellent but paid and university focused. PhET is free but static simulations. PraxiLabs and OLabs are closer to our target but still miss AR, AI tutoring, safety certification and a gamification layer. Beaker Breakers Studio fills every one of those gaps, in a single portal designed for secondary schools.",
+  "Our contribution is the combination. Six capabilities that no single competitor offers together — a four-tier safety certification, AI-powered real-time guidance, smartphone AR mode, a 3D avatar assistant, a six-dimension scoring engine, and an AI readiness predictor that tells teachers when a student is safe to enter a real lab.",
+  "We have six concrete objectives. Build AI guidance that teaches and corrects in real time. Build a four-tier safety training module. Build an AI readiness predictor. Build a gamification engine. Build a smartphone AR experience without special hardware. And make the platform reach every device — desktop, tablet, phone.",
+  "On functional requirements, the system must support role-based login, safety training with a quiz gate, experiment runner, AR mode, gamification, certificate issue, teacher dashboard and admin controls. On non-functional side, we commit to responsive UI, sub-2-second response on standard screens, role-based security, and accessibility on entry-level Android phones.",
+  "The architecture is three-tier. Presentation layer — React and Next.js web portal plus a Flutter mobile app. Application layer — Laravel REST API with Sanctum auth and Redis queues, calling Gemini and ElevenLabs APIs. Data layer — MySQL for records, Redis for leaderboards, AWS S3 and Cloudflare CDN for static assets. AR runs on-device via ARCore and ARKit through Flutter.",
+  "These are our chosen tools. Laravel for the backend because it's widely hostable in Pakistan. Flutter for a single mobile codebase. React + Next.js for SSR performance on the web. Gemini for language AI. ARCore and ARKit for mobile AR. MySQL and Redis for data. Firebase and SendGrid for notifications.",
+  "To conclude — Beaker Breakers Studio is the first platform to combine AI tutoring, mobile AR, gamification and a formal safety certificate in one school portal. We've already built a working prototype covering home, experiments, safety training, quizzes, leaderboards, AR mode and certificate issue. Thank you — we are ready for your questions."
+]
+</script>
+
+<deck-stage>
+
+  <!-- ============ SLIDE 1 — TITLE ============ -->
+  <section class="title-slide">
+    <div class="ts-grid"></div>
+    <div class="ts-hero">
+      <div class="ts-blob">
+        <div class="ts-emoji-l">🧪</div>
+        <div class="ts-bubble a"></div>
+        <div class="ts-bubble b"></div>
+        <div class="ts-bubble c"></div>
+        <div class="ts-bubble d"></div>
+      </div>
+    </div>
+
+    <div class="frame">
+      <div class="brand"><div class="dot"></div>Beaker Breakers Studio</div>
+      <div class="page-num"><b>01</b> / 10</div>
+
+      <div class="ts-left">
+        <div class="ts-tag"><div class="dot"></div>FYP DEFENSE — BSCS/SE 2023–2027</div>
+        <div class="ts-name">
+          <span class="b1">Beaker</span><br/>
+          <span class="b2">Breakers</span> Studio
+        </div>
+        <div class="ts-tag2">
+          An <b>AI-Powered Gamified Virtual Chemistry Lab</b> with <b>Augmented Reality</b><br/>
+          for Secondary Schools
+        </div>
+
+        <div class="ts-meta">
+          <div class="cell">
+            <div class="k">Presented by</div>
+            <div class="v">Rabail Mehboob<br/><span style="font-size:18px;color:var(--mute);">BSCS012313003</span></div>
+          </div>
+          <div class="cell">
+            <div class="k">Co-presenter</div>
+            <div class="v">Syed Mohsin Abbas<br/><span style="font-size:18px;color:var(--mute);">BSSE012313006</span></div>
+          </div>
+          <div class="cell">
+            <div class="k">Supervisor</div>
+            <div class="v">Ms. Mehk Fatima<br/><span style="font-size:18px;color:var(--mute);">Co-Sup: Dr. Waqas Ahmed</span></div>
+          </div>
+          <div class="cell">
+            <div class="k">Institution</div>
+            <div class="v">University of Chenab<br/><span style="font-size:18px;color:var(--mute);">Dept. of Computer Science</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 2 — INTRODUCTION ============ -->
+  <section>
+    <div class="frame">
+      <div class="brand"><div class="dot"></div>Beaker Breakers Studio</div>
+      <div class="page-num"><b>02</b> / 10</div>
+
+      <div class="eyebrow"><span class="line"></span>INTRODUCTION</div>
+      <div class="h-title" style="margin-top:18px;font-size:96px;">Bringing the chemistry lab<br/>to every <em>student's pocket</em>.</div>
+      <div class="divider" style="margin-top:28px;"></div>
+      <div class="h-sub" style="margin-top:26px;">
+        A single institutional platform that unifies AI tutoring, gamified experiments, smartphone-based
+        AR and formal safety certification — so schools can deliver real practical chemistry regardless
+        of their physical resources.
+      </div>
+
+      <div class="two-col" style="margin-top:54px;">
+        <div class="card">
+          <div class="ic">🧪</div>
+          <h4>Built for secondary schools</h4>
+          <p>Curriculum-aligned virtual experiments, school-wide portal with role-based access for students, teachers and administrators.</p>
+        </div>
+        <div class="card">
+          <div class="ic">🤖</div>
+          <h4>AI + AR in one platform</h4>
+          <p>Gemini-powered guidance and a 3D avatar assistant appear in AR through any ordinary smartphone camera — no special hardware.</p>
+        </div>
+        <div class="card">
+          <div class="ic">🛡️</div>
+          <h4>Safety-first by design</h4>
+          <p>Four-tier safety training with quiz gates and a digital certificate — students unlock experiments only after demonstrating competency.</p>
+        </div>
+        <div class="card">
+          <div class="ic">🎮</div>
+          <h4>Gamified engagement</h4>
+          <p>XP, badges, 8 rank levels, class leaderboards, streaks and missions keep students learning through play, not pressure.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 3 — PROBLEM STATEMENT ============ -->
+  <section>
+    <div class="frame">
+      <div class="brand"><div class="dot"></div>Beaker Breakers Studio</div>
+      <div class="page-num"><b>03</b> / 10</div>
+
+      <div class="eyebrow"><span class="line"></span>PROBLEM STATEMENT</div>
+      <div class="h-title" style="margin-top:18px;font-size:88px;">Most secondary schools cannot<br/>deliver practical <em>chemistry</em>.</div>
+
+      <div class="pr-grid">
+        <div class="pr-item">
+          <div class="bx" style="background:#FFEBEE;">⚠️</div>
+          <div><h5>Safety risks</h5><p>Labs restrict junior students from hazardous reagents, blocking hands-on learning.</p></div>
+        </div>
+        <div class="pr-item">
+          <div class="bx" style="background:#FFF3E0;">💰</div>
+          <div><h5>High cost</h5><p>Chemical reagents and glassware are expensive and often unavailable in low-resource schools.</p></div>
+        </div>
+        <div class="pr-item">
+          <div class="bx" style="background:#F3E5F5;">⚖️</div>
+          <div><h5>Legal barriers</h5><p>Many hazardous substances are prohibited in schools, making real experiments impossible.</p></div>
+        </div>
+        <div class="pr-item">
+          <div class="bx" style="background:#E1F5FE;">👀</div>
+          <div><h5>Passive observation</h5><p>Scarce lab equipment forces most students to watch rather than perform experiments.</p></div>
+        </div>
+        <div class="pr-item">
+          <div class="bx" style="background:#E8F5E9;">🛡️</div>
+          <div><h5>No safety training</h5><p>There is no formal, measurable competency verification before students enter a lab.</p></div>
+        </div>
+        <div class="pr-item">
+          <div class="bx" style="background:#FFF9C4;">📱</div>
+          <div><h5>Gaps in virtual labs</h5><p>Labster, PhET, PraxiLabs and OLabs lack AI, AR, gamification and certification — together.</p></div>
+        </div>
+      </div>
+
+      <div class="pr-stat">
+        <div class="big">80%</div>
+        <p>of secondary schools worldwide report inadequate practical chemistry delivery — and <b>no existing virtual platform</b> combines AI tutoring, AR, gamification and institution-wide safety certification in a single portal.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 4 — LITERATURE REVIEW ============ -->
+  <section>
+    <div class="frame">
+      <div class="brand"><div class="dot"></div>Beaker Breakers Studio</div>
+      <div class="page-num"><b>04</b> / 10</div>
+
+      <div class="eyebrow"><span class="line"></span>LITERATURE REVIEW &amp; PREVIOUS WORK</div>
+      <div class="h-title" style="margin-top:18px;font-size:80px;">Existing platforms solve <em>parts</em><br/>— none solve the whole problem.</div>
+
+      <div class="lit-table">
+        <div class="lit-row head">
+          <div>Feature</div>
+          <div>Labster</div>
+          <div>PhET</div>
+          <div>PraxiLabs</div>
+          <div>OLabs</div>
+          <div>Mobile games</div>
+          <div>Beaker Breakers</div>
+        </div>
+        <div class="lit-row">
+          <div>Target level</div>
+          <div style="font-size:15px;font-weight:800;">University</div>
+          <div style="font-size:15px;font-weight:800;">K-12 + Uni</div>
+          <div style="font-size:15px;font-weight:800;">College</div>
+          <div style="font-size:15px;font-weight:800;">Class 9–12</div>
+          <div style="font-size:15px;font-weight:800;">Personal</div>
+          <div style="font-size:15px;font-weight:800;color:var(--orange-d);">Secondary school</div>
+        </div>
+        <div class="lit-row"><div>School portal per institution</div><div class="cross">✕</div><div class="cross">✕</div><div class="tilde">~</div><div class="tilde">~</div><div class="cross">✕</div><div class="tick">✓</div></div>
+        <div class="lit-row"><div>Game mode &amp; progression</div><div class="cross">✕</div><div class="cross">✕</div><div class="cross">✕</div><div class="cross">✕</div><div class="tilde">~</div><div class="tick">✓</div></div>
+        <div class="lit-row"><div>AR mode (smartphone)</div><div class="cross">✕</div><div class="cross">✕</div><div class="cross">✕</div><div class="cross">✕</div><div class="cross">✕</div><div class="tick">✓</div></div>
+        <div class="lit-row"><div>3D avatar AI assistant</div><div class="cross">✕</div><div class="cross">✕</div><div class="tilde">~</div><div class="cross">✕</div><div class="cross">✕</div><div class="tick">✓</div></div>
+        <div class="lit-row"><div>Real-time AI guidance (LLM)</div><div class="cross">✕</div><div class="cross">✕</div><div class="cross">✕</div><div class="cross">✕</div><div class="cross">✕</div><div class="tick">✓</div></div>
+        <div class="lit-row"><div>AI readiness prediction</div><div class="cross">✕</div><div class="cross">✕</div><div class="cross">✕</div><div class="cross">✕</div><div class="cross">✕</div><div class="tick">✓</div></div>
+        <div class="lit-row"><div>4-tier safety certification</div><div class="cross">✕</div><div class="cross">✕</div><div class="cross">✕</div><div class="cross">✕</div><div class="cross">✕</div><div class="tick">✓</div></div>
+        <div class="lit-row ours"><div>All-in-one coverage</div><div class="cross">✕</div><div class="cross">✕</div><div class="cross">✕</div><div class="cross">✕</div><div class="cross">✕</div><div class="tick">✓</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 5 — CONTRIBUTION ============ -->
+  <section>
+    <div class="frame">
+      <div class="brand"><div class="dot"></div>Beaker Breakers Studio</div>
+      <div class="page-num"><b>05</b> / 10</div>
+
+      <div class="eyebrow"><span class="line"></span>PROJECT CONTRIBUTION &amp; NOVELTY</div>
+      <div class="h-title" style="margin-top:18px;font-size:80px;">Six things no competitor<br/>offers <em>together</em>.</div>
+
+      <div class="contrib-grid">
+        <div class="contrib-tile t-sky">
+          <div class="num">01</div><div class="ic">🛡️</div>
+          <h5>4-Tier Safety Certification</h5>
+          <p>Interactive training with 80% quiz gates and a digital certificate — the first virtual chem platform to formalise competency.</p>
+        </div>
+        <div class="contrib-tile t-mint">
+          <div class="num">02</div><div class="ic">🤖</div>
+          <h5>Real-time AI Guidance</h5>
+          <p>Gemini-powered LLM tutor that teaches each step, detects errors live, and explains the chemistry in plain language.</p>
+        </div>
+        <div class="contrib-tile t-peach">
+          <div class="num">03</div><div class="ic">🕶️</div>
+          <h5>Smartphone AR Mode</h5>
+          <p>ARCore / ARKit overlay on any ordinary phone — students see the experiment in their own room, no headset needed.</p>
+        </div>
+        <div class="contrib-tile t-lav">
+          <div class="num">04</div><div class="ic">🧑‍🚀</div>
+          <h5>3D Avatar Assistant</h5>
+          <p>A friendly character narrates steps, celebrates success, and warns of hazards — voiced by ElevenLabs.</p>
+        </div>
+        <div class="contrib-tile t-lem">
+          <div class="num">05</div><div class="ic">📊</div>
+          <h5>6-Dimension Scoring</h5>
+          <p>Evaluates Accuracy, Safety, Reagent use, Time, Understanding and Error Recovery — not a single right/wrong grade.</p>
+        </div>
+        <div class="contrib-tile t-pink">
+          <div class="num">06</div><div class="ic">🔮</div>
+          <h5>AI Readiness Predictor</h5>
+          <p>Classifies each student as Not Ready, Approaching or Ready — helping teachers decide who enters a real lab.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 6 — OBJECTIVES ============ -->
+  <section>
+    <div class="frame">
+      <div class="brand"><div class="dot"></div>Beaker Breakers Studio</div>
+      <div class="page-num"><b>06</b> / 10</div>
+
+      <div class="eyebrow"><span class="line"></span>PROJECT OBJECTIVES</div>
+      <div class="h-title" style="margin-top:18px;font-size:88px;">Six deliverables that define<br/>the <em>core product</em>.</div>
+
+      <div class="obj-list">
+        <div class="obj-item"><div class="n">1</div><div>
+          <h5>AI Guidance System</h5>
+          <p>API-powered tutor that teaches step-by-step, detects errors in real time and gives instant corrective feedback.</p>
+        </div></div>
+        <div class="obj-item"><div class="n">2</div><div>
+          <h5>4-Tier Safety Training</h5>
+          <p>Interactive certification that gates experiment access — students must pass 80%+ per tier.</p>
+        </div></div>
+        <div class="obj-item"><div class="n">3</div><div>
+          <h5>AI Readiness Predictor</h5>
+          <p>Analyses performance history and advises teachers whether a student is ready for a real lab.</p>
+        </div></div>
+        <div class="obj-item"><div class="n">4</div><div>
+          <h5>Gamification Engine</h5>
+          <p>XP, 60+ badges, 8 rank levels, class leaderboards, weekly missions and streak tracking.</p>
+        </div></div>
+        <div class="obj-item"><div class="n">5</div><div>
+          <h5>Augmented Reality Mode</h5>
+          <p>Virtual experiments overlaid on the real environment using any ordinary smartphone camera.</p>
+        </div></div>
+        <div class="obj-item"><div class="n">6</div><div>
+          <h5>Cross-platform Access</h5>
+          <p>Responsive web app plus Flutter mobile app — usable on computers, tablets and entry-level phones.</p>
+        </div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 7 — REQUIREMENTS ============ -->
+  <section>
+    <div class="frame">
+      <div class="brand"><div class="dot"></div>Beaker Breakers Studio</div>
+      <div class="page-num"><b>07</b> / 10</div>
+
+      <div class="eyebrow"><span class="line"></span>FUNCTIONAL &amp; NON-FUNCTIONAL REQUIREMENTS</div>
+      <div class="h-title" style="margin-top:18px;font-size:84px;">What it must <em>do</em>, and<br/>how it must <em>perform</em>.</div>
+
+      <div class="two-col" style="margin-top:50px;">
+        <div class="req-col">
+          <h4>⚙️ Functional <span class="tag">WHAT</span></h4>
+          <ul class="req-list">
+            <li><span class="k">F1</span>Role-based auth for students, teachers and school admins (Sanctum).</li>
+            <li><span class="k">F2</span>Four-tier safety training with 5-question quizzes and a pass gate at 80%.</li>
+            <li><span class="k">F3</span>Experiment runner with step guidance and AI error detection.</li>
+            <li><span class="k">F4</span>AR experiment mode with 3D avatar assistant on mobile.</li>
+            <li><span class="k">F5</span>Gamification: XP, badges, ranks, leaderboards, missions.</li>
+            <li><span class="k">F6</span>Digital safety certificate generated on full completion.</li>
+            <li><span class="k">F7</span>Teacher dashboard — live analytics &amp; AI readiness reports.</li>
+          </ul>
+        </div>
+        <div class="req-col">
+          <h4>📐 Non-functional <span class="tag" style="background:var(--mint);color:var(--green-d);">HOW</span></h4>
+          <ul class="req-list">
+            <li><span class="k">N1</span>Responsive UI — desktop, tablet and phone down to 360px width.</li>
+            <li><span class="k">N2</span>Sub-2-second response on the standard portal; &lt;5s for AI calls.</li>
+            <li><span class="k">N3</span>Role-based access control with encrypted credentials in transit.</li>
+            <li><span class="k">N4</span>Works on Android 7+ / iOS 11+ with ARCore or ARKit support.</li>
+            <li><span class="k">N5</span>Graceful degradation when the camera is blocked (simulated AR).</li>
+            <li><span class="k">N6</span>Accessible — WCAG AA colour contrast, large tap targets.</li>
+            <li><span class="k">N7</span>Scales to 1,000 concurrent students per school via Redis caching.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 8 — ARCHITECTURE ============ -->
+  <section>
+    <div class="frame">
+      <div class="brand"><div class="dot"></div>Beaker Breakers Studio</div>
+      <div class="page-num"><b>08</b> / 10</div>
+
+      <div class="eyebrow"><span class="line"></span>APPLICATION ARCHITECTURE</div>
+      <div class="h-title" style="margin-top:18px;font-size:84px;">A <em>three-tier</em> client-server system<br/>on cloud infrastructure.</div>
+
+      <div class="arch">
+        <div class="layer l1">
+          <div><span class="tag">🖥️ Presentation</span></div>
+          <div class="body">Student &amp; teacher interfaces — an SSR web portal for desktops and a cross-platform mobile app that carries both Game Mode and AR Mode.</div>
+          <div class="tech"><span>React.js</span><span>Next.js 14</span><span>Flutter 3</span><span>Dart</span></div>
+        </div>
+        <div class="layer l2">
+          <div><span class="tag">⚙️ Application</span></div>
+          <div class="body">REST API, authentication, real-time events and background jobs. AI capabilities plug in at this tier via Gemini (guidance + readiness) and ElevenLabs (voice).</div>
+          <div class="tech"><span>Laravel 11</span><span>Sanctum</span><span>Echo + Pusher</span><span>Queues</span><span>Gemini API</span></div>
+        </div>
+        <div class="layer l3">
+          <div><span class="tag">🗄️ Data</span></div>
+          <div class="body">Relational storage for users, schools, experiments and scores. Redis powers caching, sessions, and real-time leaderboards. Media delivered via CDN.</div>
+          <div class="tech"><span>MySQL 8</span><span>Redis 7</span><span>AWS S3</span><span>Cloudflare CDN</span></div>
+        </div>
+        <div class="layer l4">
+          <div><span class="tag">📱 Device</span></div>
+          <div class="body">3D rendering and AR surface detection happen on-device to keep latency low and remove the need for any specialist hardware.</div>
+          <div class="tech"><span>ARCore</span><span>ARKit</span><span>Three.js</span><span>Flutter AR Plugin</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 9 — TOOLS & TECH ============ -->
+  <section>
+    <div class="frame">
+      <div class="brand"><div class="dot"></div>Beaker Breakers Studio</div>
+      <div class="page-num"><b>09</b> / 10</div>
+
+      <div class="eyebrow"><span class="line"></span>TECHNOLOGIES AND TOOLS USED</div>
+      <div class="h-title" style="margin-top:18px;font-size:84px;">A stack chosen for <em>reach</em><br/>and <em>affordability</em>.</div>
+
+      <div class="tech-grid">
+        <div>
+          <div class="tech-cat">Frontend</div>
+          <div class="tech-chip"><span class="ic">⚛️</span>React.js + Next.js</div>
+          <div class="tech-chip"><span class="ic">🐦</span>Flutter 3 + Dart</div>
+          <div class="tech-chip"><span class="ic">🎨</span>Tailwind CSS</div>
+          <div class="tech-chip"><span class="ic">🧊</span>Three.js</div>
+        </div>
+        <div>
+          <div class="tech-cat">Backend</div>
+          <div class="tech-chip"><span class="ic">🐘</span>Laravel 11 (PHP)</div>
+          <div class="tech-chip"><span class="ic">🔐</span>Sanctum Auth</div>
+          <div class="tech-chip"><span class="ic">📣</span>Echo + Pusher</div>
+          <div class="tech-chip"><span class="ic">🛠️</span>Filament Admin</div>
+        </div>
+        <div>
+          <div class="tech-cat">Data &amp; cloud</div>
+          <div class="tech-chip"><span class="ic">🐬</span>MySQL 8</div>
+          <div class="tech-chip"><span class="ic">🟥</span>Redis 7</div>
+          <div class="tech-chip"><span class="ic">☁️</span>AWS S3</div>
+          <div class="tech-chip"><span class="ic">🌐</span>Cloudflare CDN</div>
+        </div>
+        <div>
+          <div class="tech-cat">AI &amp; AR</div>
+          <div class="tech-chip"><span class="ic">🧠</span>Gemini API</div>
+          <div class="tech-chip"><span class="ic">🎙️</span>ElevenLabs</div>
+          <div class="tech-chip"><span class="ic">📱</span>ARCore + ARKit</div>
+          <div class="tech-chip"><span class="ic">🔔</span>Firebase FCM</div>
+        </div>
+      </div>
+
+      <div class="pr-stat" style="margin-top:40px;">
+        <div class="big" style="font-size:64px;">🇵🇰</div>
+        <p><b>Why PHP + Flutter?</b> PHP is natively supported on virtually every shared hosting provider in Pakistan — reducing deployment cost for schools. Flutter lets us ship one mobile codebase to Android and iOS with first-class AR plugins.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 10 — CONCLUSION / THANK YOU ============ -->
+  <section class="ty-slide">
+    <div class="frame">
+      <div class="brand" style="color:white;"><div class="dot"></div>Beaker Breakers Studio</div>
+      <div class="page-num" style="color:rgba(255,255,255,.6);"><b style="color:white;">10</b> / 10</div>
+
+      <div class="eyebrow" style="color:var(--yellow);"><span class="line" style="background:var(--yellow);"></span>CONCLUSION</div>
+      <div class="h-title">Thank <em>you</em>.</div>
+      <div class="h-sub">Beaker Breakers Studio brings AI tutoring, mobile AR, gamification and formal safety<br/>certification together in one school portal — a working prototype today, scaling to a full<br/>institutional platform by September 2026.</div>
+
+      <div class="ty-chips">
+        <span>🧪 9 screens prototyped</span>
+        <span>🛡️ 4-tier safety flow</span>
+        <span>🕶️ Working AR mode</span>
+        <span>🏆 XP + leaderboards</span>
+        <span>🎓 Digital certificate</span>
+      </div>
+
+      <div style="margin-top:auto; display:flex; justify-content:space-between; align-items:flex-end;">
+        <div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:16px; letter-spacing:2px; color:rgba(255,255,255,.5);">PRESENTED BY</div>
+          <div style="font-family:'Fredoka',sans-serif; font-weight:600; font-size:40px; color:white; margin-top:6px;">Rabail Mehboob &amp; Syed Mohsin Abbas</div>
+          <div style="font-size:20px; color:rgba(255,255,255,.7); font-weight:700; margin-top:6px;">University of Chenab • Supervised by Ms. Mehk Fatima</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:16px; letter-spacing:2px; color:rgba(255,255,255,.5);">QUESTIONS WELCOME</div>
+          <div style="font-family:'Fredoka',sans-serif; font-weight:600; font-size:56px; color:var(--yellow); margin-top:6px;">&amp; discussion?</div>
+        </div>
+      </div>
+    </div>
+    <div class="ty-emoji">🧪</div>
+  </section>
+
+</deck-stage>
+
+<script src="deck-stage.js"></script>
+</body>
+</html>

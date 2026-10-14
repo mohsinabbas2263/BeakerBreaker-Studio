@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Beaker Breakers Studio 🧪</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=6">
+</head>
+<body>
+
+<!-- ========= SIDEBAR (desktop) ========= -->
+<aside class="sidebar" id="sidebar">
+  <div class="side-brand">
+    <img class="side-logo-img" src="assets/logo.png" alt="Beaker Breakers Studio" />
+  </div>
+
+  <div class="side-user">
+    <div class="side-av" id="side-av"><img src="avatars/avatar-girl1.png" alt="Rabail Butt"></div>
+    <div>
+      <div class="side-name" id="side-name">Rabail Butt</div>
+      <div class="side-rank" id="side-rank">⭐ Junior Chemist</div>
+    </div>
+  </div>
+
+  <nav class="side-nav">
+    <button class="side-link active" data-page="page-home" onclick="navTo('page-home', this)">
+      <span class="sl-ic">🏠</span><span>Home</span>
+    </button>
+    <button class="side-link" data-page="page-experiments" onclick="navTo('page-experiments', this)">
+      <span class="sl-ic">🔬</span><span>Experiments</span>
+    </button>
+    <button class="side-link" data-page="page-safety" onclick="navTo('page-safety', this)">
+      <span class="sl-ic">🛡️</span><span>Safety Training</span>
+    </button>
+    <button class="side-link" data-page="page-leaderboard" onclick="navTo('page-leaderboard', this)">
+      <span class="sl-ic">🏆</span><span>Leaderboard</span>
+    </button>
+    <button class="side-link" data-page="page-profile" onclick="navTo('page-profile', this)">
+      <span class="sl-ic">👤</span><span>My Profile</span>
+    </button>
+  </nav>
+
+  <button class="side-ar-btn" onclick="startAR()">
+    <span>🕶️</span><span>Try AR Mode</span><span class="side-ar-new">NEW</span>
+  </button>
+</aside>
+
+<!-- ========= MOBILE TOPBAR ========= -->
+<header class="topbar">
+  <button class="topbar-menu" onclick="toggleSidebar()" aria-label="Menu">☰</button>
+  <div class="topbar-title"><img class="topbar-logo-img" src="assets/logo.png" alt="Beaker Breakers Studio" /></div>
+  <div class="topbar-xp"><span>⚡</span><span id="topbar-xp">620</span></div>
+</header>
+
+<!-- ========= MAIN ========= -->
+<main class="main-area">
+
+<!-- ========= MASCOT ========= -->
+<div class="mascot" id="mascot" onclick="cycleMascot()">
+  <div class="mascot-bubble" id="mascot-text">Hi! I'm Beaky! 👋 Tap me for a tip!</div>
+  <span class="mascot-face" id="mascot-face">🧪</span>
+</div>
+
+<!-- ========= TOAST ========= -->
+<div class="toast" id="toast">
+  <span class="toast-icon" id="toast-icon">🎉</span>
+  <span id="toast-text">Badge Unlocked!</span>
+</div>
+
+<!-- ========= CONFETTI ========= -->
+<div class="confetti-wrap" id="confetti"></div>
+
+<!-- ========= XP FLOAT ========= -->
+<div class="xp-float" id="xp-float">+50 XP</div>
+
+<!-- ==================== HOME ==================== -->
+<div class="page active" id="page-home">
+
+  <!-- Top hero band -->
+  <div class="home-hero">
+    <div class="hh-left">
+      <div class="hh-greet">Hello, <span id="hh-name">Aisha</span>! 👋</div>
+      <div class="hh-title">Ready for some science magic?</div>
+      <div class="hh-xp-row">
+        <div class="xp-avatar" id="home-av"><img src="avatars/avatar-girl1.png" alt=""></div>
+        <div class="xp-info">
+          <div class="xp-name-row">
+            <span class="xp-rank-pill" id="home-rank">⭐ Junior Chemist</span>
+            <span class="xp-pts"><span id="home-xp">620</span> XP</span>
+          </div>
+          <div class="xp-bar-bg"><div class="xp-bar-fill" id="home-xp-fill"></div></div>
+          <div class="xp-next">380 XP to <strong>Senior Chemist</strong> 🎖️</div>
+        </div>
+      </div>
+    </div>
+    <div class="hh-right">
+      <div class="hh-bubbles">
+        <div class="bubble" style="width:60px;height:60px;top:10%;left:5%;animation-delay:0s;"></div>
+        <div class="bubble" style="width:40px;height:40px;top:50%;left:30%;animation-delay:1s;"></div>
+        <div class="bubble" style="width:80px;height:80px;top:20%;left:55%;animation-delay:2s;"></div>
+        <div class="bubble" style="width:30px;height:30px;top:70%;left:75%;animation-delay:.5s;"></div>
+      </div>
+      <div class="hh-emoji">⚗️</div>
+    </div>
+  </div>
+
+  <!-- Main dashboard grid -->
+  <div class="home-grid">
+
+    <!-- Quick actions -->
+    <section class="hg-actions">
+      <div class="section-label">🚀 Quick Start</div>
+      <div class="quick-grid">
+        <button class="quick-card qc-blue" onclick="navTo('page-experiments')">
+          <span class="qc-icon">🔬</span>
+          <div class="qc-title">Experiments</div>
+          <div class="qc-desc">6 fun labs</div>
+        </button>
+        <button class="quick-card qc-green" onclick="navTo('page-safety')">
+          <span class="qc-icon">🛡️</span>
+          <div class="qc-title">Safety</div>
+          <div class="qc-desc">Get certified</div>
+        </button>
+        <button class="quick-card qc-orange" onclick="navTo('page-leaderboard')">
+          <span class="qc-icon">🏆</span>
+          <div class="qc-title">Ranks</div>
+          <div class="qc-desc">Top scientists</div>
+        </button>
+        <button class="quick-card qc-purple" onclick="navTo('page-profile')">
+          <span class="qc-icon">🎖️</span>
+          <div class="qc-title">Profile</div>
+          <div class="qc-desc">Level up!</div>
+        </button>
+      </div>
+
+      <button class="ar-cta" onclick="startAR()">
+        <div class="ar-cta-icon">🕶️</div>
+        <div class="ar-cta-body">
+          <div class="ar-cta-title">Try AR Mode! <span class="ar-new">NEW</span></div>
+          <div class="ar-cta-sub">See chemistry come alive in your real room</div>
+        </div>
+        <div class="ar-arrow">›</div>
+      </button>
+    </section>
+
+    <!-- Avatar picker -->
+    <section class="hg-avatar">
+      <div class="section-label">🎭 Choose your avatar</div>
+      <div class="avatar-strip" id="avatar-strip"></div>
+    </section>
+
+    <!-- Daily missions -->
+    <section class="hg-missions">
+      <div class="section-label">⭐ Daily Missions</div>
+      <div class="missions">
+        <div class="mission" id="m-exp">
+          <div class="m-ic">🧪</div>
+          <div class="m-body">
+            <div class="m-title">Complete 1 experiment</div>
+            <div class="m-progress"><div class="m-fill" style="width:0%"></div></div>
+          </div>
+          <div class="m-xp">+30</div>
+        </div>
+        <div class="mission" id="m-quiz">
+          <div class="m-ic">🧠</div>
+          <div class="m-body">
+            <div class="m-title">Answer 3 quiz questions</div>
+            <div class="m-progress"><div class="m-fill" style="width:0%"></div></div>
+          </div>
+          <div class="m-xp">+20</div>
+        </div>
+        <div class="mission" id="m-ar">
+          <div class="m-ic">🕶️</div>
+          <div class="m-body">
+            <div class="m-title">Try AR Mode once</div>
+            <div class="m-progress"><div class="m-fill" style="width:0%"></div></div>
+          </div>
+          <div class="m-xp">+50</div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- ==================== EXPERIMENTS ==================== -->
+<div class="page" id="page-experiments">
+  <div class="page-header">
+    <button class="back-btn" onclick="goBack()">‹ Back</button>
+    <div class="page-title">Experiments</div>
+  </div>
+  <div class="exp-filter-row" id="filter-row"></div>
+  <div class="exp-grid" id="exp-grid"></div>
+</div>
+
+<!-- ==================== EXPERIMENT DETAIL ==================== -->
+<div class="page" id="page-exp-detail">
+  <div class="page-header"><button class="back-btn" onclick="goBack()">‹ Back</button></div>
+  <div id="exp-detail-body"></div>
+</div>
+
+<!-- ==================== EXPERIMENT RUNNER ==================== -->
+<div class="page" id="page-exp-runner">
+  <div class="page-header">
+    <button class="back-btn" onclick="exitRunner()">‹ Exit</button>
+    <div class="page-title" id="runner-title"></div>
+  </div>
+  <div id="runner-body"></div>
+</div>
+
+<!-- ==================== SAFETY ==================== -->
+<div class="page" id="page-safety">
+  <div class="page-header">
+    <button class="back-btn" onclick="goBack()">‹ Back</button>
+    <div class="page-title">Safety Training</div>
+  </div>
+
+  <div class="safety-intro">
+    <div class="safety-icon">🦺</div>
+    <div class="safety-intro-text">
+      <h3>Stay safe, do science!</h3>
+      <p>Complete all 4 safety tiers at 80%+ to earn your <strong>Digital Certificate</strong> 🎓</p>
+    </div>
+  </div>
+
+  <div class="safety-grid">
+    <div class="tier-list" id="tier-list"></div>
+
+    <div class="cert-card" id="cert-card">
+      <div class="cert-icon">🎓</div>
+      <div class="cert-title">Your Safety Certificate</div>
+      <div class="cert-sub" id="cert-sub">Complete all 4 tiers to unlock</div>
+      <button class="cert-btn" id="cert-btn" onclick="viewCertificate()" disabled>🔒 Locked</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== QUIZ ==================== -->
+<div class="page" id="page-quiz">
+  <div class="page-header"><button class="back-btn" onclick="exitQuiz()">‹ Exit Quiz</button></div>
+  <div id="quiz-body"></div>
+</div>
+
+<!-- ==================== LEADERBOARD ==================== -->
+<div class="page" id="page-leaderboard">
+  <div class="page-header">
+    <button class="back-btn" onclick="goBack()">‹ Back</button>
+    <div class="page-title">Leaderboard</div>
+  </div>
+
+  <div class="lb-tabs">
+    <button class="lb-tab active" onclick="setLbTab(this,'class')">Class</button>
+    <button class="lb-tab" onclick="setLbTab(this,'school')">School</button>
+    <button class="lb-tab" onclick="setLbTab(this,'friends')">Friends</button>
+  </div>
+
+  <div class="podium" id="podium"></div>
+  <div class="lb-list" id="lb-list"></div>
+</div>
+
+<!-- ==================== PROFILE ==================== -->
+<div class="page" id="page-profile">
+  <div class="page-header"><button class="back-btn" onclick="goBack()">‹ Back</button><div class="page-title">My Profile</div></div>
+  <div id="profile-body"></div>
+</div>
+
+<!-- ==================== AR MODE ==================== -->
+<div class="page ar-page" id="page-ar">
+  <video id="ar-video" autoplay playsinline muted></video>
+  <canvas id="ar-canvas"></canvas>
+
+  <div class="ar-top">
+    <button class="ar-close" onclick="exitAR()" aria-label="Exit AR">✕</button>
+    <div class="ar-title-top">AR Lab Mode</div>
+    <button class="ar-flip" onclick="flipAR()" title="Switch camera" aria-label="Switch camera">🔄</button>
+  </div>
+
+  <div class="ar-hud-left" id="ar-hud-left">
+    <div class="ar-hud-item"><div class="hud-k">Experiment</div><div class="hud-v" id="ar-exp">Volcano Eruption</div></div>
+    <div class="ar-hud-item"><div class="hud-k">Step</div><div class="hud-v"><span id="ar-step">1</span>/<span id="ar-steps">3</span></div></div>
+  </div>
+
+  <div class="ar-scanline" id="ar-scanline"></div>
+  <div class="ar-reticle" id="ar-reticle">
+    <div class="rt-corner tl"></div>
+    <div class="rt-corner tr"></div>
+    <div class="rt-corner bl"></div>
+    <div class="rt-corner br"></div>
+    <div class="rt-msg" id="rt-msg">Tap anywhere to place your lab bench</div>
+  </div>
+
+  <div class="ar-scene" id="ar-scene"></div>
+
+  <div class="ar-assistant" id="ar-assistant">
+    <div class="aa-bubble" id="aa-bubble">Tap a flat surface to place your lab bench 🔬</div>
+    <div class="aa-face">🤖</div>
+  </div>
+
+  <div class="ar-bottom">
+    <button class="ar-ctrl" id="ar-ctrl-prev" onclick="arPrevStep()">‹ Prev</button>
+    <button class="ar-ctrl primary" id="ar-ctrl-action" onclick="arDoAction()">Place Bench</button>
+    <button class="ar-ctrl" id="ar-ctrl-next" onclick="arNextStep()">Next ›</button>
+  </div>
+
+  <div class="ar-nocam" id="ar-nocam">
+    <div class="nocam-icon">📷</div>
+    <div class="nocam-title">Simulated Lab View</div>
+    <div class="nocam-sub">Camera is off — using a simulated room so you can still try AR Mode.</div>
+  </div>
+</div>
+
+<!-- ==================== CERTIFICATE MODAL ==================== -->
+<div class="modal-backdrop" id="cert-modal" onclick="closeCert(event)">
+  <div class="cert-paper">
+    <div class="cert-seal">🎓</div>
+    <div class="cert-heading">Certificate of Safety</div>
+    <div class="cert-presented">This is presented to</div>
+    <div class="cert-name" id="cert-name">Rabail Butt</div>
+    <div class="cert-body">for successfully completing all four tiers of Beaker Breakers Studio's Laboratory Safety Training programme with a passing score of 80% or higher.</div>
+    <div class="cert-sign-row">
+      <div class="sig">
+        <div class="sig-line">Ms. Mehk Fatima</div>
+        <div class="sig-label">Supervisor</div>
+      </div>
+      <div class="sig">
+        <div class="sig-date" id="cert-date">—</div>
+        <div class="sig-label">Date Issued</div>
+      </div>
+    </div>
+    <button class="cert-close" onclick="closeCert()">Close</button>
+  </div>
+</div>
+
+</main>
+
+<!-- ========= MOBILE TASKBAR ========= -->
+<div class="taskbar" id="taskbar">
+  <button class="taskbar-btn active" id="tb-home" onclick="navTo('page-home')">
+    <span class="tb-icon">🏠</span>Home
+  </button>
+  <button class="taskbar-btn" id="tb-exp" onclick="navTo('page-experiments')">
+    <span class="tb-icon">🔬</span>Labs
+  </button>
+  <button class="taskbar-btn" id="tb-safety" onclick="navTo('page-safety')">
+    <span class="tb-icon">🛡️</span>Safety
+  </button>
+  <button class="taskbar-btn" id="tb-lb" onclick="navTo('page-leaderboard')">
+    <span class="tb-icon">🏆</span>Ranks
+  </button>
+  <button class="taskbar-btn" id="tb-profile" onclick="navTo('page-profile')">
+    <span class="tb-icon">👤</span>Me
+  </button>
+</div>
+
+<!-- Sidebar overlay for mobile -->
+<div class="side-overlay" id="side-overlay" onclick="toggleSidebar()"></div>
+
+<script src="data.js?v=6"></script>
+<script src="app.js?v=6"></script>
+<script src="ar.js?v=6"></script>
+</body>
+</html>

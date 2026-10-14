@@ -1,0 +1,1521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beaker Breakers Studio 🧪</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky: #E8F4FD;
+    --mint: #C8F7E4;
+    --lemon: #FFF9C4;
+    --coral: #FFD6C8;
+    --lavender: #EDE7F6;
+    --blue: #4FC3F7;
+    --green: #4CAF82;
+    --orange: #FF8A50;
+    --purple: #9575CD;
+    --yellow: #FFD54F;
+    --pink: #F48FB1;
+    --red: #EF5350;
+    --teal: #26C6DA;
+    --white: #FFFFFF;
+    --text: #2D3748;
+    --subtext: #718096;
+    --card-shadow: 0 8px 32px rgba(0,0,0,0.10);
+    --bounce: cubic-bezier(.68,-0.55,.27,1.55);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: linear-gradient(135deg, #E8F4FD 0%, #C8F7E4 50%, #FFF9C4 100%);
+    min-height: 100vh;
+    overflow-x: hidden;
+    color: var(--text);
+  }
+
+  /* ===== FLOATING TASKBAR ===== */
+  .taskbar {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 32px;
+    padding: 10px 18px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.18), 0 0 0 2px rgba(255,255,255,0.8);
+    z-index: 1000;
+    border: 3px solid rgba(79,195,247,0.3);
+  }
+
+  .taskbar-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 10px 14px;
+    border-radius: 20px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.25s var(--bounce);
+    font-family: 'Nunito', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--subtext);
+    min-width: 58px;
+  }
+
+  .taskbar-btn .tb-icon {
+    font-size: 24px;
+    line-height: 1;
+    transition: transform 0.25s var(--bounce);
+  }
+
+  .taskbar-btn:hover {
+    background: var(--sky);
+    color: var(--blue);
+    transform: translateY(-4px);
+  }
+
+  .taskbar-btn:hover .tb-icon { transform: scale(1.2); }
+
+  .taskbar-btn.active {
+    background: linear-gradient(135deg, var(--blue), #29B6F6);
+    color: white;
+    box-shadow: 0 4px 16px rgba(79,195,247,0.4);
+  }
+
+  .taskbar-btn.active .tb-icon { transform: scale(1.1); }
+
+  /* ===== PAGES ===== */
+  .page {
+    display: none;
+    min-height: 100vh;
+    padding: 20px 20px 110px 20px;
+    animation: fadeIn 0.4s ease;
+  }
+
+  .page.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== BACK BUTTON (LEFT SIDE, HCI correct) ===== */
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: white;
+    border: none;
+    border-radius: 50px;
+    padding: 10px 20px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--text);
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+    transition: all 0.2s var(--bounce);
+    margin-bottom: 20px;
+  }
+
+  .back-btn:hover {
+    transform: translateX(-4px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    background: var(--sky);
+  }
+
+  /* ===== HEADER AREA ===== */
+  .page-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  .page-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 32px;
+    background: linear-gradient(135deg, var(--blue) 0%, var(--purple) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ===== HOMEPAGE ===== */
+  #page-home {
+    padding-top: 0;
+  }
+
+  .hero {
+    background: linear-gradient(135deg, #29B6F6 0%, #9575CD 100%);
+    border-radius: 32px;
+    padding: 36px 28px 28px;
+    margin-bottom: 28px;
+    position: relative;
+    overflow: hidden;
+    min-height: 220px;
+  }
+
+  .hero-bubbles {
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .bubble {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    animation: floatUp 6s infinite ease-in-out;
+  }
+
+  @keyframes floatUp {
+    0%,100% { transform: translateY(0) scale(1); }
+    50%      { transform: translateY(-20px) scale(1.05); }
+  }
+
+  .hero-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 36px;
+    color: white;
+    line-height: 1.15;
+    position: relative;
+    z-index: 2;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.15);
+  }
+
+  .hero-sub {
+    color: rgba(255,255,255,0.9);
+    font-size: 15px;
+    margin-top: 8px;
+    font-weight: 600;
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-avatars {
+    position: absolute;
+    bottom: 0;
+    right: 16px;
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    z-index: 2;
+  }
+
+  .hero-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    animation: bounce 2.5s infinite ease-in-out;
+    border: 3px solid rgba(255,255,255,0.8);
+  }
+
+  .hero-avatar:nth-child(2) { animation-delay: 0.4s; width: 68px; height: 68px; font-size: 34px; }
+  .hero-avatar:nth-child(3) { animation-delay: 0.8s; width: 56px; height: 56px; font-size: 28px; }
+
+  @keyframes bounce {
+    0%,100% { transform: translateY(0); }
+    50%      { transform: translateY(-12px); }
+  }
+
+  /* ===== AVATAR SELECTION STRIP ===== */
+  .section-label {
+    font-family: 'Fredoka One', cursive;
+    font-size: 20px;
+    color: var(--text);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .avatar-strip {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    margin-bottom: 28px;
+    scrollbar-width: none;
+  }
+  .avatar-strip::-webkit-scrollbar { display: none; }
+
+  .avatar-card {
+    flex: 0 0 90px;
+    background: white;
+    border-radius: 24px;
+    padding: 14px 8px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: all 0.25s var(--bounce);
+    border: 3px solid transparent;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  }
+
+  .avatar-card:hover, .avatar-card.selected {
+    transform: translateY(-6px) scale(1.04);
+    border-color: var(--blue);
+    box-shadow: 0 8px 24px rgba(79,195,247,0.3);
+  }
+
+  .avatar-card .av-emoji { font-size: 38px; }
+  .avatar-card .av-name { font-size: 11px; font-weight: 800; color: var(--text); text-align: center; }
+  .avatar-card.selected .av-name { color: var(--blue); }
+
+  /* ===== QUICK ACTIONS ===== */
+  .quick-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+
+  .quick-card {
+    border-radius: 24px;
+    padding: 22px 16px;
+    cursor: pointer;
+    transition: all 0.25s var(--bounce);
+    box-shadow: var(--card-shadow);
+    position: relative;
+    overflow: hidden;
+    border: none;
+    text-align: left;
+    display: block;
+    text-decoration: none;
+  }
+
+  .quick-card:hover { transform: translateY(-6px) scale(1.02); }
+
+  .quick-card .qc-icon { font-size: 40px; display: block; margin-bottom: 8px; }
+  .quick-card .qc-title { font-family: 'Fredoka One', cursive; font-size: 17px; color: var(--text); line-height: 1.2; }
+  .quick-card .qc-desc { font-size: 12px; color: var(--subtext); font-weight: 600; margin-top: 4px; }
+
+  .qc-blue   { background: linear-gradient(135deg, #E3F2FD, #BBDEFB); }
+  .qc-green  { background: linear-gradient(135deg, #E8F5E9, #C8E6C9); }
+  .qc-orange { background: linear-gradient(135deg, #FFF3E0, #FFE0B2); }
+  .qc-purple { background: linear-gradient(135deg, #EDE7F6, #D1C4E9); }
+
+  /* XP Bar */
+  .xp-bar-wrap {
+    background: white;
+    border-radius: 20px;
+    padding: 16px 20px;
+    margin-bottom: 28px;
+    box-shadow: var(--card-shadow);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .xp-avatar { font-size: 40px; }
+
+  .xp-info { flex: 1; }
+  .xp-name { font-weight: 800; font-size: 15px; color: var(--text); }
+  .xp-rank { font-size: 12px; color: var(--orange); font-weight: 700; }
+
+  .xp-bar-bg {
+    background: #E0E0E0;
+    border-radius: 50px;
+    height: 14px;
+    margin-top: 6px;
+    overflow: hidden;
+  }
+
+  .xp-bar-fill {
+    background: linear-gradient(90deg, var(--orange), var(--yellow));
+    height: 100%;
+    border-radius: 50px;
+    width: 62%;
+    transition: width 1s ease;
+  }
+
+  .xp-pts { font-family: 'Fredoka One', cursive; font-size: 22px; color: var(--orange); white-space: nowrap; }
+
+  /* ===== EXPERIMENTS PAGE ===== */
+  .exp-filter-row {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    margin-bottom: 22px;
+    scrollbar-width: none;
+  }
+  .exp-filter-row::-webkit-scrollbar { display: none; }
+
+  .filter-pill {
+    flex: 0 0 auto;
+    padding: 8px 18px;
+    border-radius: 50px;
+    border: 2px solid #E0E0E0;
+    background: white;
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--subtext);
+  }
+  .filter-pill:hover, .filter-pill.active {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: white;
+  }
+
+  .exp-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .exp-card {
+    background: white;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: var(--card-shadow);
+    cursor: pointer;
+    transition: all 0.25s var(--bounce);
+    border: 2px solid transparent;
+  }
+
+  .exp-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--blue);
+    box-shadow: 0 12px 36px rgba(79,195,247,0.2);
+  }
+
+  .exp-thumb {
+    height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    position: relative;
+  }
+
+  .exp-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: var(--orange);
+    color: white;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 50px;
+  }
+
+  .exp-info { padding: 12px 12px 14px; }
+  .exp-title { font-family: 'Fredoka One', cursive; font-size: 15px; color: var(--text); line-height: 1.2; }
+  .exp-meta { display: flex; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
+
+  .exp-tag {
+    background: var(--sky);
+    color: var(--blue);
+    font-size: 10px;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 50px;
+  }
+
+  .exp-tag.locked { background: #F5F5F5; color: #BDBDBD; }
+
+  /* ===== SAFETY PAGE ===== */
+  .safety-intro {
+    background: linear-gradient(135deg, #FFF3E0, #FFE0B2);
+    border-radius: 24px;
+    padding: 22px;
+    margin-bottom: 22px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    box-shadow: var(--card-shadow);
+  }
+
+  .safety-icon { font-size: 56px; flex-shrink: 0; }
+  .safety-intro-text h3 { font-family: 'Fredoka One', cursive; font-size: 20px; color: var(--orange); }
+  .safety-intro-text p { font-size: 13px; color: var(--text); margin-top: 4px; font-weight: 600; line-height: 1.5; }
+
+  .tier-list { display: flex; flex-direction: column; gap: 14px; }
+
+  .tier-card {
+    background: white;
+    border-radius: 20px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: var(--card-shadow);
+    cursor: pointer;
+    transition: all 0.2s var(--bounce);
+    border: 2px solid transparent;
+  }
+
+  .tier-card:hover { transform: translateX(6px); border-color: var(--green); }
+  .tier-card.locked { opacity: 0.5; cursor: not-allowed; }
+  .tier-card.locked:hover { transform: none; border-color: transparent; }
+  .tier-card.completed { border-color: var(--green); background: linear-gradient(135deg, white, #E8F5E9); }
+
+  .tier-num {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Fredoka One', cursive;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  .tier-num.t1 { background: linear-gradient(135deg, #FFD54F, #FF8A50); color: white; }
+  .tier-num.t2 { background: linear-gradient(135deg, #4FC3F7, #29B6F6); color: white; }
+  .tier-num.t3 { background: linear-gradient(135deg, #81C784, #4CAF50); color: white; }
+  .tier-num.t4 { background: linear-gradient(135deg, #CE93D8, #9575CD); color: white; }
+
+  .tier-info { flex: 1; }
+  .tier-title { font-family: 'Fredoka One', cursive; font-size: 17px; color: var(--text); }
+  .tier-desc { font-size: 12px; color: var(--subtext); font-weight: 600; margin-top: 3px; }
+
+  .tier-status {
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  .tier-progress {
+    margin-top: 8px;
+    background: #E0E0E0;
+    border-radius: 50px;
+    height: 8px;
+    overflow: hidden;
+  }
+
+  .tier-progress-fill {
+    background: var(--green);
+    height: 100%;
+    border-radius: 50px;
+    transition: width 1s ease;
+  }
+
+  /* ===== LEADERBOARD ===== */
+  .podium {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 28px;
+    padding: 0 10px;
+  }
+
+  .podium-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    max-width: 110px;
+  }
+
+  .podium-avatar {
+    font-size: 40px;
+    background: white;
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    border: 3px solid transparent;
+  }
+
+  .podium-item.rank1 .podium-avatar { border-color: var(--yellow); width: 72px; height: 72px; font-size: 44px; }
+  .podium-item.rank2 .podium-avatar { border-color: #B0BEC5; }
+  .podium-item.rank3 .podium-avatar { border-color: #FFAB40; }
+
+  .podium-name { font-family: 'Fredoka One', cursive; font-size: 13px; text-align: center; }
+  .podium-xp   { font-size: 12px; font-weight: 700; color: var(--orange); }
+
+  .podium-stand {
+    border-radius: 12px 12px 0 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Fredoka One', cursive;
+    font-size: 28px;
+    color: white;
+    padding: 10px 0;
+  }
+
+  .podium-item.rank1 .podium-stand { background: linear-gradient(135deg, #FFD54F, #FFA726); height: 80px; }
+  .podium-item.rank2 .podium-stand { background: linear-gradient(135deg, #90A4AE, #607D8B); height: 60px; }
+  .podium-item.rank3 .podium-stand { background: linear-gradient(135deg, #FFAB40, #FF6D00); height: 48px; }
+
+  .lb-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .lb-row {
+    background: white;
+    border-radius: 16px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    transition: all 0.2s;
+  }
+
+  .lb-row:hover { transform: translateX(4px); box-shadow: 0 4px 20px rgba(0,0,0,0.10); }
+  .lb-row.me { border: 2px solid var(--blue); background: var(--sky); }
+
+  .lb-rank { font-family: 'Fredoka One', cursive; font-size: 20px; color: var(--subtext); width: 28px; text-align: center; }
+  .lb-av   { font-size: 28px; }
+  .lb-name { flex: 1; font-weight: 800; font-size: 14px; }
+  .lb-pts  { font-family: 'Fredoka One', cursive; font-size: 18px; color: var(--orange); }
+  .lb-badge { font-size: 18px; }
+
+  /* ===== PROFILE PAGE ===== */
+  .profile-header {
+    background: linear-gradient(135deg, var(--purple), #CE93D8);
+    border-radius: 28px;
+    padding: 28px 22px;
+    text-align: center;
+    margin-bottom: 22px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .profile-av {
+    font-size: 80px;
+    display: block;
+    margin: 0 auto 10px;
+    animation: bounce 2.5s infinite ease-in-out;
+  }
+
+  .profile-username {
+    font-family: 'Fredoka One', cursive;
+    font-size: 26px;
+    color: white;
+  }
+
+  .profile-school {
+    color: rgba(255,255,255,0.85);
+    font-size: 13px;
+    font-weight: 700;
+    margin-top: 4px;
+  }
+
+  .profile-badges-row {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 14px;
+    flex-wrap: wrap;
+  }
+
+  .p-badge {
+    background: rgba(255,255,255,0.25);
+    color: white;
+    padding: 5px 14px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 22px;
+  }
+
+  .stat-card {
+    background: white;
+    border-radius: 20px;
+    padding: 16px 10px;
+    text-align: center;
+    box-shadow: var(--card-shadow);
+  }
+
+  .stat-icon { font-size: 28px; }
+  .stat-val  { font-family: 'Fredoka One', cursive; font-size: 26px; color: var(--text); margin-top: 4px; }
+  .stat-lbl  { font-size: 11px; color: var(--subtext); font-weight: 700; margin-top: 2px; }
+
+  .badges-section { margin-bottom: 22px; }
+
+  .badge-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .badge-chip {
+    background: white;
+    border-radius: 50px;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    transition: all 0.2s var(--bounce);
+  }
+
+  .badge-chip:hover { transform: scale(1.06); }
+  .badge-chip .bc-icon { font-size: 20px; }
+
+  /* ===== AR MODE CTA ===== */
+  .ar-cta {
+    background: linear-gradient(135deg, #00BCD4, #0097A7);
+    border-radius: 24px;
+    padding: 22px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 22px;
+    cursor: pointer;
+    box-shadow: 0 8px 30px rgba(0,188,212,0.35);
+    transition: transform 0.2s var(--bounce);
+    border: none;
+    width: 100%;
+    text-align: left;
+  }
+
+  .ar-cta:hover { transform: scale(1.02); }
+  .ar-cta-icon { font-size: 52px; flex-shrink: 0; }
+  .ar-cta-title { font-family: 'Fredoka One', cursive; font-size: 20px; color: white; }
+  .ar-cta-sub   { font-size: 13px; color: rgba(255,255,255,0.85); font-weight: 600; margin-top: 4px; }
+
+  /* ===== MASCOT HELPER ===== */
+  .mascot {
+    position: fixed;
+    top: 20px;
+    right: 16px;
+    z-index: 900;
+    cursor: pointer;
+    animation: mascotFloat 3s infinite ease-in-out;
+  }
+
+  .mascot-bubble {
+    background: white;
+    border-radius: 16px 16px 0 16px;
+    padding: 10px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    max-width: 140px;
+    margin-bottom: 6px;
+    line-height: 1.4;
+    border: 2px solid var(--blue);
+  }
+
+  .mascot-face {
+    font-size: 48px;
+    display: block;
+    text-align: right;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));
+  }
+
+  @keyframes mascotFloat {
+    0%,100% { transform: translateY(0); }
+    50%      { transform: translateY(-8px); }
+  }
+
+  /* ===== CONFETTI CELEBRATION ===== */
+  .confetti-wrap {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 2000;
+    display: none;
+  }
+
+  .confetti-wrap.show { display: block; }
+
+  .conf-piece {
+    position: absolute;
+    top: -20px;
+    width: 10px; height: 10px;
+    border-radius: 2px;
+    animation: confettiFall 2.5s ease-in forwards;
+  }
+
+  @keyframes confettiFall {
+    0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* ===== NOTIFICATION TOAST ===== */
+  .toast {
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-30px);
+    background: white;
+    border-radius: 16px;
+    padding: 14px 22px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 14px;
+    z-index: 1500;
+    opacity: 0;
+    transition: all 0.35s var(--bounce);
+    border: 2px solid var(--green);
+    max-width: 90vw;
+  }
+
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast-icon { font-size: 24px; }
+
+  /* ===== SCROLLBAR ===== */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 99px; }
+
+  /* Stars deco */
+  .deco-star {
+    position: absolute;
+    font-size: 18px;
+    opacity: 0.3;
+    animation: twinkle 2.5s infinite alternate;
+    pointer-events: none;
+  }
+  @keyframes twinkle { from { opacity: 0.2; transform: scale(0.8); } to { opacity: 0.6; transform: scale(1.2); } }
+
+  /* Responsive tweaks */
+  @media (min-width: 480px) {
+    .page { padding: 24px 32px 110px; }
+    .quick-grid { grid-template-columns: 1fr 1fr 1fr; }
+    .exp-grid { grid-template-columns: 1fr 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== MASCOT ===== -->
+<div class="mascot" onclick="cycleMascot()">
+  <div class="mascot-bubble" id="mascot-text">Hi! I'm Beaky! 👋 Tap me for a tip!</div>
+  <span class="mascot-face" id="mascot-face">🧪</span>
+</div>
+
+<!-- ===== TOAST NOTIFICATION ===== -->
+<div class="toast" id="toast">
+  <span class="toast-icon">🎉</span>
+  <span id="toast-text">Badge Unlocked!</span>
+</div>
+
+<!-- ===== CONFETTI ===== -->
+<div class="confetti-wrap" id="confetti"></div>
+
+<!-- ===================== HOME PAGE ===================== -->
+<div class="page active" id="page-home">
+  <!-- Hero -->
+  <div class="hero" style="margin-top: 0; padding-top: 28px;">
+    <div class="hero-bubbles">
+      <div class="bubble" style="width:60px;height:60px;top:10%;left:5%;animation-delay:0s;"></div>
+      <div class="bubble" style="width:40px;height:40px;top:50%;left:20%;animation-delay:1s;"></div>
+      <div class="bubble" style="width:80px;height:80px;top:20%;left:40%;animation-delay:2s;"></div>
+      <div class="bubble" style="width:30px;height:30px;top:70%;left:55%;animation-delay:0.5s;"></div>
+    </div>
+    <div class="hero-title">🧪 Beaker Breakers<br>Studio!</div>
+    <div class="hero-sub">Learn Chemistry the Fun Way ✨</div>
+    <div class="hero-avatars">
+      <div class="hero-avatar">🧪</div>
+      <div class="hero-avatar">🔬</div>
+      <div class="hero-avatar">⚗️</div>
+    </div>
+  </div>
+
+  <!-- XP Bar -->
+  <div class="xp-bar-wrap">
+    <div class="xp-avatar" id="home-av">🦊</div>
+    <div class="xp-info">
+      <div class="xp-name" id="home-name">Scientist Rabail</div>
+      <div class="xp-rank">⭐ Rank: Junior Chemist</div>
+      <div class="xp-bar-bg"><div class="xp-bar-fill"></div></div>
+    </div>
+    <div class="xp-pts">620 XP</div>
+  </div>
+
+  <!-- Choose Your Avatar -->
+  <div class="section-label">🎭 Choose Your Avatar</div>
+  <div class="avatar-strip">
+    <div class="avatar-card selected" onclick="selectAvatar(this,'🦊','Foxy')">
+      <div class="av-emoji">🦊</div>
+      <div class="av-name">Foxy</div>
+    </div>
+    <div class="avatar-card" onclick="selectAvatar(this,'🐝','Buzzy')">
+      <div class="av-emoji">🐝</div>
+      <div class="av-name">Buzzy</div>
+    </div>
+    <div class="avatar-card" onclick="selectAvatar(this,'🐸','Ribbit')">
+      <div class="av-emoji">🐸</div>
+      <div class="av-name">Ribbit</div>
+    </div>
+    <div class="avatar-card" onclick="selectAvatar(this,'🦋','Flutter')">
+      <div class="av-emoji">🦋</div>
+      <div class="av-name">Flutter</div>
+    </div>
+    <div class="avatar-card" onclick="selectAvatar(this,'🐉','Draco')">
+      <div class="av-emoji">🐉</div>
+      <div class="av-name">Draco</div>
+    </div>
+    <div class="avatar-card" onclick="selectAvatar(this,'🦄','Sparky')">
+      <div class="av-emoji">🦄</div>
+      <div class="av-name">Sparky</div>
+    </div>
+    <div class="avatar-card" onclick="selectAvatar(this,'🐧','Pingu')">
+      <div class="av-emoji">🐧</div>
+      <div class="av-name">Pingu</div>
+    </div>
+    <div class="avatar-card" onclick="selectAvatar(this,'🦁','Leo')">
+      <div class="av-emoji">🦁</div>
+      <div class="av-name">Leo</div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="section-label">🚀 What do you want to do?</div>
+  <div class="quick-grid">
+    <button class="quick-card qc-blue" onclick="goToPage('page-experiments', 'page-home')">
+      <span class="qc-icon">🔬</span>
+      <div class="qc-title">Experiments</div>
+      <div class="qc-desc">30+ fun labs!</div>
+    </button>
+    <button class="quick-card qc-green" onclick="goToPage('page-safety', 'page-home')">
+      <span class="qc-icon">🛡️</span>
+      <div class="qc-title">Safety Training</div>
+      <div class="qc-desc">Get certified</div>
+    </button>
+    <button class="quick-card qc-orange" onclick="goToPage('page-leaderboard', 'page-home')">
+      <span class="qc-icon">🏆</span>
+      <div class="qc-title">Leaderboard</div>
+      <div class="qc-desc">See top scientists!</div>
+    </button>
+    <button class="quick-card qc-purple" onclick="goToPage('page-profile', 'page-home')">
+      <span class="qc-icon">🎖️</span>
+      <div class="qc-title">My Badges</div>
+      <div class="qc-desc">Level up!</div>
+    </button>
+  </div>
+
+  <!-- AR Mode CTA -->
+  <button class="ar-cta" onclick="showToast('🔭 AR Mode launching! Point your camera at a flat surface!', '🔭')">
+    <div class="ar-cta-icon">🕶️</div>
+    <div>
+      <div class="ar-cta-title">Try AR Mode! NEW ✨</div>
+      <div class="ar-cta-sub">See chemistry in your real room using your camera!</div>
+    </div>
+  </button>
+</div>
+
+<!-- ===================== EXPERIMENTS PAGE ===================== -->
+<div class="page" id="page-experiments">
+  <div class="page-header">
+    <button class="back-btn" onclick="goBack()">⬅ Back</button>
+    <div class="page-title">🔬 Experiments</div>
+  </div>
+
+  <div class="exp-filter-row">
+    <button class="filter-pill active" onclick="setFilter(this)">All</button>
+    <button class="filter-pill" onclick="setFilter(this)">🔥 Reactions</button>
+    <button class="filter-pill" onclick="setFilter(this)">💧 Solutions</button>
+    <button class="filter-pill" onclick="setFilter(this)">⚗️ Mixtures</button>
+    <button class="filter-pill" onclick="setFilter(this)">🌡️ Heat</button>
+    <button class="filter-pill" onclick="setFilter(this)">⭐ My Faves</button>
+  </div>
+
+  <div class="exp-grid">
+    <div class="exp-card" onclick="goToPage('page-exp-detail', 'page-experiments')">
+      <div class="exp-thumb" style="background: linear-gradient(135deg,#FFF3E0,#FFE0B2);">
+        🌋<span class="exp-badge">HOT</span>
+      </div>
+      <div class="exp-info">
+        <div class="exp-title">Volcano Eruption</div>
+        <div class="exp-meta">
+          <span class="exp-tag">⭐ Easy</span>
+          <span class="exp-tag">🔥 Acid+Base</span>
+        </div>
+      </div>
+    </div>
+    <div class="exp-card" onclick="goToPage('page-exp-detail', 'page-experiments')">
+      <div class="exp-thumb" style="background: linear-gradient(135deg,#E3F2FD,#BBDEFB);">
+        🔵<span class="exp-badge" style="background:var(--blue);">NEW</span>
+      </div>
+      <div class="exp-info">
+        <div class="exp-title">Blue Bottle Magic</div>
+        <div class="exp-meta">
+          <span class="exp-tag">⭐⭐ Medium</span>
+          <span class="exp-tag">💧 Redox</span>
+        </div>
+      </div>
+    </div>
+    <div class="exp-card" onclick="goToPage('page-exp-detail', 'page-experiments')">
+      <div class="exp-thumb" style="background: linear-gradient(135deg,#E8F5E9,#C8E6C9);">
+        🌿
+      </div>
+      <div class="exp-info">
+        <div class="exp-title">Chromatography</div>
+        <div class="exp-meta">
+          <span class="exp-tag">⭐ Easy</span>
+          <span class="exp-tag">🎨 Colors</span>
+        </div>
+      </div>
+    </div>
+    <div class="exp-card" onclick="goToPage('page-exp-detail', 'page-experiments')">
+      <div class="exp-thumb" style="background: linear-gradient(135deg,#FCE4EC,#F8BBD9);">
+        🧊
+      </div>
+      <div class="exp-info">
+        <div class="exp-title">Crystal Growing</div>
+        <div class="exp-meta">
+          <span class="exp-tag">⭐⭐ Medium</span>
+          <span class="exp-tag">❄️ Crystals</span>
+        </div>
+      </div>
+    </div>
+    <div class="exp-card">
+      <div class="exp-thumb" style="background: linear-gradient(135deg,#F3E5F5,#E1BEE7); opacity:0.6;">
+        ⚗️
+      </div>
+      <div class="exp-info">
+        <div class="exp-title" style="color:#BDBDBD">pH Indicators</div>
+        <div class="exp-meta">
+          <span class="exp-tag locked">🔒 Locked</span>
+        </div>
+      </div>
+    </div>
+    <div class="exp-card">
+      <div class="exp-thumb" style="background: linear-gradient(135deg,#E0F7FA,#B2EBF2); opacity:0.6;">
+        🌊
+      </div>
+      <div class="exp-info">
+        <div class="exp-title" style="color:#BDBDBD">Electrolysis</div>
+        <div class="exp-meta">
+          <span class="exp-tag locked">🔒 Locked</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== EXPERIMENT DETAIL PAGE ===================== -->
+<div class="page" id="page-exp-detail">
+  <button class="back-btn" onclick="goBack()">⬅ Back</button>
+
+  <div style="background:linear-gradient(135deg,#FFF3E0,#FFCC80);border-radius:28px;padding:24px;margin-bottom:20px;text-align:center;position:relative;overflow:hidden;">
+    <div style="font-size:80px;margin-bottom:12px;animation:bounce 2s infinite ease-in-out;">🌋</div>
+    <div style="font-family:'Fredoka One',cursive;font-size:26px;color:var(--text);">Volcano Eruption!</div>
+    <div style="color:var(--subtext);font-size:13px;font-weight:700;margin-top:6px;">Acid + Base Reaction • Easy • 20 mins</div>
+    <div style="position:absolute;top:10px;right:14px;background:var(--orange);color:white;padding:5px 14px;border-radius:50px;font-size:12px;font-weight:800;">+50 XP</div>
+  </div>
+
+  <!-- Steps -->
+  <div class="section-label">📋 Steps</div>
+  <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:22px;">
+    <div style="background:white;border-radius:18px;padding:16px 18px;box-shadow:var(--card-shadow);display:flex;gap:14px;align-items:flex-start;border-left:5px solid var(--green);">
+      <div style="background:var(--green);color:white;font-family:'Fredoka One',cursive;font-size:16px;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div>
+      <div>
+        <div style="font-weight:800;font-size:14px;">Build Your Volcano Model 🏔️</div>
+        <div style="font-size:12px;color:var(--subtext);margin-top:4px;font-weight:600;line-height:1.5;">Shape a cone from paper and place an empty cup in the center. This is your crater!</div>
+      </div>
+    </div>
+    <div style="background:white;border-radius:18px;padding:16px 18px;box-shadow:var(--card-shadow);display:flex;gap:14px;align-items:flex-start;border-left:5px solid var(--blue);">
+      <div style="background:var(--blue);color:white;font-family:'Fredoka One',cursive;font-size:16px;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div>
+      <div>
+        <div style="font-weight:800;font-size:14px;">Add Baking Soda 🥄</div>
+        <div style="font-size:12px;color:var(--subtext);margin-top:4px;font-weight:600;line-height:1.5;">Pour 2 tablespoons of baking soda into the cup. Baking soda is a BASE!</div>
+      </div>
+    </div>
+    <div style="background:white;border-radius:18px;padding:16px 18px;box-shadow:var(--card-shadow);display:flex;gap:14px;align-items:flex-start;border-left:5px solid var(--orange);">
+      <div style="background:var(--orange);color:white;font-family:'Fredoka One',cursive;font-size:16px;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div>
+      <div>
+        <div style="font-weight:800;font-size:14px;">Pour the Vinegar! 🍶</div>
+        <div style="font-size:12px;color:var(--subtext);margin-top:4px;font-weight:600;line-height:1.5;">Slowly pour vinegar into the cup. Vinegar is an ACID! Watch the explosion! 🌋</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Start Button -->
+  <button onclick="triggerConfetti();showToast('🌋 Experiment started! Good luck!','🌋')" style="width:100%;background:linear-gradient(135deg,var(--orange),#FF6D00);color:white;border:none;border-radius:20px;padding:18px;font-family:'Fredoka One',cursive;font-size:22px;cursor:pointer;box-shadow:0 8px 28px rgba(255,138,80,0.4);transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+    🚀 Start Experiment!
+  </button>
+
+  <!-- AI Helper -->
+  <div style="background:linear-gradient(135deg,var(--lavender),#D1C4E9);border-radius:20px;padding:18px;margin-top:16px;display:flex;gap:14px;align-items:center;">
+    <div style="font-size:44px;">🤖</div>
+    <div>
+      <div style="font-family:'Fredoka One',cursive;font-size:16px;color:var(--purple);">Ask Beaky AI!</div>
+      <div style="font-size:12px;color:var(--text);font-weight:600;margin-top:4px;">"Why does the reaction make bubbles?" — Just ask me anything! 💬</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== SAFETY PAGE ===================== -->
+<div class="page" id="page-safety">
+  <div class="page-header">
+    <button class="back-btn" onclick="goBack()">⬅ Back</button>
+    <div class="page-title">🛡️ Safety Training</div>
+  </div>
+
+  <div class="safety-intro">
+    <div class="safety-icon">🦺</div>
+    <div class="safety-intro-text">
+      <h3>Stay Safe, Do Science!</h3>
+      <p>Complete all 4 safety tiers to earn your <strong>Digital Certificate</strong> 🎓 and unlock all experiments!</p>
+    </div>
+  </div>
+
+  <div class="tier-list">
+    <div class="tier-card completed" onclick="goToPage('page-quiz', 'page-safety')">
+      <div class="tier-num t1">1</div>
+      <div class="tier-info">
+        <div class="tier-title">🧯 Basic Lab Rules</div>
+        <div class="tier-desc">Never eat in the lab • Wear goggles • Stay calm</div>
+        <div class="tier-progress"><div class="tier-progress-fill" style="width:100%;background:var(--green);"></div></div>
+      </div>
+      <div class="tier-status">✅</div>
+    </div>
+    <div class="tier-card" onclick="goToPage('page-quiz', 'page-safety')">
+      <div class="tier-num t2">2</div>
+      <div class="tier-info">
+        <div class="tier-title">🧪 Chemical Handling</div>
+        <div class="tier-desc">Read labels • Never mix unknown chemicals • Dispose safely</div>
+        <div class="tier-progress"><div class="tier-progress-fill" style="width:60%;background:var(--blue);"></div></div>
+      </div>
+      <div class="tier-status">⏳</div>
+    </div>
+    <div class="tier-card locked">
+      <div class="tier-num t3">3</div>
+      <div class="tier-info">
+        <div class="tier-title">🔥 Fire & Heat Safety</div>
+        <div class="tier-desc">Handling hot equipment • Emergency procedures</div>
+        <div class="tier-progress"><div class="tier-progress-fill" style="width:0%;"></div></div>
+      </div>
+      <div class="tier-status">🔒</div>
+    </div>
+    <div class="tier-card locked">
+      <div class="tier-num t4">4</div>
+      <div class="tier-info">
+        <div class="tier-title">⚕️ First Aid & Emergency</div>
+        <div class="tier-desc">Spill response • Eye wash station • Emergency exits</div>
+        <div class="tier-progress"><div class="tier-progress-fill" style="width:0%;"></div></div>
+      </div>
+      <div class="tier-status">🔒</div>
+    </div>
+  </div>
+
+  <div style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);border-radius:20px;padding:20px;margin-top:22px;text-align:center;">
+    <div style="font-size:52px;margin-bottom:8px;">🎓</div>
+    <div style="font-family:'Fredoka One',cursive;font-size:18px;color:var(--green);">Your Safety Certificate</div>
+    <div style="font-size:13px;color:var(--subtext);font-weight:600;margin-top:6px;">Complete all 4 tiers to earn your certificate and show your teacher!</div>
+    <div style="margin-top:12px;background:white;border-radius:12px;padding:10px;font-size:12px;color:#BDBDBD;font-weight:700;">🔒 Complete Tier 2, 3 & 4 to unlock</div>
+  </div>
+</div>
+
+<!-- ===================== QUIZ PAGE ===================== -->
+<div class="page" id="page-quiz">
+  <button class="back-btn" onclick="goBack()">⬅ Back</button>
+  <div style="text-align:center;margin-bottom:24px;">
+    <div style="font-size:52px;margin-bottom:8px;">🧪</div>
+    <div style="font-family:'Fredoka One',cursive;font-size:24px;color:var(--text);">Safety Quiz - Tier 2</div>
+    <div style="font-size:13px;color:var(--subtext);font-weight:700;margin-top:4px;">Question 1 of 5 • Score: 80% to pass!</div>
+  </div>
+
+  <!-- Progress -->
+  <div style="background:#E0E0E0;border-radius:50px;height:12px;margin-bottom:28px;overflow:hidden;">
+    <div style="width:20%;height:100%;background:linear-gradient(90deg,var(--blue),var(--purple));border-radius:50px;transition:width 0.5s;"></div>
+  </div>
+
+  <div style="background:white;border-radius:24px;padding:24px;box-shadow:var(--card-shadow);margin-bottom:22px;">
+    <div style="font-size:32px;margin-bottom:14px;text-align:center;">🔴</div>
+    <div style="font-family:'Fredoka One',cursive;font-size:20px;color:var(--text);text-align:center;line-height:1.4;">What should you do if you accidentally spill a chemical?</div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:12px;">
+    <button onclick="answerQuiz(this, false)" style="background:white;border:3px solid #E0E0E0;border-radius:18px;padding:18px 20px;text-align:left;cursor:pointer;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:var(--text);transition:all 0.2s;display:flex;align-items:center;gap:12px;" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='#E0E0E0'">
+      <span style="font-size:24px;">😴</span> Ignore it and keep working
+    </button>
+    <button onclick="answerQuiz(this, true)" style="background:white;border:3px solid #E0E0E0;border-radius:18px;padding:18px 20px;text-align:left;cursor:pointer;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:var(--text);transition:all 0.2s;display:flex;align-items:center;gap:12px;" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='#E0E0E0'">
+      <span style="font-size:24px;">🧹</span> Inform the teacher and clean it up safely
+    </button>
+    <button onclick="answerQuiz(this, false)" style="background:white;border:3px solid #E0E0E0;border-radius:18px;padding:18px 20px;text-align:left;cursor:pointer;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:var(--text);transition:all 0.2s;display:flex;align-items:center;gap:12px;" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='#E0E0E0'">
+      <span style="font-size:24px;">🚪</span> Run out of the room
+    </button>
+    <button onclick="answerQuiz(this, false)" style="background:white;border:3px solid #E0E0E0;border-radius:18px;padding:18px 20px;text-align:left;cursor:pointer;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:var(--text);transition:all 0.2s;display:flex;align-items:center;gap:12px;" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='#E0E0E0'">
+      <span style="font-size:24px;">💨</span> Blow on it to dry it
+    </button>
+  </div>
+</div>
+
+<!-- ===================== LEADERBOARD PAGE ===================== -->
+<div class="page" id="page-leaderboard">
+  <div class="page-header">
+    <button class="back-btn" onclick="goBack()">⬅ Back</button>
+    <div class="page-title">🏆 Leaderboard</div>
+  </div>
+
+  <!-- Podium -->
+  <div class="podium">
+    <div class="podium-item rank2">
+      <div class="podium-avatar">🐉</div>
+      <div class="podium-name">Ahmed S.</div>
+      <div class="podium-xp">1,240 XP</div>
+      <div class="podium-stand">🥈</div>
+    </div>
+    <div class="podium-item rank1">
+      <div class="podium-avatar">🦁</div>
+      <div class="podium-name">Fatima K.</div>
+      <div class="podium-xp">1,850 XP</div>
+      <div class="podium-stand">🥇</div>
+    </div>
+    <div class="podium-item rank3">
+      <div class="podium-avatar">🦋</div>
+      <div class="podium-name">Sara R.</div>
+      <div class="podium-xp">980 XP</div>
+      <div class="podium-stand">🥉</div>
+    </div>
+  </div>
+
+  <div class="lb-list">
+    <div class="lb-row">
+      <div class="lb-rank">4</div>
+      <div class="lb-av">🐸</div>
+      <div class="lb-name">Mohsin A.</div>
+      <div class="lb-pts">920 XP</div>
+      <div class="lb-badge">🔬</div>
+    </div>
+    <div class="lb-row">
+      <div class="lb-rank">5</div>
+      <div class="lb-av">🐝</div>
+      <div class="lb-name">Zara M.</div>
+      <div class="lb-pts">810 XP</div>
+      <div class="lb-badge">⚗️</div>
+    </div>
+    <div class="lb-row me">
+      <div class="lb-rank">6</div>
+      <div class="lb-av" id="lb-my-av">🦊</div>
+      <div class="lb-name">You 🎉</div>
+      <div class="lb-pts">620 XP</div>
+      <div class="lb-badge">🌟</div>
+    </div>
+    <div class="lb-row">
+      <div class="lb-rank">7</div>
+      <div class="lb-av">🦄</div>
+      <div class="lb-name">Omar T.</div>
+      <div class="lb-pts">580 XP</div>
+      <div class="lb-badge">🧪</div>
+    </div>
+    <div class="lb-row">
+      <div class="lb-rank">8</div>
+      <div class="lb-av">🐧</div>
+      <div class="lb-name">Hira N.</div>
+      <div class="lb-pts">420 XP</div>
+      <div class="lb-badge">🌡️</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== PROFILE PAGE ===================== -->
+<div class="page" id="page-profile">
+  <button class="back-btn" onclick="goBack()">⬅ Back</button>
+
+  <div class="profile-header">
+    <span class="profile-av" id="prof-av">🦊</span>
+    <div class="profile-username" id="prof-name">Scientist Rabail</div>
+    <div class="profile-school">🏫 The University of Chenab, Gujrat</div>
+    <div class="profile-badges-row">
+      <span class="p-badge">⭐ Junior Chemist</span>
+      <span class="p-badge">🛡️ Tier 1 Certified</span>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">⚡</div>
+      <div class="stat-val">620</div>
+      <div class="stat-lbl">Total XP</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🔬</div>
+      <div class="stat-val">8</div>
+      <div class="stat-lbl">Experiments</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🔥</div>
+      <div class="stat-val">5</div>
+      <div class="stat-lbl">Day Streak</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🏅</div>
+      <div class="stat-val">12</div>
+      <div class="stat-lbl">Badges</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🎯</div>
+      <div class="stat-val">87%</div>
+      <div class="stat-lbl">Accuracy</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🏆</div>
+      <div class="stat-val">#6</div>
+      <div class="stat-lbl">Class Rank</div>
+    </div>
+  </div>
+
+  <div class="badges-section">
+    <div class="section-label">🎖️ My Badges</div>
+    <div class="badge-chips">
+      <div class="badge-chip" style="background:#FFF9C4;">
+        <span class="bc-icon">🌋</span>Volcano Master
+      </div>
+      <div class="badge-chip" style="background:#E3F2FD;">
+        <span class="bc-icon">🔬</span>Lab Explorer
+      </div>
+      <div class="badge-chip" style="background:#E8F5E9;">
+        <span class="bc-icon">🛡️</span>Safety First
+      </div>
+      <div class="badge-chip" style="background:#FCE4EC;">
+        <span class="bc-icon">🔥</span>5 Day Streak
+      </div>
+      <div class="badge-chip" style="background:#EDE7F6;">
+        <span class="bc-icon">⚡</span>Speed Scientist
+      </div>
+      <div class="badge-chip" style="background:#E0F7FA;">
+        <span class="bc-icon">💎</span>Crystal Grower
+      </div>
+    </div>
+  </div>
+
+  <!-- Readiness Report -->
+  <div style="background:linear-gradient(135deg,#E8F5E9,#DCEDC8);border-radius:24px;padding:20px;box-shadow:var(--card-shadow);">
+    <div style="font-family:'Fredoka One',cursive;font-size:18px;color:var(--green);margin-bottom:8px;">🤖 AI Readiness Report</div>
+    <div style="font-size:13px;color:var(--text);font-weight:600;line-height:1.6;">
+      <strong>Status: 🟡 Approaching Readiness</strong><br>
+      You've shown great progress in Procedural Accuracy and Safety Compliance! Complete Tier 2 & 3 safety training to be <strong>Ready for Real Lab</strong>! 🧪
+    </div>
+    <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+      <span style="background:white;border-radius:50px;padding:5px 12px;font-size:11px;font-weight:800;color:var(--green);">✅ Safety: 90%</span>
+      <span style="background:white;border-radius:50px;padding:5px 12px;font-size:11px;font-weight:800;color:var(--blue);">✅ Accuracy: 87%</span>
+      <span style="background:white;border-radius:50px;padding:5px 12px;font-size:11px;font-weight:800;color:var(--orange);">⏳ Certification: 50%</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== FLOATING TASKBAR ===================== -->
+<div class="taskbar">
+  <button class="taskbar-btn active" id="tb-home" onclick="navTo('page-home','tb-home')">
+    <span class="tb-icon">🏠</span>Home
+  </button>
+  <button class="taskbar-btn" id="tb-exp" onclick="navTo('page-experiments','tb-exp')">
+    <span class="tb-icon">🔬</span>Labs
+  </button>
+  <button class="taskbar-btn" id="tb-safety" onclick="navTo('page-safety','tb-safety')">
+    <span class="tb-icon">🛡️</span>Safety
+  </button>
+  <button class="taskbar-btn" id="tb-lb" onclick="navTo('page-leaderboard','tb-lb')">
+    <span class="tb-icon">🏆</span>Ranks
+  </button>
+  <button class="taskbar-btn" id="tb-profile" onclick="navTo('page-profile','tb-profile')">
+    <span class="tb-icon">👤</span>Me
+  </button>
+</div>
+
+<script>
+  // ===== NAVIGATION STACK FOR BACK BUTTON =====
+  const navStack = [];
+  let currentPage = 'page-home';
+  const tabPageMap = {
+    'tb-home': 'page-home',
+    'tb-exp': 'page-experiments',
+    'tb-safety': 'page-safety',
+    'tb-lb': 'page-leaderboard',
+    'tb-profile': 'page-profile'
+  };
+
+  function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
+    window.scrollTo(0, 0);
+    currentPage = pageId;
+  }
+
+  function goToPage(pageId, fromPage) {
+    navStack.push(fromPage || currentPage);
+    showPage(pageId);
+    updateTaskbar(pageId);
+  }
+
+  function goBack() {
+    if (navStack.length > 0) {
+      const prev = navStack.pop();
+      showPage(prev);
+      updateTaskbar(prev);
+    }
+  }
+
+  function navTo(pageId, tabId) {
+    navStack.length = 0; // Clear stack on main tab nav
+    showPage(pageId);
+    updateTaskbar(pageId);
+  }
+
+  function updateTaskbar(pageId) {
+    document.querySelectorAll('.taskbar-btn').forEach(b => b.classList.remove('active'));
+    for (const [tab, page] of Object.entries(tabPageMap)) {
+      if (page === pageId) {
+        document.getElementById(tab)?.classList.add('active');
+        break;
+      }
+    }
+  }
+
+  // ===== AVATAR SELECTION =====
+  let selectedAvatar = '🦊';
+  let selectedAvatarName = 'Foxy';
+
+  function selectAvatar(card, emoji, name) {
+    document.querySelectorAll('.avatar-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    selectedAvatar = emoji;
+    selectedAvatarName = name;
+
+    document.getElementById('home-av').textContent = emoji;
+    document.getElementById('prof-av').textContent = emoji;
+    document.getElementById('lb-my-av').textContent = emoji;
+
+    const msgs = [
+      `${name} is ready to do science! 🔬`,
+      `Great choice! ${name} is super smart! 🧪`,
+      `${name} says: Let's learn chemistry! ⚗️`,
+    ];
+    showMascotMessage(msgs[Math.floor(Math.random()*msgs.length)]);
+    showToast(`You picked ${emoji} ${name}! Ready to experiment?`, emoji);
+  }
+
+  // ===== FILTER PILLS =====
+  function setFilter(pill) {
+    document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+  }
+
+  // ===== MASCOT =====
+  const mascotTips = [
+    "Always wear goggles in a real lab! 🥽",
+    "Never mix chemicals without asking! ⚠️",
+    "Complete safety training to unlock more experiments! 🛡️",
+    "Earn XP by finishing experiments! ⚡",
+    "Check the leaderboard to see your rank! 🏆",
+    "AR Mode lets you see experiments in YOUR room! 🕶️",
+    "Ask me anything during an experiment! 🤖",
+    "5-day streaks earn you bonus badges! 🔥",
+  ];
+  let mascotIdx = 0;
+
+  function cycleMascot() {
+    mascotIdx = (mascotIdx + 1) % mascotTips.length;
+    showMascotMessage(mascotTips[mascotIdx]);
+  }
+
+  function showMascotMessage(msg) {
+    document.getElementById('mascot-text').textContent = msg;
+  }
+
+  // Rotate tips automatically
+  setInterval(() => {
+    mascotIdx = (mascotIdx + 1) % mascotTips.length;
+    document.getElementById('mascot-text').textContent = mascotTips[mascotIdx];
+  }, 6000);
+
+  // ===== TOAST =====
+  function showToast(msg, icon='🎉') {
+    const toast = document.getElementById('toast');
+    document.getElementById('toast-text').textContent = msg;
+    toast.querySelector('.toast-icon').textContent = icon;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+  }
+
+  // ===== CONFETTI =====
+  function triggerConfetti() {
+    const wrap = document.getElementById('confetti');
+    wrap.innerHTML = '';
+    wrap.classList.add('show');
+    const colors = ['#FFD54F','#4FC3F7','#EF5350','#66BB6A','#CE93D8','#FF8A50','#26C6DA'];
+    for (let i = 0; i < 60; i++) {
+      const el = document.createElement('div');
+      el.className = 'conf-piece';
+      el.style.left = Math.random() * 100 + 'vw';
+      el.style.background = colors[Math.floor(Math.random()*colors.length)];
+      el.style.width = (Math.random()*10+6) + 'px';
+      el.style.height = (Math.random()*10+6) + 'px';
+      el.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+      el.style.animationDelay = Math.random()*1.5 + 's';
+      el.style.animationDuration = (Math.random()*1.5+2) + 's';
+      wrap.appendChild(el);
+    }
+    setTimeout(() => { wrap.classList.remove('show'); wrap.innerHTML = ''; }, 4000);
+  }
+
+  // ===== QUIZ ANSWER =====
+  function answerQuiz(btn, correct) {
+    const allBtns = document.querySelectorAll('#page-quiz button:not(.back-btn)');
+    allBtns.forEach(b => {
+      b.style.pointerEvents = 'none';
+      b.onmouseover = null; b.onmouseout = null;
+    });
+    if (correct) {
+      btn.style.background = '#E8F5E9';
+      btn.style.borderColor = 'var(--green)';
+      btn.style.color = 'var(--green)';
+      showToast('🎉 Correct! Well done, scientist!', '🎉');
+      triggerConfetti();
+      showMascotMessage('Amazing! You got it right! 🌟');
+    } else {
+      btn.style.background = '#FFEBEE';
+      btn.style.borderColor = 'var(--red)';
+      btn.style.color = 'var(--red)';
+      // Highlight correct
+      allBtns.forEach(b => {
+        if (b.getAttribute('onclick')?.includes('true')) {
+          b.style.background = '#E8F5E9';
+          b.style.borderColor = 'var(--green)';
+        }
+      });
+      showToast('Not quite! The correct answer is highlighted in green.', '💡');
+      showMascotMessage('Almost! Read the question again carefully 📚');
+    }
+    setTimeout(() => {
+      allBtns.forEach(b => {
+        b.style.background = 'white';
+        b.style.borderColor = '#E0E0E0';
+        b.style.color = 'var(--text)';
+        b.style.pointerEvents = 'auto';
+        b.onmouseover = function(){ this.style.borderColor='var(--blue)'; };
+        b.onmouseout  = function(){ this.style.borderColor='#E0E0E0'; };
+      });
+    }, 2500);
+  }
+</script>
+</body>
+</html>
