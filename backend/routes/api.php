@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ExperimentController;
 use App\Http\Controllers\Api\LeaderboardController;
+use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\QuizController;
 use App\Http\Controllers\Api\SafetyController;
@@ -43,5 +44,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/leaderboard', [LeaderboardController::class, 'index']);
         Route::get('/profile', [ProfileController::class, 'show']);
         Route::patch('/profile', [ProfileController::class, 'update']);
+
+        // M7 – FR-09.6: notification inbox (SR-08: no user-id param).
+        Route::get('/notifications', [NotificationController::class, 'index']);
+        Route::patch('/notifications/read-all', [NotificationController::class, 'readAll']);
+        Route::post('/push/register', [NotificationController::class, 'registerPushToken']);
     });
 });

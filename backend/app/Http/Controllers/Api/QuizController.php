@@ -8,6 +8,7 @@ use App\Models\QuizAttempt;
 use App\Services\RewardService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class QuizController extends Controller
 {
@@ -34,14 +35,31 @@ class QuizController extends Controller
 
         $questions = $experiment->quizQuestions()->inRandomOrder()->get();
 
+        // FR-04.5 + randomise answer positions so correct is not always option A.
+        // permMap[question_id] = [old_idx_at_new_pos_0, old_idx_at_new_pos_1, ...]
+        $uuid    = (string) Str::uuid();
+        $permMap = [];
+
+        $mapped = $questions->map(function (ExperimentQuizQuestion $q) use (&$permMap) {
+            $opts    = $q->options;
+            $indices = range(0, count($opts) - 1);
+            shuffle($indices);
+            $permMap[$q->id] = $indices;
+
+            return [
+                'id'      => $q->id,
+                'prompt'  => $q->prompt,
+                'options' => array_values(array_map(fn ($i) => $opts[$i], $indices)),
+            ];
+        })->values();
+
+        cache()->put("quiz_map:{$uuid}", $permMap, 7200);
+
         return response()->json([
-            'experiment' => ['id' => $experiment->id, 'title' => $experiment->title],
-            'pass_mark' => self::PASS_MARK,
-            'questions' => $questions->map(fn (ExperimentQuizQuestion $q) => [
-                'id' => $q->id,
-                'prompt' => $q->prompt,
-                'options' => $q->options,
-            ])->values(),
+            'experiment'    => ['id' => $experiment->id, 'title' => $experiment->title],
+            'pass_mark'     => self::PASS_MARK,
+            '_quiz_session' => $uuid,
+            'questions'     => $mapped,
         ]);
     }
 
@@ -54,13 +72,20 @@ class QuizController extends Controller
     public function submit(Request $request, Experiment $experiment): JsonResponse
     {
         $validated = $request->validate([
-            'answers' => ['required', 'array', 'min:1'],
-            'answers.*' => ['required', 'integer', 'min:0', 'max:9'],
-            'session_id' => ['nullable', 'integer', 'exists:experiment_sessions,id'],
+            'answers'        => ['required', 'array', 'min:1'],
+            'answers.*'      => ['required', 'integer', 'min:0', 'max:9'],
+            'session_id'     => ['nullable', 'integer', 'exists:experiment_sessions,id'],
+            '_quiz_session'  => ['nullable', 'string', 'max:40'],
         ]);
 
-        $user = $request->user();
+        $user    = $request->user();
         $answers = $validated['answers'];
+
+        // Retrieve the shuffle permutation that show() cached so grading uses
+        // the original stored correct_option rather than the shuffled position.
+        $permMap = ($validated['_quiz_session'] ?? null)
+            ? (cache()->get("quiz_map:{$validated['_quiz_session']}") ?? [])
+            : [];
 
         $questions = ExperimentQuizQuestion::query()
             ->where('experiment_id', $experiment->id)
@@ -71,17 +96,28 @@ class QuizController extends Controller
             return response()->json(['message' => 'No questions of this experiment were answered.'], 422);
         }
 
-        $feedback = $questions->map(function (ExperimentQuizQuestion $q) use ($answers) {
+        $feedback = $questions->map(function (ExperimentQuizQuestion $q) use ($answers, $permMap) {
             $chosen = (int) ($answers[$q->id] ?? -1);
-            $correct = $chosen === $q->correct_option;
+
+            // perm[new_pos] = old_pos; translate the student's chosen shuffled index
+            // back to the original option index so we can compare to correct_option.
+            $perm         = $permMap[$q->id] ?? null;
+            $originalChosen = ($perm !== null && isset($perm[$chosen])) ? $perm[$chosen] : $chosen;
+            $correct      = $originalChosen === $q->correct_option;
+
+            // Return the shuffled position of the correct answer so the frontend
+            // can highlight the right option in the order it displayed.
+            $shuffledCorrect = $perm !== null
+                ? (int) array_search($q->correct_option, $perm, true)
+                : $q->correct_option;
 
             return [
-                'question_id' => $q->id,
-                'chosen_option' => $chosen,
-                'correct' => $correct,
+                'question_id'    => $q->id,
+                'chosen_option'  => $chosen,
+                'correct'        => $correct,
                 // FR-04.2: the explanation goes out only where it is needed.
-                'explanation' => $correct ? null : $q->explanation,
-                'correct_option' => $correct ? null : $q->correct_option,
+                'explanation'    => $correct ? null : $q->explanation,
+                'correct_option' => $correct ? null : $shuffledCorrect,
             ];
         });
 

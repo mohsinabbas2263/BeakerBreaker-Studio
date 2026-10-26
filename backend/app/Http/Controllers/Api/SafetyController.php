@@ -7,6 +7,7 @@ use App\Services\RewardService;
 use App\Services\SafetyCertificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use RuntimeException;
 
 class SafetyController extends Controller
@@ -57,14 +58,31 @@ class SafetyController extends Controller
             return response()->json(['message' => 'This tier has no questions yet.'], 404);
         }
 
+        // Shuffle answer positions so correct is not always option A (same
+        // permutation pattern as QuizController).
+        $uuid    = (string) Str::uuid();
+        $permMap = [];
+
+        $mapped = $questions->map(function ($q) use (&$permMap) {
+            $opts    = $q->options;
+            $indices = range(0, count($opts) - 1);
+            shuffle($indices);
+            $permMap[$q->id] = $indices;
+
+            return [
+                'id'      => $q->id,
+                'prompt'  => $q->prompt,
+                'options' => array_values(array_map(fn ($i) => $opts[$i], $indices)),
+            ];
+        })->values();
+
+        cache()->put("safety_map:{$uuid}", $permMap, 7200);
+
         return response()->json([
-            'tier_number' => $tier,
-            'title' => SafetyTierQuestion::TIERS[$tier] ?? null,
-            'questions' => $questions->map(fn ($q) => [
-                'id' => $q->id,
-                'prompt' => $q->prompt,
-                'options' => $q->options,
-            ])->values(),
+            'tier_number'      => $tier,
+            'title'            => SafetyTierQuestion::TIERS[$tier] ?? null,
+            '_safety_session'  => $uuid,
+            'questions'        => $mapped,
         ]);
     }
 
@@ -75,14 +93,27 @@ class SafetyController extends Controller
     public function submit(Request $request, int $tier): JsonResponse
     {
         $validated = $request->validate([
-            'answers' => ['required', 'array', 'min:1'],
-            'answers.*' => ['required', 'integer', 'min:0', 'max:9'],
+            'answers'          => ['required', 'array', 'min:1'],
+            'answers.*'        => ['required', 'integer', 'min:0', 'max:9'],
+            '_safety_session'  => ['nullable', 'string', 'max:40'],
         ]);
 
-        $user = $request->user();
+        $user    = $request->user();
+        $answers = $validated['answers'];
+
+        // Translate shuffled answer indices back to original option indices before
+        // passing to the grading service (which compares against stored correct_option).
+        if ($validated['_safety_session'] ?? null) {
+            $permMap = cache()->get("safety_map:{$validated['_safety_session']}") ?? [];
+            $answers = collect($answers)->mapWithKeys(function ($chosen, $qId) use ($permMap) {
+                $perm     = $permMap[$qId] ?? null;
+                $original = ($perm !== null && isset($perm[$chosen])) ? $perm[$chosen] : $chosen;
+                return [$qId => $original];
+            })->all();
+        }
 
         try {
-            $attempt = $this->safety->grade($user, $tier, $validated['answers']);
+            $attempt = $this->safety->grade($user, $tier, $answers);
         } catch (RuntimeException $e) {
             return response()->json(['message' => $e->getMessage()], 403);
         }

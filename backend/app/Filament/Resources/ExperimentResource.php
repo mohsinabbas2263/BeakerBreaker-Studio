@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ExperimentResource\Pages;
+use App\Filament\Resources\ExperimentResource\RelationManagers;
 use App\Models\Experiment;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -95,8 +96,19 @@ class ExperimentResource extends Resource
             ->defaultSort('grade_level');
     }
 
+    public static function getRelations(): array
+    {
+        return [
+            RelationManagers\StepsRelationManager::class,
+            RelationManagers\QuizQuestionsRelationManager::class,
+        ];
+    }
+
     public static function getPages(): array
     {
-        return ['index' => Pages\ManageExperiments::route('/')];
+        return [
+            'index' => Pages\ManageExperiments::route('/'),
+            'edit'  => Pages\EditExperiment::route('/{record}/edit'),
+        ];
     }
 }

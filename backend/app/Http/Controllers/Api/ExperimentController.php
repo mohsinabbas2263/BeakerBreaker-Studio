@@ -30,11 +30,18 @@ class ExperimentController extends Controller
 
         $user = $request->user();
 
+        // FR-03.2 classwise: students only see experiments for their enrolled grade.
+        // Teachers and administrators see everything. Null grade (no class assigned) shows all.
+        $gradeLevel = $user->isStudent()
+            ? $user->profile?->schoolClass?->grade_level
+            : null;
+
         $experiments = Experiment::query()
             ->where('is_published', true)
             ->when($filters['topic'] ?? null, fn ($q, $t) => $q->where('topic', $t))
             ->when($filters['difficulty'] ?? null, fn ($q, $d) => $q->where('difficulty', $d))
             ->when($filters['ar_only'] ?? false, fn ($q) => $q->where('ar_available', true))
+            ->when($gradeLevel, fn ($q, $gl) => $q->where('grade_level', $gl))
             ->withCount('steps')
             ->orderBy('grade_level')
             ->orderBy('base_points')
@@ -45,8 +52,13 @@ class ExperimentController extends Controller
             ->pluck('experiment_id')
             ->unique();
 
+        $topicsQuery = Experiment::where('is_published', true);
+        if ($gradeLevel) {
+            $topicsQuery->where('grade_level', $gradeLevel);
+        }
+
         return response()->json([
-            'topics' => Experiment::where('is_published', true)->distinct()->pluck('topic'),
+            'topics' => $topicsQuery->distinct()->pluck('topic'),
             'experiments' => $experiments->map(function (Experiment $e) use ($user, $completed) {
                 $check = $this->access->check($user, $e);
 
