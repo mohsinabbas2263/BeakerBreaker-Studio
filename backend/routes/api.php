@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\QuizController;
 use App\Http\Controllers\Api\SafetyController;
+use App\Http\Controllers\Api\TeacherController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -49,5 +50,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/notifications', [NotificationController::class, 'index']);
         Route::patch('/notifications/read-all', [NotificationController::class, 'readAll']);
         Route::post('/push/register', [NotificationController::class, 'registerPushToken']);
+    });
+
+    // ---- teacher ----
+    Route::middleware('role:teacher')->group(function () {
+        // FR-09.7: broadcast a notification to a class.
+        Route::post('/teacher/broadcast', [TeacherController::class, 'broadcast']);
     });
 });

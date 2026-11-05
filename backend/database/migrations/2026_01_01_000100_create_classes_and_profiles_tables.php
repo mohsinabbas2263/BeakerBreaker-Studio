@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('classes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('school_id')->constrained('schools')->cascadeOnDelete();
+            $table->foreignId('school_id')->nullable()->constrained('schools')->nullOnDelete();
             $table->string('title');
             $table->unsignedTinyInteger('grade_level');        // 9 or 10 (FR-03.1)
             $table->string('academic_year', 9);
