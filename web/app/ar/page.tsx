@@ -14,7 +14,7 @@
  * FR-05.6: exitAr() calls session.end() and stops all MediaStream tracks.
  */
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { Suspense, useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Shell from "@/components/layout/Shell";
 import {
@@ -75,7 +75,16 @@ interface RunningSession {
 
 // ── Main component ────────────────────────────────────────────────────────────
 
+// useSearchParams needs a Suspense boundary for the static build.
 export default function ArPage() {
+  return (
+    <Suspense fallback={null}>
+      <ArPageInner />
+    </Suspense>
+  );
+}
+
+function ArPageInner() {
   const router      = useRouter();
   const params      = useSearchParams();
   const toast       = useToast();

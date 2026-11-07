@@ -139,6 +139,8 @@ export interface SafetyTiersResponse {
 export interface SafetyStartResponse {
   tier_number: number;
   title: string;
+  /** Identifies this attempt's option shuffle; must be sent back with the answers. */
+  _safety_session: string;
   questions: SafetyQuestion[];
 }
 
