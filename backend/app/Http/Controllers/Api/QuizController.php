@@ -14,6 +14,14 @@ class QuizController extends Controller
 {
     public const PASS_MARK = 80;
 
+    /** How long a handed-out quiz stays open for submission. */
+    public const ATTEMPT_TTL_SECONDS = 7200;
+
+    public static function attemptKey(string $id): string
+    {
+        return "quiz_attempt:{$id}";
+    }
+
     public function __construct(protected RewardService $rewards) {}
 
     /** FR-04.1: available only after every step is complete. FR-04.5: fresh order each time. */
@@ -53,7 +61,12 @@ class QuizController extends Controller
             ];
         })->values();
 
-        cache()->put("quiz_map:{$uuid}", $permMap, 7200);
+        // FR-02.5, FR-04.4: the server keeps the shuffle; submit() scores against it.
+        cache()->put(self::attemptKey($uuid), [
+            'user_id' => $user->id,
+            'experiment_id' => $experiment->id,
+            'perm' => $permMap,
+        ], self::ATTEMPT_TTL_SECONDS);
 
         return response()->json([
             'experiment'    => ['id' => $experiment->id, 'title' => $experiment->title],
@@ -72,44 +85,48 @@ class QuizController extends Controller
     public function submit(Request $request, Experiment $experiment): JsonResponse
     {
         $validated = $request->validate([
-            'answers'        => ['required', 'array', 'min:1'],
+            'answers'        => ['present', 'array'],
             'answers.*'      => ['required', 'integer', 'min:0', 'max:9'],
             'session_id'     => ['nullable', 'integer', 'exists:experiment_sessions,id'],
-            '_quiz_session'  => ['nullable', 'string', 'max:40'],
+            '_quiz_session'  => ['required', 'string', 'max:40'],
         ]);
 
         $user    = $request->user();
         $answers = $validated['answers'];
 
-        // Retrieve the shuffle permutation that show() cached so grading uses
-        // the original stored correct_option rather than the shuffled position.
-        $permMap = ($validated['_quiz_session'] ?? null)
-            ? (cache()->get("quiz_map:{$validated['_quiz_session']}") ?? [])
-            : [];
+        // Single use, and only for the student and experiment it was drawn for.
+        $record = cache()->pull(self::attemptKey($validated['_quiz_session']));
 
+        if (! is_array($record) || $record['user_id'] !== $user->id || $record['experiment_id'] !== $experiment->id) {
+            return response()->json([
+                'message' => 'This quiz has expired or was already submitted. Open it again.',
+                'code' => 'attempt_expired',
+            ], 422);
+        }
+
+        $permMap = $record['perm'];
+
+        // FR-02.5: scored over every question that was handed out, not over the ones
+        // the client chose to answer. An unanswered question counts as wrong.
         $questions = ExperimentQuizQuestion::query()
             ->where('experiment_id', $experiment->id)
-            ->whereIn('id', array_keys($answers))
+            ->whereIn('id', array_keys($permMap))
             ->get();
 
         if ($questions->isEmpty()) {
-            return response()->json(['message' => 'No questions of this experiment were answered.'], 422);
+            return response()->json(['message' => 'This quiz has no questions.'], 422);
         }
 
         $feedback = $questions->map(function (ExperimentQuizQuestion $q) use ($answers, $permMap) {
-            $chosen = (int) ($answers[$q->id] ?? -1);
+            $chosen = array_key_exists($q->id, $answers) ? (int) $answers[$q->id] : -1;
 
-            // perm[new_pos] = old_pos; translate the student's chosen shuffled index
-            // back to the original option index so we can compare to correct_option.
-            $perm         = $permMap[$q->id] ?? null;
-            $originalChosen = ($perm !== null && isset($perm[$chosen])) ? $perm[$chosen] : $chosen;
-            $correct      = $originalChosen === $q->correct_option;
+            // perm[shown_position] = stored_position.
+            $perm           = $permMap[$q->id];
+            $originalChosen = $perm[$chosen] ?? -1;
+            $correct        = $originalChosen === $q->correct_option;
 
-            // Return the shuffled position of the correct answer so the frontend
-            // can highlight the right option in the order it displayed.
-            $shuffledCorrect = $perm !== null
-                ? (int) array_search($q->correct_option, $perm, true)
-                : $q->correct_option;
+            // The correct answer's position as the student saw it.
+            $shuffledCorrect = (int) array_search($q->correct_option, $perm, true);
 
             return [
                 'question_id'    => $q->id,

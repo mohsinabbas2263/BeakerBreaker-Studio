@@ -15,6 +15,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\Sanctum;
 use RuntimeException;
+use Tests\Concerns\AnswersAttempts;
 use Tests\TestCase;
 
 /**
@@ -23,7 +24,7 @@ use Tests\TestCase;
  */
 class NonNegotiableRulesTest extends TestCase
 {
-    use RefreshDatabase;
+    use AnswersAttempts, RefreshDatabase;
 
     protected function student(): User
     {
@@ -46,13 +47,7 @@ class NonNegotiableRulesTest extends TestCase
         Sanctum::actingAs($user);
 
         // Every answer wrong, and a perfect score claimed in the body.
-        $answers = $questions->mapWithKeys(fn ($q) => [$q->id => 3])->all();
-
-        $response = $this->postJson('/api/safety/tiers/1/submit', [
-            'answers' => $answers,
-            'score' => 100,
-            'passed' => true,
-        ]);
+        $response = $this->answerSafetyTier(1, fn ($q) => 3, ['score' => 100, 'passed' => true]);
 
         $response->assertOk()
             ->assertJsonPath('score', 0)
@@ -68,9 +63,7 @@ class NonNegotiableRulesTest extends TestCase
         $questions = $this->tierQuestions();
         Sanctum::actingAs($user);
 
-        $answers = $questions->mapWithKeys(fn ($q) => [$q->id => $q->correct_option])->all();
-
-        $this->postJson('/api/safety/tiers/1/submit', ['answers' => $answers])
+        $this->answerSafetyTier(1)
             ->assertOk()
             ->assertJsonPath('score', 100)
             ->assertJsonPath('passed', true);

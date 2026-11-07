@@ -55,16 +55,26 @@ tier opens only when the one before it is passed at 80 or above (`FR-02.2`).
 
 ### `POST /safety/tiers/{tier}/start`
 Draws a fresh random set of 10 questions from that tier's bank (`FR-02.4`).
-Each question carries `id`, `prompt` and `options`. **The answer key is not in
-the response**, and `403 tier_locked` comes back for a tier that is not open.
+Each question carries `id`, `prompt` and `options`, the options in a shuffled
+order. **The answer key is not in the response**, and `403 tier_locked` comes back
+for a tier that is not open. The response also carries `_safety_session`, which
+identifies this drawn set and its shuffle; the submit must send it back.
 
 ### `POST /safety/tiers/{tier}/submit`
 ```json
-{ "answers": { "17": 0, "23": 2, "41": 1 } }
+{ "answers": { "17": 0, "23": 2, "41": 1 }, "_safety_session": "9b1d…" }
 ```
-Question id to the index of the chosen option. The score is computed on the
-server from the stored key (`FR-02.5`). A `score` or `passed` field in the
-request body is ignored; `NonNegotiableRulesTest` asserts exactly that.
+Question id to the position of the chosen option, as it was shown. The score is
+computed on the server from the stored key (`FR-02.5`), **over every question
+drawn for that attempt**: an unanswered question counts as wrong, and an answer
+to a question that was not drawn is ignored. A `score` or `passed` field in the
+request body is ignored; `NonNegotiableRulesTest` asserts exactly that, and
+`ScoringIntegrityTest` covers partial and replayed submissions.
+
+`_safety_session` is required and works once, for the student and tier it was
+drawn for. A missing one answers `422` with a validation error; an expired,
+reused or foreign one answers `422 attempt_expired`, and the client starts the
+tier again.
 
 Answers with:
 
@@ -133,9 +143,12 @@ Questions in a fresh random order (`FR-04.5`), without the answer key.
 
 ### `POST /experiments/{id}/quiz`
 ```json
-{ "answers": { "5": 0, "6": 1 }, "session_id": 31 }
+{ "answers": { "5": 0, "6": 1 }, "session_id": 31, "_quiz_session": "4c2e…" }
 ```
-Marked on the server. `feedback` carries one entry per question with `correct`,
+`_quiz_session` comes from `GET /experiments/{id}/quiz` and follows the same
+rules as `_safety_session`: required, single use, `422 attempt_expired` otherwise.
+Marked on the server over every question of the quiz; an unanswered one counts as
+wrong. `feedback` carries one entry per question with `correct`,
 and, only where the answer was wrong, `explanation` and `correct_option`
 (`FR-04.2`). `points_awarded` holds the experiment's points on the first pass at
 80 or above, and 0 on every pass after that (`FR-04.3`). Every attempt is
