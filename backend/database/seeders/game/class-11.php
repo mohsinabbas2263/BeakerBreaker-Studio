@@ -276,7 +276,7 @@ return [
         'title' => 'Identify the Metal Ion',
         'topic' => 'Qualitative Analysis', 'difficulty' => 'hard', 'grade_level' => 11, 'board' => 'punjab',
         'chemical_equation' => 'Fe³⁺ + 3OH⁻ → Fe(OH)₃↓ (orange-brown);  Cu²⁺ + 2OH⁻ → Cu(OH)₂↓ (blue)',
-        'explanatory_note' => 'Cations are identified by the colour of their hydroxide precipitates with sodium hydroxide and aqueous ammonia, and how they behave in excess: Al³⁺ and Zn²⁺ give white precipitates soluble in excess NaOH, Fe³⁺ orange-brown, Cu²⁺ blue, Cr³⁺ green; NH₄⁺ gives ammonia gas on warming with NaOH. Punjab 11 Section 16.7.',
+        'explanatory_note' => 'Cations are identified by the colour of their hydroxide precipitates with sodium hydroxide and aqueous ammonia, and how they behave in excess: Al³⁺ and Zn²⁺ give white precipitates soluble in excess NaOH, Fe³⁺ orange-brown, Cu²⁺ blue, Cr³⁺ green; Ca²⁺ a white precipitate insoluble in excess NaOH and little or none with ammonia; NH₄⁺ gives ammonia gas on warming with NaOH. Punjab 11 Section 16.7.',
         'base_points' => 80, 'estimated_minutes' => 20, 'emoji' => '🎨',
         'steps' => array_merge(
             [$safety(['gloves'])],
@@ -300,6 +300,10 @@ return [
                 'No precipitate, but a gas with a sharp smell turned moist red litmus blue.',
                 ['a' => 'Ammonium, NH₄⁺', 'b' => 'Calcium, Ca²⁺', 'c' => 'Copper(II), Cu²⁺', 'd' => 'Zinc, Zn²⁺'], 'a',
                 'NH₄⁺ + OH⁻ → NH₃ + H₂O on warming.'),
+            $ionTest(12, 'Sample 6: aqueous ammonia', 'aqueous_ammonia', ['naoh' => 'NaOH already gave a white precipitate that stayed in excess. Now try aqueous ammonia.'],
+                'With NaOH it gave a white precipitate that does NOT dissolve in excess. With aqueous ammonia, only a slight turbidity or no precipitate.',
+                ['a' => 'Calcium, Ca²⁺', 'b' => 'Aluminium, Al³⁺', 'c' => 'Zinc, Zn²⁺', 'd' => 'Copper(II), Cu²⁺'], 'a',
+                'Ca(OH)₂ is not amphoteric, so excess NaOH does not dissolve it, and ammonia gives too little OH⁻ to precipitate it.'),
         ),
         'quiz' => [
             ['prompt' => 'Which hydroxide is orange-brown?', 'options' => ['Fe(OH)₃', 'Cu(OH)₂', 'Al(OH)₃', 'Zn(OH)₂'], 'correct_option' => 0, 'explanation' => 'Iron(III) hydroxide is orange-brown.'],
