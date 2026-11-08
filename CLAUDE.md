@@ -31,6 +31,7 @@ Chapters 1 to 4 are written and signed off. Development started in October 2026.
 | `docs/architecture.md` | Tiers, components, stack, external services, performance targets. |
 | `docs/data-model.md` | The entities, attributes, schema rules, state machines. |
 | `docs/api.md` | The endpoints M1 actually exposes, with their status codes. |
+| `docs/experiment-engine.md` | Game-style experiment steps: step kinds, schema, API, readiness formulas. **Proposal under review**; do not build from it until Mohsin agrees. |
 | `docs/build-order.md` | The milestones in dependency order. |
 | `backend/README.md` | How to get the backend running, and what is deliberately missing. |
 
