@@ -13,11 +13,12 @@ use App\Models\StudentProfile;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
+use Tests\Concerns\AnswersAttempts;
 use Tests\TestCase;
 
 class StudentJourneyTest extends TestCase
 {
-    use RefreshDatabase;
+    use AnswersAttempts, RefreshDatabase;
 
     protected User $user;
 
@@ -147,9 +148,8 @@ class StudentJourneyTest extends TestCase
             'step_id' => $experiment->steps()->first()->id,
         ]);
 
-        $response = $this->postJson("/api/experiments/{$experiment->id}/quiz", [
-            'answers' => [$right->id => 0, $wrong->id => 0],
-        ])->assertOk();
+        // The stored first option of each: right for one question, wrong for the other.
+        $response = $this->answerQuiz($experiment->id, fn ($q) => 0)->assertOk();
 
         $feedback = collect($response->json('feedback'));
 
@@ -234,9 +234,7 @@ class StudentJourneyTest extends TestCase
                 // the previous tier is already passed by the loop below
             }
 
-            $answers = $questions->mapWithKeys(fn ($q) => [$q->id => $q->correct_option])->all();
-
-            $this->postJson("/api/safety/tiers/{$tier}/submit", ['answers' => $answers])
+            $this->answerSafetyTier($tier)
                 ->assertOk()
                 ->assertJsonPath('passed', true);
         }

@@ -11,7 +11,7 @@ client (`SR-06`, `SR-07`).
 | Web | React 18, Next.js 14 |
 | Mobile | Flutter 3, Dart (Android and iOS) |
 | AR | ARCore, ARKit |
-| API | Laravel 11 on PHP 8.2 |
+| API | Laravel 12 on PHP 8.2 |
 | Admin panel | Filament |
 | Database | MySQL 8.0 |
 | Cache, queues, leaderboard | Redis 7 |

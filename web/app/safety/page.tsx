@@ -38,7 +38,12 @@ export default function SafetyPage() {
     if (!quiz) return;
     setSubmitting(true);
     try {
-      const res = await api.post<SafetySubmitResponse>(`/safety/tiers/${tierNum}/submit`, { answers });
+      // The options were shown shuffled; _safety_session lets the server map each
+      // chosen position back to the stored answer key (FR-02.5).
+      const res = await api.post<SafetySubmitResponse>(`/safety/tiers/${tierNum}/submit`, {
+        answers,
+        _safety_session: quiz._safety_session,
+      });
       setResult(res);
       setPhase("result");
       mutate("/safety/tiers");

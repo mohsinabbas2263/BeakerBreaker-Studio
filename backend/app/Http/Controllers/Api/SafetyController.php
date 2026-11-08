@@ -12,6 +12,14 @@ use RuntimeException;
 
 class SafetyController extends Controller
 {
+    /** How long a drawn set stays open for submission. */
+    public const ATTEMPT_TTL_SECONDS = 7200;
+
+    public static function attemptKey(string $id): string
+    {
+        return "safety_attempt:{$id}";
+    }
+
     public function __construct(
         protected SafetyCertificationService $safety,
         protected RewardService $rewards,
@@ -76,7 +84,13 @@ class SafetyController extends Controller
             ];
         })->values();
 
-        cache()->put("safety_map:{$uuid}", $permMap, 7200);
+        // FR-02.5: the server remembers which questions it drew and how it shuffled
+        // them. submit() scores against this record, never against the client's list.
+        cache()->put(self::attemptKey($uuid), [
+            'user_id' => $user->id,
+            'tier' => $tier,
+            'perm' => $permMap,
+        ], self::ATTEMPT_TTL_SECONDS);
 
         return response()->json([
             'tier_number'      => $tier,
@@ -93,27 +107,35 @@ class SafetyController extends Controller
     public function submit(Request $request, int $tier): JsonResponse
     {
         $validated = $request->validate([
-            'answers'          => ['required', 'array', 'min:1'],
+            'answers'          => ['present', 'array'],
             'answers.*'        => ['required', 'integer', 'min:0', 'max:9'],
-            '_safety_session'  => ['nullable', 'string', 'max:40'],
+            '_safety_session'  => ['required', 'string', 'max:40'],
         ]);
 
-        $user    = $request->user();
-        $answers = $validated['answers'];
+        $user = $request->user();
 
-        // Translate shuffled answer indices back to original option indices before
-        // passing to the grading service (which compares against stored correct_option).
-        if ($validated['_safety_session'] ?? null) {
-            $permMap = cache()->get("safety_map:{$validated['_safety_session']}") ?? [];
-            $answers = collect($answers)->mapWithKeys(function ($chosen, $qId) use ($permMap) {
-                $perm     = $permMap[$qId] ?? null;
-                $original = ($perm !== null && isset($perm[$chosen])) ? $perm[$chosen] : $chosen;
-                return [$qId => $original];
-            })->all();
+        // Single use: an attempt can be submitted once, by the student it was drawn for,
+        // for the tier it was drawn from.
+        $record = cache()->pull(self::attemptKey($validated['_safety_session']));
+
+        if (! is_array($record) || $record['user_id'] !== $user->id || $record['tier'] !== $tier) {
+            return response()->json([
+                'message' => 'This attempt has expired or was already submitted. Start the tier again.',
+                'code' => 'attempt_expired',
+            ], 422);
+        }
+
+        // Translate each shuffled position back to the stored option index.
+        $answers = [];
+        foreach ($record['perm'] as $questionId => $perm) {
+            if (array_key_exists($questionId, $validated['answers'])) {
+                $chosen = (int) $validated['answers'][$questionId];
+                $answers[$questionId] = $perm[$chosen] ?? -1;
+            }
         }
 
         try {
-            $attempt = $this->safety->grade($user, $tier, $answers);
+            $attempt = $this->safety->grade($user, $tier, array_keys($record['perm']), $answers);
         } catch (RuntimeException $e) {
             return response()->json(['message' => $e->getMessage()], 403);
         }

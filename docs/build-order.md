@@ -15,7 +15,7 @@ the mobile application moved to Phase 2 (see `CLAUDE.md`, Stack).
 `FR-01.*`, `FR-02.*`, `FR-03.*`, `FR-04.*`, `FR-06.*`, `FR-07.1`, `SR-01` to `SR-08`,
 `NFR-06`.
 
-Laravel 11, MySQL schema for all twenty tables, Sanctum tokens, role based login with
+Laravel 12, MySQL schema for all twenty tables, Sanctum tokens, role based login with
 lockout, the four safety tiers with server side scoring and certificate issue, the
 experiment runner with ordered steps and resume, knowledge quizzes with explanations,
 points, badges, ranks, streaks, the class leaderboard, AI guidance with its pre authored

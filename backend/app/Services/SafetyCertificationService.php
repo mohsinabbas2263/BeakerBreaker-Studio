@@ -50,22 +50,31 @@ class SafetyCertificationService
      * FR-02.5: the score is computed here, from the stored answer key, and a
      * score supplied by a client is not a parameter of this method at all.
      *
-     * @param  array<int,int>  $answers  question id => chosen option index
+     * The score is taken over every question the server drew for this attempt,
+     * not over the questions the client chose to answer. An unanswered question
+     * counts as wrong. Otherwise a client could send one answer it knows and
+     * score 100 percent.
+     *
+     * @param  array<int,int>  $questionIds  the ids drawn for this attempt
+     * @param  array<int,int>  $answers      question id => chosen option index
      */
-    public function grade(User $user, int $tier, array $answers): SafetyAttempt
+    public function grade(User $user, int $tier, array $questionIds, array $answers): SafetyAttempt
     {
         if (! $this->tierIsAvailable($user, $tier)) {
             throw new RuntimeException("Tier {$tier} is not available to this student (FR-02.2).");
         }
 
         $questions = SafetyTierQuestion::query()
-            ->whereIn('id', array_keys($answers))
+            ->whereIn('id', $questionIds)
             ->where('tier_number', $tier)
             ->get();
 
         if ($questions->isEmpty()) {
-            throw new RuntimeException('No questions of that tier were answered (SR-07).');
+            throw new RuntimeException('This attempt has no questions of that tier (SR-07).');
         }
+
+        // Answers to questions outside the drawn set are dropped, not scored.
+        $answers = array_intersect_key($answers, array_flip($questions->pluck('id')->all()));
 
         $correct = $questions->filter(
             fn (SafetyTierQuestion $q) => (int) ($answers[$q->id] ?? -1) === $q->correct_option

@@ -17,7 +17,7 @@
 
 <br/>
 
-[![Laravel](https://img.shields.io/badge/Laravel%2011-FF2D20?style=flat-square&logo=laravel&logoColor=white)](https://laravel.com)
+[![Laravel](https://img.shields.io/badge/Laravel%2012-FF2D20?style=flat-square&logo=laravel&logoColor=white)](https://laravel.com)
 [![Next.js](https://img.shields.io/badge/Next.js%2014-000000?style=flat-square&logo=nextdotjs&logoColor=white)](https://nextjs.org)
 [![React](https://img.shields.io/badge/React%2018-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev)
 [![Flutter](https://img.shields.io/badge/Flutter%203-02569B?style=flat-square&logo=flutter&logoColor=white)](https://flutter.dev)
@@ -150,7 +150,7 @@ flowchart LR
 
 | Layer | Technology | Purpose |
 |:--|:--|:--|
-| **Backend** | Laravel 11 (PHP) | REST API and administration panel |
+| **Backend** | Laravel 12 (PHP) | REST API and administration panel |
 | **Web** | React 18 with Next.js 14 | Web frontend with server side rendering |
 | **Mobile** | Flutter 3 with Dart | Cross platform Android and iOS application |
 | **Database** | MySQL 8.0 | Primary relational database |
@@ -193,7 +193,7 @@ git clone https://github.com/<your-org>/beaker-breakers-studio.git
 cd beaker-breakers-studio
 ```
 
-**2. Backend (Laravel 11)**
+**2. Backend (Laravel 12)**
 
 ```bash
 cd backend
@@ -233,7 +233,7 @@ flutter run                            # AR Mode needs a physical device
 
 ```
 beaker-breakers-studio/
-├── backend/            # Laravel 11 REST API, admin panel, server side scoring
+├── backend/            # Laravel 12 REST API, admin panel, server side scoring
 │   ├── app/
 │   ├── database/
 │   └── routes/

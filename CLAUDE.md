@@ -95,7 +95,7 @@ enforced on the server (`FR-09.1`, `SR-04`).
 
 ## Stack, and why
 
-Laravel 11 on PHP 8.2 for the API and the Filament administrator panel. MySQL 8 for data,
+Laravel 12 on PHP 8.2 for the API and the Filament administrator panel. MySQL 8 for data,
 Redis 7 for cache, queues and the leaderboard. Next.js 14 with React 18 for the web portal,
 delivered as a PWA. AWS S3 behind Cloudflare for assets.
 
@@ -111,7 +111,7 @@ to simulated presentation that `FR-05.4` to `FR-05.6` already require. When the 
 mentions the mobile application, say so as roadmap rather than as something built.
 
 ```
-backend/                      Laravel 11 API and Filament admin panel
+backend/                      Laravel 12 API and Filament admin panel
 Beaker Breakers Studio (2)/   the UI prototype (vanilla HTML/CSS/JS)
 web/                          Next.js 14 portal (M2)
 mobile/                       Flutter app (Phase 2)
@@ -149,6 +149,9 @@ Record any further ones here, with the reason. These three are already decided:
    recorded with its score, answers and time, and the nineteen entities in the data
    dictionary have nowhere to put it. Chapter 4's data dictionary needs this row added.
 3. **Flutter after the web portal**, as above.
+4. **Laravel 12, not Laravel 11.** Laravel 11 no longer receives security fixes and
+   Composer refuses to install it. Chapter 4 (Table 17) still says Laravel 11 (PHP 8.2)
+   and needs updating to Laravel 12 (PHP 8.2).
 
 ---
 
