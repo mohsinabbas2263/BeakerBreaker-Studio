@@ -31,8 +31,9 @@ https://claude.ai/artifact/2SJ8zaHA5gd82F6YcfHxRa (titration, 8 steps).
 
 ## Step kinds
 
-Nine kinds cover the Class 9 and 10 practicals. An experiment is a list of steps, each one of
-these kinds. Existing experiments become `confirm` steps, so nothing breaks.
+Nine kinds cover every textbook experiment in Classes 9 to 12, both boards (26 experiments
+written so far, see [Content written](#content-written)). An experiment is a list of steps,
+each one of these kinds. Existing experiments become `confirm` steps, so nothing breaks.
 
 | Kind | Student does | `action` sent | Server checks | Mistake category |
 |---|---|---|---|---|
@@ -41,13 +42,47 @@ these kinds. Existing experiments become `confirm` steps, so nothing breaks.
 | `choose` | Drags one reagent or indicator into a target | `{item}` | `item == correct` | reagent or procedure, per wrong item |
 | `measure` | Sets an amount on a slider and transfers it | `{value}` | `|value - target| <= tolerance` | reagent |
 | `add_until` | Adds in steps (1 mL, 1 drop) and stops at a change | `{stop_at}` | `end <= stop_at <= end + tolerance`; below is "too early", above is overshoot | procedure (early), reagent (overshoot) |
-| `heat` | Picks a flame level and time | `{level, seconds}` | level and time in range | safety (too hot), procedure |
-| `read` | Reads an instrument and types the value | `{value}` | within tolerance of the true reading | procedure |
+| `heat` | Picks a flame level and how long to heat, one stage at a time | `{level, seconds}` | levels follow `sequence` in order; each stage lasts at least `min_seconds` | safety (too hot first), procedure (too short) |
+| `read` | Reads an instrument or a ruler and types the value | `{value}` | within tolerance of the true reading | procedure |
 | `observe` | Picks what they saw | `{option}` | `option == correct` | concept |
 | `confirm` | Presses the action button (today's behaviour) | `{}` | always correct | none |
 
 `add_until` sends the end point to the client, because the client has to show the colour change
 at the right moment. Grading still happens on the server.
+
+### Config reference
+
+What each kind's `config` holds, as the written content uses it. **Private** keys are the
+answers: the server keeps them and strips them from the public copy sent to the client.
+
+| Kind | Public keys | Private keys | Notes |
+|---|---|---|---|
+| `gear` | `items` | `required`, `forbidden` | Done when every `required` item is worn |
+| `place` | `items`, `zones`, `simultaneous` | `answer` (zone → item) | `simultaneous: true` means all zones fill first and are judged together (both cotton plugs in the diffusion tube at once). Default `false`: each drop is judged as it happens |
+| `choose` | `items`, `target` | `correct`, `wrong` (item → category) | `wrong` maps each wrong item to `procedure`, `reagent`, `safety` or `concept`. An item missing from `wrong` counts as `procedure` |
+| `measure` | `unit`, `min`, `max`, `step` | `target`, `tolerance` | `tolerance: 0` means exact. `unit` may be empty for a ratio such as Rf or Kpc |
+| `add_until` | `unit`, `increments`, `end`, `visual.from`, `visual.to`, `visual.fade_from` | `tolerance` | `end` is public (see above). The client starts fading `visual.from` toward `visual.to` at `fade_from` |
+| `heat` | `levels` | `sequence`, `min_seconds` | `sequence: ['low']` is gentle heat only; `['low', 'high']` means warm gently first, then strongly. Starting on a higher level than `sequence[0]` is `too_hot_first` |
+| `read` | `unit` | `value`, `tolerance` | A fixed `value`, or `value_from: 'step:N'` to read back what the student did in step N (the burette in Appendix A) |
+| `observe` | `options` | `correct` | Options are keyed `a` to `d` |
+| `confirm` | none | none | Uses the step's `action_label` for the button |
+
+Units in the content: `cm³`, `M`, `mg/dm³`, `°C`, `cm`, `drops`, `granules`, `spatulas`, or
+empty. The books use cm³, so new content should too; the appendix's `mL` is equivalent.
+
+### Message keys
+
+`intro` and `success` on every step. A mistake looks up its line by key, and falls back to
+`preauthored_guidance` when the key is missing:
+
+| Kind | Mistake keys |
+|---|---|
+| `gear` | the forbidden item's id (`sandals`, `snack`) |
+| `place`, `choose` | the wrong item's id |
+| `measure` | `too_low`, `too_high` |
+| `add_until` | `too_early`, `overshoot` |
+| `heat` | `too_hot_first`, `too_short` |
+| `read`, `observe` | `wrong` |
 
 ---
 
@@ -159,7 +194,7 @@ Content is written in the seeder. One step looks like this:
 
 ### Template for teachers
 
-For each step, fill one row. Everything is in simple English for Class 9 and 10.
+For each step, fill one row. Everything is in simple English for Classes 9 to 12.
 
 | Field | Example (titration step 3) |
 |---|---|
@@ -176,6 +211,21 @@ For each step, fill one row. Everything is in simple English for Class 9 and 10.
 ### Full example
 
 The titration in the demo, as seed data, is in [Appendix A](#appendix-a-titration-as-seed-data).
+
+### Content written
+
+All 26 textbook experiments are written in this format on `main`, in
+`backend/database/seeders/game/`. None is seeded until this document is agreed.
+
+| File | Experiments |
+|---|---|
+| `punjab.php` | Punjab 9 and 10: 7 |
+| `federal.php` | Federal 9 and 10: 6 |
+| `class-11.php` | Punjab 11: 6, Federal 11: 1 (aspirin) |
+| `class-12.php` | Federal 12: 5, Punjab 12: 1 (aldehyde or ketone) |
+
+Every step has `preauthored_guidance` (`NFR-06`), and every experiment has a four question quiz.
+Each file's header lists its book pages and any place the book text looked wrong.
 
 ---
 
