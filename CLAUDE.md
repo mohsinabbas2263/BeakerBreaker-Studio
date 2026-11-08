@@ -15,9 +15,9 @@ Chapters 1 to 4 are written and signed off. Development started in October 2026.
 
 | Part | State |
 |---|---|
-| `backend/` | **M1 written, not yet run.** Schema, auth, safety certification, experiment runner, quizzes, rewards, leaderboard, Filament admin panel, and tests for the five rules below. It has never been executed: it was written where Composer could not reach Packagist, so every file is syntax checked and nothing is runtime checked. **First job: `composer install` and `php artisan migrate --seed`, then `php artisan test`.** Expect to fix a few things on that first run. |
+| `backend/` | **Running, 138 tests passing** (SQLite; MySQL not yet tested). M1 foundation, licensing by board and class (Classes 9 to 12), and M3 teacher features: class monitor, safety review, tasks with automatic states, broadcast. Not built: readiness reports (M4), admin reporting (M5), the game experiment engine (waits on PR #3). |
 | `Beaker Breakers Studio (2)/` | A working **UI prototype**: vanilla HTML, CSS and JavaScript, 9 student screens, all data hardcoded in `data.js`. No auth, no teacher or admin screens, no backend. It is the visual source of truth, not the application. |
-| `web/` | Not started. M2. |
+| `web/` | **Student portal (M2) and teacher screens (M3) built** in Next.js 14. Teacher AI Readiness (wf_S12) waits for M4. |
 | `mobile/` | Not started. Phase 2, after the web portal is in schools. |
 
 ---

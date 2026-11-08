@@ -305,7 +305,9 @@ export interface LeaderboardResponse {
   scope: string;
 }
 
-// ─── Teacher ──────────────────────────────────────────────────────────────────
+// ─── Teacher (M3) ─────────────────────────────────────────────────────────────
+// Shapes of the /teacher/* responses. FR-09.1: the server only ever returns
+// classes the signed-in teacher is assigned to.
 
 export interface TeacherClass {
   id: number;
@@ -321,16 +323,34 @@ export interface TeacherClassesResponse {
   classes: TeacherClass[];
 }
 
+export interface AttentionStudent {
+  id: number;
+  display_name: string;
+  avatar_key: string | null;
+  class_id: number;
+  class_title: string;
+  reasons: string[];
+}
+
+export interface TeacherDashboardResponse {
+  stats: { students: number; avg_xp: number; certified: number; ready_for_lab: number };
+  classes: TeacherClass[];
+  attention: AttentionStudent[];
+}
+
+/** FR-09.2: one row of the class monitor. */
 export interface ClassStudent {
   id: number;
   display_name: string;
-  avatar_key: string;
+  avatar_key: string | null;
   total_points: number;
   rank_level: number;
   rank_name: string;
   experiments_completed: number;
   safety_tier_passed: number;
   has_certificate: boolean;
+  readiness: ReadinessClassification | null;
+  last_quiz_score: number | null;
   last_active_on: string | null;
 }
 
@@ -342,6 +362,7 @@ export interface ClassMonitorResponse {
 export interface SafetyReviewStudent {
   id: number;
   display_name: string;
+  avatar_key: string | null;
   tier1_passed: boolean;
   tier1_score: number | null;
   tier2_passed: boolean;
@@ -351,6 +372,7 @@ export interface SafetyReviewStudent {
   tier4_passed: boolean;
   tier4_score: number | null;
   certificate: string | null;
+  certificate_issued_on: string | null;
 }
 
 export interface SafetyReviewResponse {
@@ -359,11 +381,14 @@ export interface SafetyReviewResponse {
   students: SafetyReviewStudent[];
 }
 
+export type AssignmentState = "assigned" | "in_progress" | "completed" | "overdue";
+
 export interface TeacherTask {
   id: number;
   title: string;
   experiment_title: string;
-  experiment_emoji: string;
+  experiment_emoji: string | null;
+  class_id: number;
   class_title: string;
   due_at: string;
   instructions: string | null;
@@ -378,10 +403,35 @@ export interface TasksResponse {
   tasks: TeacherTask[];
 }
 
+export interface TaskDetailResponse {
+  task: {
+    id: number; title: string; experiment_title: string; experiment_emoji: string | null;
+    class_title: string; due_at: string; instructions: string | null;
+  };
+  students: {
+    id: number; display_name: string; avatar_key: string | null;
+    state: AssignmentState; state_changed_at: string | null;
+  }[];
+}
+
+export interface AssignableExperiment {
+  id: number;
+  title: string;
+  emoji: string | null;
+  grade_level: number;
+  topic: string;
+}
+
+export interface AssignableExperimentsResponse {
+  experiments: AssignableExperiment[];
+}
+
 export interface SentNotification {
   notification_type: string;
   subject: string;
   body: string;
+  class_title: string | null;
+  recipients: number;
   created_at: string;
 }
 

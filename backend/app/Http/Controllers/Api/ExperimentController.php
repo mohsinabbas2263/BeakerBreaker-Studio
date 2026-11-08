@@ -8,6 +8,7 @@ use App\Models\ExperimentStep;
 use App\Services\ExperimentAccessService;
 use App\Services\GuidanceService;
 use App\Services\RewardService;
+use App\Services\TaskProgressService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -17,6 +18,7 @@ class ExperimentController extends Controller
         protected ExperimentAccessService $access,
         protected GuidanceService $guidance,
         protected RewardService $rewards,
+        protected TaskProgressService $tasks,
     ) {}
 
     /** FR-03.1 the library, FR-03.2 filtering by difficulty and topic. */
@@ -167,6 +169,9 @@ class ExperimentController extends Controller
 
         $this->rewards->recordActivity($user);
 
+        // FR-09.5: a task for this experiment is now in progress.
+        $this->tasks->experimentStarted($user, $experiment->id);
+
         return response()->json(['session' => $session], $session->wasRecentlyCreated ? 201 : 200);
     }
 
@@ -207,6 +212,11 @@ class ExperimentController extends Controller
             'steps_completed' => $done->unique()->count(),
             'completed_at' => $allDone ? now() : null,
         ]);
+
+        // FR-09.5: finishing the experiment completes any task set for it.
+        if ($allDone) {
+            $this->tasks->experimentCompleted($request->user(), $session->experiment_id);
+        }
 
         return response()->json([
             'session' => $session->fresh(),
