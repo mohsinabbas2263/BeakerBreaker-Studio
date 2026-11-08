@@ -236,6 +236,15 @@ class StepJudgeTest extends TestCase
         $this->judge->judge($this->step('dance', []), []);
     }
 
+    public function test_an_instrument_read_sends_its_reading_for_drawing_and_a_calculation_does_not(): void
+    {
+        $thermometer = $this->step('read', ['unit' => '°C', 'instrument' => 'thermometer', 'value' => 78, 'tolerance' => 1]);
+        $this->assertSame(['unit' => '°C', 'instrument' => 'thermometer', 'display' => 78], $thermometer->publicConfig());
+
+        $mean = $this->step('read', ['unit' => 'cm³', 'value' => 9.57, 'tolerance' => 0.05]);
+        $this->assertSame(['unit' => 'cm³'], $mean->publicConfig());
+    }
+
     public function test_the_public_config_never_carries_an_answer(): void
     {
         foreach (ExperimentStep::PRIVATE_KEYS as $kind => $private) {

@@ -134,6 +134,73 @@ class ReadinessTest extends TestCase
         ], $d);
     }
 
+    /** Records moves as the engine would, in one session of a fresh experiment. */
+    private function play(User $s, array $steps): void
+    {
+        $experiment = $this->finish($s);
+        $session = ExperimentSession::where('user_id', $s->id)->where('experiment_id', $experiment->id)->first();
+
+        foreach ($steps as $order => [$kind, $outcomes]) {
+            $step = \App\Models\ExperimentStep::create([
+                'experiment_id' => $experiment->id, 'step_order' => $order + 1, 'kind' => $kind,
+                'title' => 's', 'instruction_text' => 's', 'preauthored_guidance' => 's',
+            ]);
+            foreach ($outcomes as $outcome) {
+                [$result, $category] = array_pad(explode(':', $outcome), 2, null);
+                \App\Models\StepAction::create([
+                    'session_id' => $session->id, 'step_id' => $step->id, 'user_id' => $s->id, 'kind' => $kind,
+                    'action' => [], 'outcome' => $result, 'category' => $category,
+                ]);
+            }
+        }
+    }
+
+    public function test_once_game_steps_are_played_the_engine_formulas_apply(): void
+    {
+        // Experiment 1: a safety slip on the gear, a clean measure, an observe wrong then right.
+        $this->play($this->amna, [
+            ['gear', ['mistake:safety', 'partial', 'correct']],
+            ['measure', ['correct']],
+            ['observe', ['mistake:concept', 'correct']],
+        ]);
+        // Experiment 2: an overshoot needing the answer shown, a clean choose.
+        $this->play($this->amna, [
+            ['add_until', ['mistake:reagent', 'mistake:reagent', 'mistake:reagent', 'revealed']],
+            ['choose', ['correct']],
+        ]);
+        $this->finish($this->amna);   // a third, older experiment with no game steps
+        $q = Experiment::first();
+        $this->quiz($this->amna, $q, 80);
+
+        $service = app(ReadinessService::class);
+        $this->assertSame(ReadinessService::ENGINE, $service->formulaVersion($this->amna));
+
+        $this->assertSame([
+            'procedural_accuracy' => 40,        // 2 clean (measure, choose) of 5 steps finished
+            'safety_compliance' => 88,          // experiment 1: 75, experiment 2: 100
+            'reagent_management' => 67,         // measure and choose right first time; add_until not
+            'time_efficiency' => 100,           // as before, from sessions
+            'conceptual_understanding' => 40,   // quiz 80 and observe right first time 0, averaged
+            'error_recovery' => 67,             // gear and observe recovered; add_until needed the answer
+        ], $service->dimensions($this->amna));
+    }
+
+    public function test_a_report_records_its_formulas_and_which_values_are_estimated(): void
+    {
+        $this->mixedHistory($this->amna);
+        $this->play($this->bilal, [['choose', ['correct']]]);
+        $this->finish($this->bilal);
+        $this->finish($this->bilal);
+
+        Sanctum::actingAs($this->teacher);
+        $this->postJson("/api/teacher/students/{$this->amna->id}/readiness")->assertCreated()
+            ->assertJsonPath('report.formula_version', 'interim-1')
+            ->assertJsonPath('report.estimated', ['reagent_management', 'error_recovery']);
+        $this->postJson("/api/teacher/students/{$this->bilal->id}/readiness")->assertCreated()
+            ->assertJsonPath('report.formula_version', 'engine-1')
+            ->assertJsonPath('report.estimated', []);
+    }
+
     public function test_error_recovery_is_full_when_nothing_was_failed(): void
     {
         foreach (range(1, 3) as $i) {

@@ -1,7 +1,9 @@
 # Experiment engine: game-style steps
 
-Status: **proposal for review**, 8 Nov 2026. Needs Mohsin's agreement before any migration
-is written, because it changes the backend schema and API.
+Status: **agreed and built.** Mohsin merged this proposal (PR #3) on 8 Nov 2026 without
+comments on the four questions at the end, so the proposals there stand as written. Built
+on 9 Nov 2026: schema, `StepJudge`, the action endpoint, the 26 textbook experiments
+seeded in this format, the web runner, and readiness from `step_actions`.
 
 Approved look and feel: the clickable demo at
 https://claude.ai/artifact/2SJ8zaHA5gd82F6YcfHxRa (titration, 8 steps).
@@ -63,7 +65,7 @@ answers: the server keeps them and strips them from the public copy sent to the 
 | `measure` | `unit`, `min`, `max`, `step` | `target`, `tolerance` | `tolerance: 0` means exact. `unit` may be empty for a ratio such as Rf or Kpc |
 | `add_until` | `unit`, `increments`, `end`, `visual.from`, `visual.to`, `visual.fade_from` | `tolerance` | `end` is public (see above). The client starts fading `visual.from` toward `visual.to` at `fade_from` |
 | `heat` | `levels` | `sequence`, `min_seconds` | `sequence: ['low']` is gentle heat only; `['low', 'high']` means warm gently first, then strongly. Starting on a higher level than `sequence[0]` is `too_hot_first` |
-| `read` | `unit` | `value`, `tolerance` | A fixed `value`, or `value_from: 'step:N'` to read back what the student did in step N (the burette in Appendix A) |
+| `read` | `unit`, `instrument` | `value`, `tolerance` | A fixed `value`, or `value_from: 'step:N'` to read back what the student did in step N (the burette in Appendix A). With `instrument` (`ruler`, `syringe`, `thermometer`) the public config also carries `display`, the reading to draw on the scale: reading the scale is the task. A read that is a calculation (the mean of concordant titres) has no instrument and its value stays private |
 | `observe` | `options` | `correct` | Options are keyed `a` to `d` |
 | `confirm` | none | none | Uses the step's `action_label` for the button |
 
@@ -134,8 +136,8 @@ deviation in `CLAUDE.md`.
 | Endpoint | Change |
 |---|---|
 | `GET /experiments/{id}` | Each step also returns `kind`, a **public** copy of `config` (answers removed) and `messages.intro` |
-| `POST /sessions/{session}/steps/{step}/actions` | **New.** Body `{action, hinted}`. Answers `{outcome, category, message, mood, step_complete, state, quiz_unlocked}` |
-| `POST /sessions/{id}/steps` | Kept for `confirm` steps only |
+| `POST /sessions/{session}/steps/{step}/actions` | **New.** Body `{action, hinted}`. Answers `{outcome, category, mistake_code, message, mood, step_complete, mistakes, progress, reveal, steps_completed, step_count, quiz_unlocked}`. `reveal` is the answer, sent only after 3 mistakes on the step |
+| `POST /sessions/{id}/steps` | Kept for `confirm` steps only; a game step answers 422 `use_actions`, so it cannot be skipped |
 | `POST /steps/{id}/guidance` | Unchanged. Ask AI and the hint |
 | `GET /experiments/{id}` `resume` | Also returns `step_state` |
 
@@ -239,13 +241,17 @@ Each file's header lists its book pages and any place the book text looked wrong
 | 4 | Titration converted as the first real experiment, then 7 to 9 more for the pilot | Rabail and the school's teacher, with Claude |
 | 5 | Readiness computation from `step_actions` | Mohsin and Claude |
 
+State, 9 Nov 2026: steps 1, 2, 3 and 5 done; all 26 textbook experiments are seeded in
+this format (step 4 went further than planned). Still to do: a teacher checks the content
+against the books, and the eight old-format Federal experiments are converted.
+
 Experiments not yet converted keep working as `confirm` steps throughout.
 
-## Questions for Mohsin
+## Questions for Mohsin (unanswered; merged as proposed)
 
 1. Is a new `step_actions` table fine, or would you rather extend `experiment_sessions`?
 2. Should `config` live on the step as JSON, or do you prefer a separate `step_options` table?
-3. Rename `developing` to `approaching` in `readiness_reports` now, before any reports exist?
+3. Rename `developing` to `approaching` in `readiness_reports` now, before any reports exist? *Not done: the interface shows "Approaching Readiness" for the stored `developing`, which is enough.*
 4. Any objection to the action endpoint replacing `POST /sessions/{id}/steps` for non-`confirm` steps?
 
 ---

@@ -15,7 +15,7 @@ Chapters 1 to 4 are written and signed off. Development started in October 2026.
 
 | Part | State |
 |---|---|
-| `backend/` | **Running, 150 tests passing** (SQLite; MySQL not yet tested). M1 foundation, licensing by board and class (Classes 9 to 12), M3 teacher features (class monitor, safety review, tasks with automatic states, broadcast) and M4 readiness reports (two dimensions estimated until the engine exists). Not built: admin reporting (M5), the game experiment engine (waits on PR #3). |
+| `backend/` | **Running, 184 tests passing** (SQLite; MySQL not yet tested). M1 foundation, licensing by board and class (Classes 9 to 12), M3 teacher features (class monitor, safety review, tasks with automatic states, broadcast) M4 readiness reports, and the game experiment engine with all 26 textbook experiments (Classes 9 to 12) seeded in it. Not built: admin reporting (M5). |
 | `Beaker Breakers Studio (2)/` | A working **UI prototype**: vanilla HTML, CSS and JavaScript, 9 student screens, all data hardcoded in `data.js`. No auth, no teacher or admin screens, no backend. It is the visual source of truth, not the application. |
 | `web/` | **Student portal (M2), teacher screens (M3) and readiness reports (M4) built** in Next.js 14. |
 | `mobile/` | Not started. Phase 2, after the web portal is in schools. |
@@ -31,7 +31,7 @@ Chapters 1 to 4 are written and signed off. Development started in October 2026.
 | `docs/architecture.md` | Tiers, components, stack, external services, performance targets. |
 | `docs/data-model.md` | The entities, attributes, schema rules, state machines. |
 | `docs/api.md` | The endpoints M1 actually exposes, with their status codes. |
-| `docs/experiment-engine.md` | Game-style experiment steps: step kinds, schema, API, readiness formulas. **Proposal under review**; do not build from it until Mohsin agrees. |
+| `docs/experiment-engine.md` | Game-style experiment steps: step kinds, config, schema, API, readiness formulas. **Agreed (PR #3) and built.** Content is in `backend/database/seeders/game/`. |
 | `docs/build-order.md` | The milestones in dependency order. |
 | `backend/README.md` | How to get the backend running, and what is deliberately missing. |
 
@@ -161,6 +161,11 @@ Record any further ones here, with the reason. These three are already decided:
    their board's experiments or those in both books. Enforced in
    `ExperimentAccessService`; a student with no class sees none. The report and
    `FR-03.1` need updating, and the supervisor should be told.
+6. **A twenty-first table, `step_actions`, and three columns on `experiment_steps`**
+   (`kind`, `config`, `messages`), from the game experiment engine agreed in PR #3.
+   Every move inside a step is recorded, insert only, because the readiness report
+   (`FR-08.1`) is computed from it. `readiness_reports` also gains `formula_version`.
+   Chapter 4's data dictionary needs these rows.
 
 ---
 

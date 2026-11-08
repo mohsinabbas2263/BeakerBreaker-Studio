@@ -53,8 +53,17 @@ class ExperimentStep extends Model
     public function publicConfig(): array
     {
         $kind = $this->kind ?? 'confirm';
+        $public = array_diff_key($this->config ?? [], array_flip(self::PRIVATE_KEYS[$kind] ?? []));
 
-        return array_diff_key($this->config ?? [], array_flip(self::PRIVATE_KEYS[$kind] ?? []));
+        // A read step on an instrument (ruler, syringe, thermometer) is about reading
+        // the scale, so the scale must be drawn at the true reading. The number is sent
+        // for drawing only; a read step that is a calculation has no instrument and
+        // keeps its value private. Judging stays on the server either way.
+        if ($kind === 'read' && isset($this->config['instrument'], $this->config['value'])) {
+            $public['display'] = $this->config['value'];
+        }
+
+        return $public;
     }
 
     /** A line for the avatar; the pre-authored guidance stands in for a missing one (NFR-06). */

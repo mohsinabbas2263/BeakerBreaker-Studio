@@ -212,6 +212,28 @@ than show the message.
 
 ---
 
+## Game steps (the experiment engine)
+
+docs/experiment-engine.md has the full design. `GET /experiments/{id}` gives each
+step its `kind`, a public `config` with the answers removed (`FR-02.5`) and its
+`intro` line; `resume.step_state` carries the progress inside the current step
+(`NFR-05`).
+
+### `POST /sessions/{session}/steps/{step}/actions`
+Body `{action, hinted}`; `action` depends on the kind (`{item}`, `{item, zone}`,
+`{value}`, `{stop_at}`, `{level, seconds}`, `{option}`, `{}`). The server judges
+the move with `StepJudge`, records it in `step_actions` (insert only), and
+answers with `outcome` (`correct`, `partial`, `mistake`, `revealed`), `category`,
+`mistake_code`, the avatar's `message` and `mood`, `step_complete`, `mistakes`,
+`progress`, `reveal` (the answer, only after 3 mistakes on the step),
+`steps_completed`, `step_count` and `quiz_unlocked`. A step out of order is 422
+`out_of_order`; a badly formed action is 422 before anything is judged.
+
+`POST /sessions/{id}/steps` still completes `confirm` steps and refuses game
+steps with 422 `use_actions`.
+
+---
+
 ## Teacher (M3)
 
 Every route below needs the `teacher` role (`SR-04`) and checks the class against
@@ -282,20 +304,35 @@ but a valid classification, the rule decides and `ai_generated` is `false`
 never `ready`.
 
 A report: `{id, generated_at, ai_generated, classification, narrative,
-dimensions{six values 0 to 100}, estimated[], student{id, display_name, avatar_key}}`.
+dimensions{six values 0 to 100}, formula_version, estimated[], student{id, display_name, avatar_key}}`.
 `classification` is `ready` (Ready for Real Lab), `developing` (Approaching
 Readiness) or `not_ready` (Not Ready), the names `FR-08.3` gives.
 
-**Interim formulas** (decided 8 Nov 2026, `ReadinessService::FORMULA_VERSION`
-`interim-1`). Two dimensions need the per-step record of the experiment engine,
-which is not built, so they are estimated and listed in `estimated`:
+**Two sets of formulas.** Each report stores `formula_version` and lists in
+`estimated` the dimensions it could only estimate.
 
-| Dimension | Formula, 0 to 100 |
+`engine-1` applies once the student has played any game step; it reads
+`step_actions` (docs/experiment-engine.md). A step counts once per session.
+
+| Dimension | `engine-1`, 0 to 100 |
+|---|---|
+| Procedural accuracy | game steps finished with no mistake ÷ game steps finished |
+| Safety compliance | per experiment 100 minus 25 per safety mistake, floor 0, averaged |
+| Reagent management | `measure`, `choose` and `add_until` steps right first time ÷ all of them |
+| Time efficiency | per finished experiment, estimated minutes ÷ actual minutes, capped at 100, averaged. Never affects points (`FR-06.2`) |
+| Conceptual understanding | average of (first quiz attempts) and (`observe` steps right first time) |
+| Error recovery | steps with a mistake that were then finished without the answer being revealed ÷ steps with a mistake; 100 when there were none |
+
+`interim-1` (decided 8 Nov 2026) applies to a student who has only played old
+press-the-button experiments; reagent management and error recovery are then
+estimated:
+
+| Dimension | `interim-1`, 0 to 100 |
 |---|---|
 | Procedural accuracy | experiments finished ÷ experiments begun |
 | Safety compliance | average of the first attempt's score on each tier attempted |
 | Reagent management (estimated) | finished experiments completed in their first session, not abandoned and restarted |
-| Time efficiency | per finished experiment, estimated minutes ÷ actual minutes, capped at 100, averaged. Never affects points (`FR-06.2`) |
+| Time efficiency | as above |
 | Conceptual understanding | average score of the first quiz attempt on each experiment |
 | Error recovery (estimated) | quizzes failed the first time that were passed later; 100 when none failed |
 
