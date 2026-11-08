@@ -11,6 +11,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Livewire;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 /**
@@ -34,7 +35,7 @@ class AdminPanelTest extends TestCase
         ];
     }
 
-    /** @dataProvider panelPages */
+    #[DataProvider('panelPages')]
     public function test_every_panel_page_loads_for_an_administrator(string $uri): void
     {
         $admin = User::factory()->administrator()->create(['display_name' => 'Head Admin']);
