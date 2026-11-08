@@ -40,7 +40,14 @@ class ExperimentResource extends Resource
                 ->helperText('Difficulty sets the safety tier needed: easy 1, medium 2, hard 3.'),
 
             Forms\Components\Select::make('grade_level')
-                ->options([9 => 'Class 9', 10 => 'Class 10'])
+                ->options(\App\Models\School::GRADES)
+                ->required()
+                ->native(false),
+
+            // Licensing: schools see their own board's experiments and those in both books.
+            Forms\Components\Select::make('board')
+                ->options(['both' => 'Both boards', ...\App\Models\School::BOARDS])
+                ->default('both')
                 ->required()
                 ->native(false),
 
@@ -76,6 +83,8 @@ class ExperimentResource extends Resource
                 Tables\Columns\TextColumn::make('title')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('topic')->badge()->searchable(),
                 Tables\Columns\TextColumn::make('difficulty')->badge()->sortable(),
+                Tables\Columns\TextColumn::make('grade_level')->label('Class')->sortable(),
+                Tables\Columns\TextColumn::make('board')->badge(),
                 Tables\Columns\TextColumn::make('steps_count')->counts('steps')->label('Steps'),
                 Tables\Columns\TextColumn::make('quiz_questions_count')->counts('quizQuestions')->label('Quiz'),
                 Tables\Columns\TextColumn::make('base_points')->label('XP')->sortable(),

@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\Sanctum;
 use RuntimeException;
 use Tests\Concerns\AnswersAttempts;
+use Tests\Concerns\MakesLicensedStudents;
 use Tests\TestCase;
 
 /**
@@ -24,14 +25,11 @@ use Tests\TestCase;
  */
 class NonNegotiableRulesTest extends TestCase
 {
-    use AnswersAttempts, RefreshDatabase;
+    use AnswersAttempts, MakesLicensedStudents, RefreshDatabase;
 
     protected function student(): User
     {
-        $user = User::factory()->create();
-        StudentProfile::create(['user_id' => $user->id]);
-
-        return $user;
+        return $this->enrolledStudent();
     }
 
     protected function tierQuestions(int $tier = 1, int $count = 10)

@@ -14,11 +14,12 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 use Tests\Concerns\AnswersAttempts;
+use Tests\Concerns\MakesLicensedStudents;
 use Tests\TestCase;
 
 class StudentJourneyTest extends TestCase
 {
-    use AnswersAttempts, RefreshDatabase;
+    use AnswersAttempts, MakesLicensedStudents, RefreshDatabase;
 
     protected User $user;
 
@@ -26,8 +27,7 @@ class StudentJourneyTest extends TestCase
     {
         parent::setUp();
 
-        $this->user = User::factory()->create();
-        StudentProfile::create(['user_id' => $this->user->id]);
+        $this->user = $this->enrolledStudent();
 
         SafetyAttempt::create([
             'user_id' => $this->user->id,

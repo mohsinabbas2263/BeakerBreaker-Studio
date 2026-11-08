@@ -10,11 +10,28 @@ class School extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'district', 'licence_start', 'licence_end', 'student_cap'];
+    public const BOARDS = ['punjab' => 'Punjab (PCTB / PECTAA)', 'federal' => 'Federal (FBISE)'];
+
+    public const GRADES = [9 => 'Class 9', 10 => 'Class 10', 11 => 'Class 11 (1st year)', 12 => 'Class 12 (2nd year)'];
+
+    protected $fillable = [
+        'name', 'district', 'board', 'licensed_grades', 'licence_start', 'licence_end', 'student_cap',
+    ];
 
     protected function casts(): array
     {
-        return ['licence_start' => 'date', 'licence_end' => 'date', 'student_cap' => 'integer'];
+        return [
+            'licence_start' => 'date',
+            'licence_end' => 'date',
+            'student_cap' => 'integer',
+            'licensed_grades' => 'array',
+        ];
+    }
+
+    /** Licensing: the administrator decides which classes' experiments this school gets. */
+    public function licensesGrade(?int $grade): bool
+    {
+        return $grade !== null && in_array($grade, array_map('intval', $this->licensed_grades ?? []), true);
     }
 
     public function users(): HasMany

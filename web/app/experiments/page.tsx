@@ -78,7 +78,18 @@ export default function ExperimentsPage() {
         {!isLoading && filtered.length === 0 && (
           <div className="text-center py-16">
             <span className="text-5xl">🧫</span>
-            <p className="text-sub font-700 mt-3">No experiments in this topic yet.</p>
+            {(data?.experiments.length ?? 0) === 0 ? (
+              // Licensing: no experiments at all means the student has no class yet, or
+              // their school is not licensed for their class.
+              <>
+                <p className="font-fredoka font-600 text-lg text-ink mt-3">No experiments for your class yet</p>
+                <p className="text-sub font-700 text-sm mt-1 max-w-sm mx-auto">
+                  Ask your teacher or school administrator to add you to your class.
+                </p>
+              </>
+            ) : (
+              <p className="text-sub font-700 mt-3">No experiments in this topic yet.</p>
+            )}
           </div>
         )}
       </div>

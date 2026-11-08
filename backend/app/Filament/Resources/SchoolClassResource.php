@@ -36,7 +36,7 @@ class SchoolClassResource extends Resource
             Forms\Components\TextInput::make('title')->required()->maxLength(60),
 
             Forms\Components\Select::make('grade_level')
-                ->options([9 => 'Class 9', 10 => 'Class 10'])
+                ->options(\App\Models\School::GRADES)
                 ->required()
                 ->native(false),
 
