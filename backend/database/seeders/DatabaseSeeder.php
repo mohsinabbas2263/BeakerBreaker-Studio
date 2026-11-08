@@ -11,6 +11,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             SafetyTierQuestionSeeder::class,
             ExperimentSeeder::class,
+            GameExperimentSeeder::class,   // after ExperimentSeeder's textbook filter
             DemoSchoolSeeder::class,
         ]);
     }
