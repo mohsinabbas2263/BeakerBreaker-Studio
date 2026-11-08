@@ -180,7 +180,14 @@ so every client shows the same words (`FR-06.3`).
 ### `PATCH /profile`
 `display_name` and `avatar_key` only. `avatar_key` must be one of
 `avatar-girl1`, `avatar-girl2`, `avatar-boy1`, `avatar-boy2` (`User::AVATARS`);
-anything else is a 422. Points, rank, class and role are not
+anything else is a 422.
+
+`display_name` is the name classmates see on the leaderboard (`FR-07.1`). Spaces
+are tidied first; then it must be 2 to 40 characters of letters in any script
+(Urdu included), spaces, `.`, `'` or `-`, starting with a letter. Digits,
+symbols and links are a 422 with "Use letters only, with spaces between words."
+A real change writes a `profile.name_changed` audit entry with the old and new
+name (`FR-10.8`). The response returns the stored `display_name` and `avatar_key`. Points, rank, class and role are not
 writable from the client (`FR-06.4`, `SR-04`).
 
 ---
