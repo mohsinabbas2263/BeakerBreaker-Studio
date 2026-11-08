@@ -47,3 +47,8 @@ desktop.ini
 # ---- draw.io backups ----
 *.bkp
 .$*
+
+# ---- reference textbooks (copyrighted, ~335 MB; keep local, never commit) ----
+/books/
+/*taleem360*.pdf
+/Chemistry_Experiments_Compilation.txt
