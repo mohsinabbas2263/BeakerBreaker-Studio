@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { api, type LoginResponse } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
@@ -91,6 +92,11 @@ export default function LoginPage() {
                            font-nunito font-700 text-sm text-ink bg-sky
                            focus:outline-none focus:border-blue transition-colors"
               />
+              {/* FR-01.3 */}
+              <Link href="/forgot-password"
+                    className="block text-right text-xs font-800 text-blue-d hover:underline mt-2">
+                Forgot password?
+              </Link>
             </div>
 
             <button

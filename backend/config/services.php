@@ -13,6 +13,9 @@ return [
 
     'fcm' => ['server_key' => env('FCM_SERVER_KEY')],
 
+    // The Next.js portal. Password reset links point here (FR-01.3).
+    'frontend' => ['url' => env('FRONTEND_URL', 'http://localhost:3000')],
+
     'postmark' => ['token' => env('POSTMARK_TOKEN')],
     'ses' => [
         'key' => env('AWS_ACCESS_KEY_ID'),
