@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Reward;
+use App\Models\User;
+use App\Support\Badges;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ProfileController extends Controller
 {
@@ -33,7 +36,8 @@ class ProfileController extends Controller
             'experiments_completed' => $completed,
             'safety_tier_passed' => $user->highestSafetyTierPassed(),
             'certificate' => $user->certificate,
-            'badges' => $badges,
+            // FR-06.3: each badge with the name a student reads, not its code.
+            'badges' => Badges::describe($badges),
         ]);
     }
 
@@ -45,7 +49,7 @@ class ProfileController extends Controller
     {
         $validated = $request->validate([
             'display_name' => ['sometimes', 'string', 'min:2', 'max:60'],
-            'avatar_key' => ['sometimes', 'string', 'max:60'],
+            'avatar_key' => ['sometimes', 'string', Rule::in(array_keys(User::AVATARS))],
         ]);
 
         $request->user()->update($validated);

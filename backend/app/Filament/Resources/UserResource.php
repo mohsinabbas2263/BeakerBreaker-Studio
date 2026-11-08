@@ -57,6 +57,13 @@ class UserResource extends Resource
                 ->required()
                 ->maxLength(60),
 
+            Forms\Components\Select::make('avatar_key')
+                ->label('Avatar')
+                ->options(User::AVATARS)
+                ->default('avatar-girl1')
+                ->native(false)
+                ->helperText('The student can change it later on their profile.'),
+
             Forms\Components\TextInput::make('email')
                 ->email()
                 ->required()

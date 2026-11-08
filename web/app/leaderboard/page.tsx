@@ -1,9 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import useSWR from "swr";
 import Shell from "@/components/layout/Shell";
 import { fetcher } from "@/lib/fetcher";
 import type { LeaderboardResponse } from "@/lib/api";
+import { avatarSrc } from "@/lib/avatars";
 
 const RANK_EMOJI: Record<number, string> = {
   1: "🧪", 2: "🔬", 3: "⚗️", 4: "🧫", 5: "🧬", 6: "🏅", 7: "🥇", 8: "🏆",
@@ -27,10 +29,11 @@ export default function LeaderboardPage() {
           <div className="rounded-2xl p-4 mb-5 flex items-center gap-3"
                style={{ background: "linear-gradient(135deg,#E8F4FD,#BBDEFB)" }}>
             <span className="text-2xl font-900 text-blue-d w-8 text-center">#{data.me.position}</span>
-            <span className="text-2xl">{RANK_EMOJI[data.me.rank_level]}</span>
+            <Image src={avatarSrc(data.me.avatar_key)} alt="" width={44} height={44}
+                   className="rounded-full border-2 border-white shadow-md object-cover flex-shrink-0" />
             <div className="flex-1">
               <p className="font-fredoka font-600 text-base text-ink">You</p>
-              <p className="text-xs text-sub font-700">{data.me.rank_name}</p>
+              <p className="text-xs text-sub font-700">{RANK_EMOJI[data.me.rank_level]} {data.me.rank_name}</p>
             </div>
             <span className="font-fredoka font-600 text-base text-orange-d">
               {data.me.total_points.toLocaleString()} XP
@@ -47,12 +50,13 @@ export default function LeaderboardPage() {
               <span className="w-8 text-center text-sm font-900 text-sub">
                 {MEDAL[row.position] ?? `#${row.position}`}
               </span>
-              <span className="text-xl">{RANK_EMOJI[row.rank_level]}</span>
+              <Image src={avatarSrc(row.avatar_key)} alt="" width={36} height={36}
+                     className="rounded-full border-2 border-white shadow-sm object-cover flex-shrink-0" />
               <div className="flex-1 min-w-0">
                 <p className={`font-nunito font-800 text-sm truncate ${row.is_me ? "text-blue-d" : "text-ink"}`}>
                   {row.display_name} {row.is_me && "(You)"}
                 </p>
-                <p className="text-[11px] text-sub font-700">{row.rank_name}</p>
+                <p className="text-[11px] text-sub font-700">{RANK_EMOJI[row.rank_level]} {row.rank_name}</p>
               </div>
               <span className="font-fredoka font-600 text-sm text-orange-d">
                 {row.total_points.toLocaleString()}

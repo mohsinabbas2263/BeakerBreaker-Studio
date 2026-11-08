@@ -171,11 +171,16 @@ The student's own class. Each row carries `position`, `display_name`,
 else: no email, no scores, no safety history (`FR-07.1`, `SR-08`).
 
 ### `GET /profile`
-Points, rank, streak, experiments completed, highest safety tier, certificate
-and badge codes.
+Points, rank, streak, experiments completed, highest safety tier, certificate,
+`class` (the class title, or `null`) and `badges`. Each badge is
+`{code, name, icon}`; the server names it (`safety_tier_1` is "Safety Tier 1",
+`experiment_{slug}` is the experiment's title, `streak_7_days` is "7-Day Streak")
+so every client shows the same words (`FR-06.3`).
 
 ### `PATCH /profile`
-`display_name` and `avatar_key` only. Points, rank, class and role are not
+`display_name` and `avatar_key` only. `avatar_key` must be one of
+`avatar-girl1`, `avatar-girl2`, `avatar-boy1`, `avatar-boy2` (`User::AVATARS`);
+anything else is a 422. Points, rank, class and role are not
 writable from the client (`FR-06.4`, `SR-04`).
 
 ---

@@ -5,6 +5,7 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth";
+import { avatarSrc } from "@/lib/avatars";
 import Beaky from "@/components/ui/Beaky";
 import NotificationBell from "@/components/ui/NotificationBell";
 import { registerPushSubscription } from "@/lib/push";
@@ -25,13 +26,6 @@ const TASKBAR = [
   { href: "/leaderboard", icon: "🏆", label: "Ranks"  },
   { href: "/profile",     icon: "👤", label: "Me"     },
 ];
-
-const AVATAR_MAP: Record<string, string> = {
-  "avatar-girl1": "/avatars/avatar-girl1.png",
-  "avatar-girl2": "/avatars/avatar-girl2.png",
-  "avatar-boy1":  "/avatars/avatar-boy1.png",
-  "avatar-boy2":  "/avatars/avatar-boy2.png",
-};
 
 export default function Shell({ children }: { children: React.ReactNode }) {
   const pathname  = usePathname();
@@ -57,7 +51,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
     );
   }
 
-  const avatarSrc = AVATAR_MAP[user.avatar_key] ?? "/avatars/avatar-girl1.png";
+  const avatar = avatarSrc(user.avatar_key);
 
   return (
     <div className="min-h-screen">
@@ -87,7 +81,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
         {/* User chip */}
         <div className="rounded-[18px] p-3 flex items-center gap-3"
              style={{ background: "linear-gradient(135deg,#E8F4FD,#BBDEFB)" }}>
-          <Image src={avatarSrc} alt={user.display_name} width={48} height={48}
+          <Image src={avatar} alt={user.display_name} width={48} height={48}
                  className="rounded-full border-3 border-white shadow-md object-cover flex-shrink-0" />
           <div className="min-w-0">
             <p className="font-fredoka font-600 text-[13px] text-ink truncate">{user.display_name}</p>
