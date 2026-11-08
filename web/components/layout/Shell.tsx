@@ -128,7 +128,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
               className="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl
                          font-nunito font-800 text-[14px] text-sub
                          hover:bg-sky hover:text-blue-d transition-colors whitespace-nowrap">
-          <NotificationBell />
+          <NotificationBell inline />
           <span>Notifications</span>
         </Link>
 
