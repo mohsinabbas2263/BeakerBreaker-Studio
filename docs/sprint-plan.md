@@ -108,6 +108,7 @@ No experiment before Tier 1 (`FR-02.3`). Teacher acts only on assigned classes (
 |---|---|---|
 | Sun 29 Nov | BE | VPS with Docker Compose, domain, HTTPS (TLS 1.3), production `.env` on the server only |
 | Sun 29 Nov | FE | Web on Vercel pointing at the production API |
+| Sun 29 Nov | BE | **`SR-06`: turn on encryption at rest** for the MySQL data, before any student is imported. InnoDB data-at-rest encryption with a keyring (`ALTER TABLE users ENCRYPTION='Y'`, and the same for every table holding student data), or an encrypted disk volume if the host provides one. Backups encrypted too |
 | Mon 30 Nov | BE | Daily backups with 30 day retention (`SR-10`); error logging and uptime alert |
 | Mon 30 Nov | Both | Full run on production with test accounts; fix what breaks |
 | Tue 1 Dec | Both | Bulk import the real class; create the teacher account; train the teacher |

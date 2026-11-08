@@ -31,7 +31,11 @@ reagent_management, time_efficiency, conceptual_understanding, error_recovery.
 
 - Passwords stored only as salted hashes from an adaptive function, work factor >= 12
   (`SR-01`). Never recoverable.
-- Student personally identifiable information encrypted at rest (`SR-06`).
+- Student personally identifiable information encrypted at rest (`SR-06`). Decided 8 Nov 2026:
+  this is done at the database level on the production server (MySQL data-at-rest
+  encryption or an encrypted volume, and encrypted backups), not by encrypting columns in
+  the application, so admin search by name keeps working. Local SQLite copies are not
+  encrypted and must never hold real student data.
 - `audit_logs` and `certificates` rows are insert only. Neither carries an updated_at
   column, and no code path updates or deletes them (`FR-02.8`, `FR-10.8`).
 - A deleted account stays recoverable for 30 days before removal (`FR-01.5`).

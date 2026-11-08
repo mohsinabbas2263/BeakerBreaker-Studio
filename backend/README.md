@@ -84,6 +84,23 @@ ignored, guidance survives an absent API key, there is no registration route,
 points never fall and are awarded once, and an issued certificate cannot be
 edited or deleted. A failure there is a defect in the build, not in the test.
 
+### Coverage (`NFR-10`)
+
+`NFR-10` asks for 100 percent on authentication, score computation, reward award
+and safety certification, and 70 percent overall. It needs a coverage driver
+(PCOV or Xdebug) enabled in PHP:
+
+```bash
+php -d memory_limit=1G vendor/bin/phpunit --coverage-text
+```
+
+Measured on 8 Nov 2026 (96 tests, SQLite): 75.7 percent of lines overall, and
+100 percent of lines in `AuthController`, `EnsureRole`, `FilamentAdminsOnly`,
+`SafetyController`, `QuizController`, `SafetyCertificationService`,
+`RewardService`, `User`, `StudentProfile`, `Certificate`, `AuditLog` and
+`InsertOnly`. Re-measure after changing any of them; the figure is only true for
+the code it was taken on.
+
 ---
 
 ## Where things are
