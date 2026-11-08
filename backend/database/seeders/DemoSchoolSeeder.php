@@ -29,6 +29,8 @@ class DemoSchoolSeeder extends Seeder
             ['name' => 'Government High School, Gujrat'],
             [
                 'district' => 'Gujrat',
+                'board' => 'punjab',
+                'licensed_grades' => [9, 10],
                 'licence_start' => now()->startOfYear(),
                 'licence_end' => now()->addYear()->endOfYear(),
                 'student_cap' => 400,

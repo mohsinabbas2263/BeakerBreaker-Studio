@@ -12,7 +12,7 @@ class Experiment extends Model
     use HasFactory;
 
     protected $fillable = [
-        'slug', 'title', 'topic', 'difficulty', 'grade_level', 'prerequisite_experiment_id',
+        'slug', 'title', 'topic', 'difficulty', 'grade_level', 'board', 'prerequisite_experiment_id',
         'chemical_equation', 'explanatory_note', 'ar_available', 'base_points',
         'estimated_minutes', 'emoji', 'card_gradient', 'is_published',
     ];

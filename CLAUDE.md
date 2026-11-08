@@ -152,6 +152,14 @@ Record any further ones here, with the reason. These three are already decided:
 4. **Laravel 12, not Laravel 11.** Laravel 11 no longer receives security fixes and
    Composer refuses to install it. Chapter 4 (Table 17) still says Laravel 11 (PHP 8.2)
    and needs updating to Laravel 12 (PHP 8.2).
+5. **Classes 9 to 12, sold to schools and colleges, licensed by class and board**
+   (decided by Rabail, 8 Nov 2026). `FR-03.1` and the report's scope say Class 9 and 10
+   in secondary schools; the product now covers Classes 9 to 12 of the Punjab and Federal
+   boards. The administrator sets each school's board and licensed classes. A student sees
+   their class's board-exam pair (9 and 10, or 11 and 12) within the licence, and only
+   their board's experiments or those in both books. Enforced in
+   `ExperimentAccessService`; a student with no class sees none. The report and
+   `FR-03.1` need updating, and the supervisor should be told.
 
 ---
 

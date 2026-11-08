@@ -11,6 +11,8 @@ const LOCK_MSGS: Record<string, string> = {
   safety_tier_required:    "You need a higher safety tier to open this experiment.",
   prerequisite_incomplete: "Complete the prerequisite experiment first.",
   unpublished:             "This experiment hasn't been published yet.",
+  no_class:                "You are not in a class yet. Ask your school administrator to add you to one.",
+  not_licensed:            "This experiment is not part of your class.",
 };
 
 export default function ExperimentDetailPage({ params }: { params: { id: string } }) {

@@ -30,18 +30,14 @@ class ExperimentController extends Controller
 
         $user = $request->user();
 
-        // FR-03.2 classwise: students only see experiments for their enrolled grade.
-        // Teachers and administrators see everything. Null grade (no class assigned) shows all.
-        $gradeLevel = $user->isStudent()
-            ? $user->profile?->schoolClass?->grade_level
-            : null;
+        // Licensing: a student sees only their own class's grade, if their school is
+        // licensed for it, and only their school's board (or experiments in both boards).
+        $visible = fn () => $this->access->restrictToLicence(Experiment::query()->where('is_published', true), $user);
 
-        $experiments = Experiment::query()
-            ->where('is_published', true)
+        $experiments = $visible()
             ->when($filters['topic'] ?? null, fn ($q, $t) => $q->where('topic', $t))
             ->when($filters['difficulty'] ?? null, fn ($q, $d) => $q->where('difficulty', $d))
             ->when($filters['ar_only'] ?? false, fn ($q) => $q->where('ar_available', true))
-            ->when($gradeLevel, fn ($q, $gl) => $q->where('grade_level', $gl))
             ->withCount('steps')
             ->orderBy('grade_level')
             ->orderBy('base_points')
@@ -52,13 +48,8 @@ class ExperimentController extends Controller
             ->pluck('experiment_id')
             ->unique();
 
-        $topicsQuery = Experiment::where('is_published', true);
-        if ($gradeLevel) {
-            $topicsQuery->where('grade_level', $gradeLevel);
-        }
-
         return response()->json([
-            'topics' => $topicsQuery->distinct()->pluck('topic'),
+            'topics' => $visible()->distinct()->pluck('topic'),
             'experiments' => $experiments->map(function (Experiment $e) use ($user, $completed) {
                 $check = $this->access->check($user, $e);
 
@@ -88,6 +79,11 @@ class ExperimentController extends Controller
     public function show(Request $request, Experiment $experiment): JsonResponse
     {
         $user = $request->user();
+
+        // Licensing: outside the student's class or school licence the experiment does
+        // not exist for them, so its title and steps are not shown either.
+        abort_if($this->access->licence($user, $experiment)['code'] === 'not_licensed', 404);
+
         $check = $this->access->check($user, $experiment);
 
         $session = $user->experimentSessions()

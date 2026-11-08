@@ -102,6 +102,13 @@ experiment has to say why (`FR-03.3`). The codes are
 `safety_tier_1_required`, `safety_tier_required`, `prerequisite_incomplete`
 and `unpublished`.
 
+**Licensing.** The list holds only experiments the student is licensed for: their
+class's board-exam pair (Class 9 and 10, or 11 and 12), limited to the classes their
+school is licensed for, and only of the school's board or marked for both boards. A
+student with no class, or no school, gets an empty list. On any single-experiment
+route, an experiment outside that licence answers `404` from `GET /experiments/{id}`,
+and `403` with code `not_licensed` (or `no_class`) from `start`.
+
 ### `GET /experiments/{id}`
 The experiment with its chemical equation and explanatory note (`FR-03.6`), its
 steps in declared order (`FR-03.4`), and `resume` when an attempt was left
