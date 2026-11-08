@@ -937,5 +937,52 @@ class ExperimentSeeder extends Seeder
                 ]);
             }
         }
+
+        $this->keepOnlyTextbookExperiments();
+    }
+
+    /**
+     * Decided 8 Nov 2026: only experiments that appear in the Punjab and Federal
+     * textbooks are offered. Each published one gets the class and board of its book
+     * (docs/experiment-catalogue.md). The rest stay in the database unpublished, so
+     * nothing is lost if a practical notebook later confirms them.
+     */
+    public const TEXTBOOK = [
+        'melting-points' => [9, 'federal'],            // Federal 9 Activity 12.2
+        'boiling-points' => [9, 'federal'],            // Federal 9 Activity 12.3
+        'solubility-temperature' => [9, 'both'],       // Punjab 9 p16, Federal 9 Activity 2.1
+        'copper-sulphate-crystals' => [10, 'federal'], // Federal 10 Activity 6.3
+        'dilution-hcl' => [10, 'federal'],             // Federal 10 Activity 3.1
+        'standardise-hcl' => [10, 'federal'],          // Federal 10 Activity 3.2
+        'acid-base-neutral' => [10, 'federal'],        // Federal 10 Activity 6.1
+        'displacement-reactions' => [10, 'federal'],   // Federal 10 Activity 7.1
+        'standardise-naoh' => [11, 'punjab'],          // Punjab 11 Chapter 16
+        'confirmatory-ion-tests' => [11, 'punjab'],    // Punjab 11 Chapter 16
+    ];
+
+    private function keepOnlyTextbookExperiments(): void
+    {
+        Experiment::whereNotIn('slug', array_keys(self::TEXTBOOK))->update(['is_published' => false]);
+
+        foreach (self::TEXTBOOK as $slug => [$grade, $board]) {
+            Experiment::where('slug', $slug)->update([
+                'grade_level' => $grade,
+                'board' => $board,
+                'is_published' => true,
+            ]);
+        }
+
+        // A prerequisite that is no longer offered, or sits in another class pair or board,
+        // would lock its experiment for good (FR-03.3), so such links are dropped.
+        Experiment::where('is_published', true)->whereNotNull('prerequisite_experiment_id')->get()
+            ->each(function (Experiment $e) {
+                $pre = Experiment::find($e->prerequisite_experiment_id);
+                $reachable = $pre && $pre->is_published
+                    && in_array($pre->board, [$e->board, 'both'], true)
+                    && abs($pre->grade_level - $e->grade_level) <= 1;
+                if (! $reachable) {
+                    $e->update(['prerequisite_experiment_id' => null]);
+                }
+            });
     }
 }

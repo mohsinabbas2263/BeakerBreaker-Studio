@@ -75,6 +75,18 @@ The Punjab 2nd year book has no lab activities. Fehling's, Tollens' and Brady's 
 discussed in its organic chapters (the current seeder lists them as Class 9-10; they belong
 to Class 12).
 
+## Decision, 8 Nov 2026: textbook experiments only
+
+Only experiments that appear in these textbooks are offered. `ExperimentSeeder::TEXTBOOK`
+publishes the 10 seeded experiments that match a book entry, with that book's class and
+board; the other 20 stay in the database unpublished. The book experiments that have no
+seeded version yet are the content still to write.
+
+Consequence today: a **Punjab Class 9 or 10 student sees one experiment** (the saturated
+solution one, in both boards). The Punjab 9 and 10 activities (copper sulphate heating,
+litmus, zinc and acid, diffusion, rate of reaction, sodium and zinc sulphate crystals) are
+the first content to write for a Punjab school.
+
 ## The 30 seeded experiments against the books
 
 Judged by title and topic; each still needs its steps compared with the book page.
