@@ -1,6 +1,6 @@
 # Beaker Breakers Studio — backend
 
-Laravel 11 API and Filament administrator panel. This is milestone **M1** of
+Laravel 12 API and Filament administrator panel. This is milestone **M1** of
 `docs/build-order.md`: accounts, safety certification, the experiment runner,
 quizzes, rewards and the leaderboard, with the administrator panel over all of it.
 
