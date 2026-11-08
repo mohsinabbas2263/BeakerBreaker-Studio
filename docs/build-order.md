@@ -54,6 +54,12 @@ are already in place from M1; the controllers, policies and screens are not.
 the server (`FR-09.1`), and an assignment moves to overdue with no teacher action
 (`FR-09.5`, the `assignments:mark-overdue` command).
 
+**State, 8 Nov 2026:** built, both done-when conditions tested in
+`TeacherFeaturesTest` (19 tests). Screens wf_S10, S11, S13, S14 and S15 work against the
+API. Two pieces remain: `FR-09.3` is met by polling every 5 seconds rather than a live
+Pusher channel, and wf_S12 (AI readiness) waits for M4. A task counts as completed when
+the student finishes every step of its experiment, the point at which the quiz opens.
+
 ## M4. AI readiness reporting
 
 `FR-08.1` to `FR-08.6`.

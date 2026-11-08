@@ -212,8 +212,68 @@ than show the message.
 
 ---
 
-## Not in M1
+## Teacher (M3)
 
-Teacher routes (`FR-09.*`), readiness reporting (`FR-08.*`), administrator
-reporting and export (`FR-10.3` to `FR-10.7`), notifications and FCM
-registration (`FR-09.6`, `FR-09.7`). The tables exist; the endpoints do not.
+Every route below needs the `teacher` role (`SR-04`) and checks the class against
+`class_teachers` on the server (`FR-09.1`). A class the teacher is not assigned to
+answers **403** `{"code": "not_assigned"}`, and the refusal is written to the
+audit log as `teacher.refused` (UC-06 alternate flow).
+
+### `GET /teacher/dashboard`
+wf_S10. `stats` (`students`, `avg_xp`, `certified`, `ready_for_lab`) across every
+assigned class, the `classes`, and up to ten students in `attention`, each with
+`reasons`: not started yet, inactive for 7 days or more, not safety certified,
+or a last quiz under 80.
+
+### `GET /teacher/classes`
+The assigned classes, each with `student_count`, `avg_xp` and `certified_count`.
+
+### `GET /teacher/classes/{class}/students`
+wf_S11, `FR-09.2`. Per student: `total_points`, `rank_level`, `rank_name`,
+`experiments_completed`, `safety_tier_passed`, `has_certificate`, the latest
+`readiness` classification or `null`, `last_quiz_score` and `last_active_on`.
+`FR-09.3` asks for updates within 5 seconds; the web app polls every 5 seconds
+until the live channel (Pusher) is added.
+
+### `GET /teacher/classes/{class}/safety`
+wf_S14, UC-26, `FR-02.9`. Per student the best score and pass for each tier
+(`tier1_passed`, `tier1_score` … `tier4_*`), and the `certificate` reference and
+`certificate_issued_on`. `summary` is `{certified, total}`.
+
+### `GET /teacher/classes/{class}/experiments`
+The experiments a task may use for this class: published, in the class's
+board-exam pair as far as the school is licensed, and in its board or `both`.
+
+### `POST /teacher/tasks`
+`FR-09.4`. Body `{class_id, experiment_id, due_at, target, student_ids?, instructions?}`.
+`target` is `class` or `students`; with `students`, `student_ids` must all belong
+to the class or the whole request is refused with 403 and nothing is created.
+`due_at` must be in the future (422). `instructions` lose any markup, 500 at most.
+Creates one assignment per student in state `assigned` and one `task`
+notification each (`FR-09.6`; the bell polls every 30 seconds). The due time in
+the notification is written in `DISPLAY_TIMEZONE` (default `Asia/Karachi`).
+Answers **201** with the task.
+
+### `GET /teacher/tasks` and `GET /teacher/tasks/{task}`
+The teacher's own tasks with a count per state; one task with each student's
+`state` and `state_changed_at` (UC-06.1).
+
+**States move by themselves (`FR-09.5`).** Starting the task's experiment moves
+`assigned` or `overdue` to `in_progress`; finishing every step of it moves the
+task to `completed`; `assignments:mark-overdue` (every 15 minutes) moves
+`assigned` and `in_progress` to `overdue` once the due date has passed.
+
+### `POST /teacher/broadcast` and `GET /teacher/notifications`
+`FR-09.7`. Type is `task`, `reminder`, `safety_alert` or `announcement`. Markup is
+removed **before** the 500 character limit is checked, so the limit applies to
+the text students read. Each broadcast is recorded in the audit log as
+`broadcast.sent`, and `GET /teacher/notifications` reads the teacher's sent
+history back from there.
+
+---
+
+## Not built yet
+
+Readiness reporting (`FR-08.*`), the live class channel for `FR-09.3`,
+administrator reporting and export (`FR-10.3` to `FR-10.7`), and push delivery
+through FCM (`FR-09.6`; the tokens are stored, nothing sends to them yet).

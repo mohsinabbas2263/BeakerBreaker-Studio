@@ -6,11 +6,14 @@ import { useEffect } from "react";
 import { useAuth } from "@/lib/auth";
 
 /**
- * Layout for teacher screens (wf_S10 to wf_S15). The class monitor, tasks and
- * safety review arrive with M3; only the pages that have an API today are linked.
+ * Layout for teacher screens (wf_S10 to wf_S15). AI Readiness (wf_S12) is linked
+ * once M4 gives it an API.
  */
 const NAV = [
   { href: "/teacher/dashboard",     icon: "🏫", label: "Dashboard" },
+  { href: "/teacher/monitor",       icon: "📋", label: "Class Monitor" },
+  { href: "/teacher/tasks",         icon: "📝", label: "Tasks" },
+  { href: "/teacher/safety",        icon: "🛡️", label: "Safety Review" },
   { href: "/teacher/notifications", icon: "📣", label: "Broadcast" },
 ];
 
@@ -43,12 +46,14 @@ export default function TeacherShell({ children }: { children: React.ReactNode }
             <p className="font-fredoka font-600 text-base text-ink leading-tight">Beaker Breakers</p>
             <p className="text-[11px] text-sub font-800 uppercase tracking-wide">Teacher</p>
           </div>
-          <nav className="flex gap-1.5">
+          <nav className="flex gap-1.5 order-last w-full overflow-x-auto pb-0.5 -mx-1 px-1
+                          lg:order-none lg:w-auto lg:overflow-visible">
             {NAV.map(n => {
               const active = pathname.startsWith(n.href);
               return (
                 <Link key={n.href} href={n.href}
                       className={`flex items-center gap-1.5 px-3 py-2 rounded-xl font-nunito font-800 text-sm
+                                  whitespace-nowrap flex-shrink-0
                                   ${active ? "text-white" : "text-sub hover:bg-sky hover:text-blue-d"}`}
                       style={active ? { background: "linear-gradient(135deg,#4FC3F7,#29B6F6)" } : {}}>
                   <span aria-hidden>{n.icon}</span>{n.label}

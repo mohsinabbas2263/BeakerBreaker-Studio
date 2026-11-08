@@ -7,6 +7,8 @@ use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\QuizController;
 use App\Http\Controllers\Api\SafetyController;
+use App\Http\Controllers\Api\TaskController;
+use App\Http\Controllers\Api\TeacherClassController;
 use App\Http\Controllers\Api\TeacherController;
 use Illuminate\Support\Facades\Route;
 
@@ -54,7 +56,20 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // ---- teacher ----
     Route::middleware('role:teacher')->group(function () {
+        // FR-09.1: every route below checks the class against class_teachers.
+        Route::get('/teacher/dashboard', [TeacherClassController::class, 'dashboard']);
+        Route::get('/teacher/classes', [TeacherClassController::class, 'classes']);
+        Route::get('/teacher/classes/{class}/students', [TeacherClassController::class, 'monitor']);    // FR-09.2
+        Route::get('/teacher/classes/{class}/safety', [TeacherClassController::class, 'safety']);       // FR-02.9
+        Route::get('/teacher/classes/{class}/experiments', [TaskController::class, 'experiments']);
+
+        // FR-09.4, FR-09.5: tasks.
+        Route::get('/teacher/tasks', [TaskController::class, 'index']);
+        Route::post('/teacher/tasks', [TaskController::class, 'store']);
+        Route::get('/teacher/tasks/{task}', [TaskController::class, 'show']);
+
         // FR-09.7: broadcast a notification to a class.
         Route::post('/teacher/broadcast', [TeacherController::class, 'broadcast']);
+        Route::get('/teacher/notifications', [TeacherController::class, 'sent']);
     });
 });
