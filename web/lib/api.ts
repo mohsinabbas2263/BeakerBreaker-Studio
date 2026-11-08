@@ -199,13 +199,54 @@ export interface ExperimentsListResponse {
   experiments: ExperimentSummary[];
 }
 
+/** docs/experiment-engine.md: the nine step kinds. */
+export type StepKind = "gear" | "place" | "choose" | "measure" | "add_until" | "heat" | "read" | "observe" | "confirm";
+
+/** A step's config as the server sends it: the answers are never in it (FR-02.5). */
+export interface StepConfig {
+  items?: string[];
+  zones?: string[];
+  target?: string | number;
+  simultaneous?: boolean;
+  unit?: string;
+  min?: number;
+  max?: number;
+  step?: number;
+  increments?: number[];
+  end?: number;
+  visual?: { from: string; to: string; fade_from: number };
+  levels?: string[];
+  options?: Record<string, string>;
+}
+
 export interface Step {
   id: number;
   step_order: number;
   title: string;
   instruction_text: string;
-  item_emoji: string;
-  action_label: string;
+  item_emoji: string | null;
+  action_label: string | null;
+  kind: StepKind;
+  config: StepConfig;
+  intro: string | null;
+}
+
+export type Mood = "point" | "happy" | "think" | "oops" | "worried" | "party";
+
+/** POST /sessions/{session}/steps/{step}/actions */
+export interface StepActionResponse {
+  outcome: "correct" | "partial" | "mistake" | "revealed";
+  category: "procedure" | "safety" | "reagent" | "concept" | null;
+  mistake_code: string | null;
+  message: string | null;
+  mood: Mood;
+  step_complete: boolean;
+  mistakes: number;
+  progress: { worn?: string[]; placed?: Record<string, string>; stage?: number };
+  reveal: Record<string, unknown> | null;
+  steps_completed: number;
+  step_count: number;
+  quiz_unlocked: boolean;
 }
 
 export interface ResumeInfo {
@@ -213,6 +254,8 @@ export interface ResumeInfo {
   steps_completed: number;
   completed_step_ids: number[];
   presentation_mode: string;
+  /** NFR-05: progress inside the current step. */
+  step_state: { step_id: number; mistakes: number; progress: StepActionResponse["progress"] } | null;
 }
 
 export interface ExperimentDetailResponse {

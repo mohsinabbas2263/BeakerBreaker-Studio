@@ -142,8 +142,9 @@ class ReadinessController extends Controller
             'classification' => $r->classification,
             'narrative' => $r->narrative,
             'dimensions' => collect(ReadinessReport::DIMENSIONS)->mapWithKeys(fn ($d) => [$d => (int) $r->{$d}])->all(),
-            // Two dimensions are estimated until the experiment engine records each step.
-            'estimated' => ['reagent_management', 'error_recovery'],
+            // Dimensions this report could only estimate (no game steps played yet).
+            'formula_version' => $r->formula_version,
+            'estimated' => ReadinessService::ESTIMATED[$r->formula_version] ?? [],
             'student' => ['id' => $student->id, 'display_name' => $student->display_name, 'avatar_key' => $student->avatar_key],
         ];
     }

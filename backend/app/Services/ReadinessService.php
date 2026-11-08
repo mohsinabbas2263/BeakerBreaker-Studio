@@ -6,6 +6,7 @@ use App\Models\ExperimentSession;
 use App\Models\QuizAttempt;
 use App\Models\ReadinessReport;
 use App\Models\SafetyAttempt;
+use App\Models\StepAction;
 use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
@@ -20,11 +21,13 @@ use Throwable;
  * and when Gemini does not answer the rule below decides (NFR-06), so a report
  * always generates.
  *
- * INTERIM FORMULAS (decided 8 Nov 2026). Reagent management and error recovery
- * need the per-step record of the game engine (docs/experiment-engine.md,
- * step_actions), which is not built yet. Until it is, both are estimated from
- * session and quiz history, and every report says so (FORMULA_VERSION). When the
- * engine lands, those two formulas change here; the report shape does not.
+ * TWO SETS OF FORMULAS, and each report records which it used (formula_version):
+ *
+ *  - engine-1: the student has played game steps, so step_actions holds every move.
+ *    The formulas of docs/experiment-engine.md apply.
+ *  - interim-1: the student has only old press-the-button experiments. Reagent
+ *    management and error recovery are then estimated from session and quiz
+ *    history (decided 8 Nov 2026), and the report marks them as estimated.
  */
 class ReadinessService
 {
@@ -34,7 +37,25 @@ class ReadinessService
     /** FR-08.2 allows 5 seconds for the whole report; Gemini gets most of it. */
     public const AI_TIMEOUT_SECONDS = 4;
 
-    public const FORMULA_VERSION = 'interim-1';
+    public const ENGINE = 'engine-1';
+
+    public const INTERIM = 'interim-1';
+
+    /** The dimensions each formula set only estimates. */
+    public const ESTIMATED = [
+        self::ENGINE => [],
+        self::INTERIM => ['reagent_management', 'error_recovery'],
+    ];
+
+    /** Kinds that test handling chemicals: what reagent management measures. */
+    private const REAGENT_KINDS = ['measure', 'choose', 'add_until'];
+
+    /** Which formulas apply: the engine's once any game step has been played. */
+    public function formulaVersion(User $student): string
+    {
+        return StepAction::where('user_id', $student->id)->where('kind', '!=', 'confirm')->exists()
+            ? self::ENGINE : self::INTERIM;
+    }
 
     public const CLASSIFICATIONS = ['ready', 'developing', 'not_ready'];
 
@@ -48,6 +69,7 @@ class ReadinessService
     /** FR-08.5: compute, classify and store one report. Assumes eligibility was checked. */
     public function generate(User $student, User $requester): ReadinessReport
     {
+        $version = $this->formulaVersion($student);
         $dimensions = $this->dimensions($student);
         [$classification, $narrative, $fromAi] = $this->classify($student, $dimensions);
 
@@ -57,6 +79,7 @@ class ReadinessService
             'classification' => $classification,
             'narrative' => $narrative,
             'ai_generated' => $fromAi,
+            'formula_version' => $version,
             'generated_at' => now(),
             ...$dimensions,
         ]);
@@ -68,6 +91,76 @@ class ReadinessService
      * @return array<string, int>
      */
     public function dimensions(User $student): array
+    {
+        $interim = $this->interimDimensions($student);
+
+        if ($this->formulaVersion($student) === self::INTERIM) {
+            return $interim;
+        }
+
+        return $this->engineDimensions($student, $interim);
+    }
+
+    /**
+     * docs/experiment-engine.md, "Readiness, from step_actions". A step counts once
+     * per session; time efficiency is the same in both sets.
+     *
+     * @param  array<string, int>  $interim  used where the game record has nothing to say
+     * @return array<string, int>
+     */
+    private function engineDimensions(User $student, array $interim): array
+    {
+        $steps = StepAction::where('user_id', $student->id)->where('kind', '!=', 'confirm')
+            ->with('session:id,experiment_id')
+            ->orderBy('id')->get()
+            ->groupBy(fn (StepAction $a) => "{$a->session_id}:{$a->step_id}");
+
+        $finished = $steps->filter(fn (Collection $moves) => $moves->contains(fn ($m) => in_array($m->outcome, ['correct', 'revealed'], true)));
+        $clean = fn (Collection $moves) => ! $moves->contains('outcome', 'mistake');
+        $rightFirstTime = fn (Collection $moves) => $moves->first()->outcome === 'correct';
+
+        // Procedural accuracy: steps completed with no mistake ÷ steps completed.
+        $procedural = $this->percent($finished->filter($clean)->count(), $finished->count());
+
+        // Safety compliance: 100 minus 25 per safety mistake, per experiment, averaged, floor 0.
+        $safety = $steps->flatten()->groupBy(fn (StepAction $a) => $a->session?->experiment_id)
+            ->map(fn (Collection $moves) => max(0, 100 - 25 * $moves->where('category', 'safety')->count()))
+            ->avg();
+
+        // Reagent management: measure, choose and add_until steps right first time ÷ all of them.
+        $reagentSteps = $steps->filter(fn (Collection $moves) => in_array($moves->first()->kind, self::REAGENT_KINDS, true));
+        $reagent = $reagentSteps->isEmpty()
+            ? $interim['reagent_management']
+            : $this->percent($reagentSteps->filter($rightFirstTime)->count(), $reagentSteps->count());
+
+        // Conceptual understanding: first quiz attempts and observe steps right first time, averaged.
+        $observe = $steps->filter(fn (Collection $moves) => $moves->first()->kind === 'observe');
+        $conceptual = $observe->isEmpty()
+            ? $interim['conceptual_understanding']
+            : (int) round(($interim['conceptual_understanding'] + $this->percent($observe->filter($rightFirstTime)->count(), $observe->count())) / 2);
+
+        // Error recovery: steps with a mistake then finished without the answer shown ÷ steps with a mistake.
+        $slipped = $steps->reject($clean);
+        $recovery = $slipped->isEmpty()
+            ? 100
+            : $this->percent($slipped->filter(fn (Collection $moves) => $moves->contains('outcome', 'correct'))->count(), $slipped->count());
+
+        return [
+            'procedural_accuracy' => $procedural,
+            'safety_compliance' => (int) round($safety ?? 100),
+            'reagent_management' => $reagent,
+            'time_efficiency' => $interim['time_efficiency'],
+            'conceptual_understanding' => $conceptual,
+            'error_recovery' => $recovery,
+        ];
+    }
+
+    /**
+     * The interim set, from session, quiz and safety history only.
+     *
+     * @return array<string, int>
+     */
+    private function interimDimensions(User $student): array
     {
         $sessions = ExperimentSession::where('user_id', $student->id)
             ->with('experiment:id,estimated_minutes')

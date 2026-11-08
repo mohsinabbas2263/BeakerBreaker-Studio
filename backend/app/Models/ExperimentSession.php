@@ -12,7 +12,7 @@ class ExperimentSession extends Model
 
     protected $fillable = [
         'user_id', 'experiment_id', 'presentation_mode',
-        'started_at', 'completed_at', 'steps_completed', 'completed_step_ids',
+        'started_at', 'completed_at', 'steps_completed', 'completed_step_ids', 'step_state',
     ];
 
     protected function casts(): array
@@ -22,6 +22,7 @@ class ExperimentSession extends Model
             'completed_at' => 'datetime',
             'steps_completed' => 'integer',
             'completed_step_ids' => 'array',
+            'step_state' => 'array',
         ];
     }
 

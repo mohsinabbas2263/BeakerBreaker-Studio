@@ -1,10 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Shell from "@/components/layout/Shell";
+import GameStep from "@/components/game/GameStep";
 import Confetti from "@/components/ui/Confetti";
 import { beakySay } from "@/components/ui/Beaky";
 import { useToast } from "@/components/ui/Toast";
@@ -15,21 +16,21 @@ import {
   ApiError,
   type ExperimentDetailResponse,
   type GuidanceResponse,
+  type Mood,
   type StartSessionResponse,
-  type StepProgressResponse,
+  type StepActionResponse,
 } from "@/lib/api";
 
 /**
- * wf_S04, the step runner.
+ * wf_S04, the game runner (docs/experiment-engine.md).
  *
- * FR-03.4  steps come in their declared order and the next one opens only when
- *          the current one is done; the server refuses a step out of order.
- * FR-03.5  each completion is written to the server the moment it happens, so a
- *          refresh resumes at the same step (NFR-05).
- * FR-03.7  guidance for the current step comes from the API. When the AI service
- *          is down the API answers with the pre-authored line (NFR-06), so this
- *          page never has a "no guidance" state.
+ * FR-02.5  the page sends what the student did; the server judges every move.
+ * FR-03.4  steps come in order; the server refuses a step out of order.
+ * FR-03.5  each move is saved as it happens, so a refresh resumes mid-step (NFR-05).
+ * FR-03.7  Ask AI answers about the current step; with the AI service down the API
+ *          answers with the pre-authored line (NFR-06), as does every avatar line.
  */
+type Progress = StepActionResponse["progress"];
 
 export default function ExperimentRunnerPage({ params }: { params: { id: string } }) {
   const { id } = params;
@@ -37,17 +38,26 @@ export default function ExperimentRunnerPage({ params }: { params: { id: string 
   const toast = useToast();
   const { user } = useAuth();
 
-  const [detail, setDetail]       = useState<ExperimentDetailResponse | null>(null);
+  const [detail, setDetail] = useState<ExperimentDetailResponse | null>(null);
   const [sessionId, setSessionId] = useState<number | null>(null);
-  const [doneIds, setDoneIds]     = useState<number[]>([]);
-  const [error, setError]         = useState<string | null>(null);
-  const [saving, setSaving]       = useState(false);
-  const [finished, setFinished]   = useState(false);
+  const [done, setDone] = useState(0);
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [finished, setFinished] = useState(false);
 
-  const [guidance, setGuidance]   = useState<GuidanceResponse | null>(null);
-  const [question, setQuestion]   = useState("");
-  const [asking, setAsking]       = useState(false);
-  const [dragOver, setDragOver]   = useState(false);
+  // The avatar: what it says, how it feels, and what the server has shown so far.
+  const [line, setLine] = useState<string | null>(null);
+  const [mood, setMood] = useState<Mood>("point");
+  const [moodKey, setMoodKey] = useState(0);
+  const [progress, setProgress] = useState<Progress>({});
+  const [reveal, setReveal] = useState<Record<string, unknown> | null>(null);
+  const [lastMistake, setLastMistake] = useState<string | null>(null);
+  const [hinted, setHinted] = useState(false);
+
+  // Ask AI (FR-03.7)
+  const [answer, setAnswer] = useState<GuidanceResponse | null>(null);
+  const [question, setQuestion] = useState("");
+  const [asking, setAsking] = useState(false);
 
   // Load the experiment, then open or resume a session (FR-03.5).
   useEffect(() => {
@@ -64,7 +74,9 @@ export default function ExperimentRunnerPage({ params }: { params: { id: string 
         if (cancelled) return;
         setDetail(d);
         setSessionId(s.session.id);
-        setDoneIds(s.session.completed_step_ids ?? []);
+        setDone(s.session.completed_step_ids?.length ?? 0);
+        // NFR-05: pick up inside the step where the student left off.
+        if (d.resume?.step_state && d.resume.session_id === s.session.id) setProgress(d.resume.step_state.progress ?? {});
       } catch (err) {
         if (!cancelled) setError(err instanceof Error ? err.message : "Could not open this experiment.");
       }
@@ -73,57 +85,68 @@ export default function ExperimentRunnerPage({ params }: { params: { id: string 
   }, [id, router]);
 
   const steps = useMemo(() => detail?.steps ?? [], [detail]);
-  const stepIndex = Math.min(doneIds.length, Math.max(steps.length - 1, 0));
-  const current = steps[stepIndex];
   const total = steps.length;
-  const progressPct = total ? Math.round((doneIds.length / total) * 100) : 0;
+  const current = steps[Math.min(done, Math.max(total - 1, 0))];
+  const pct = total ? Math.round((done / total) * 100) : 0;
 
-  // Fetch the opener for each new step.
+  // Each new step: the avatar says its opening line, and the bench is cleared.
   useEffect(() => {
-    if (!current || finished) return;
-    let cancelled = false;
-    setGuidance(null);
-    api.post<GuidanceResponse>(`/steps/${current.id}/guidance`, {})
-      .then(g => { if (!cancelled) setGuidance(g); })
-      .catch(() => { /* the API always answers with text; a network failure just leaves the tip empty */ });
-    return () => { cancelled = true; };
-  }, [current, finished]);
+    if (!current) return;
+    setLine(current.intro ?? current.instruction_text);
+    setMood("point");
+    setReveal(null);
+    setLastMistake(null);
+    setHinted(false);
+    setAnswer(null);
+  }, [current]);
 
-  const completeStep = useCallback(async () => {
-    if (!current || !sessionId || saving) return;
-    setSaving(true);
+  async function act(action: Record<string, string | number>) {
+    if (!current || !sessionId || busy) return;
+    setBusy(true);
     try {
-      const res = await api.post<StepProgressResponse>(`/sessions/${sessionId}/steps`, { step_id: current.id });
-      setDoneIds(res.session.completed_step_ids ?? [...doneIds, current.id]);
+      const res = await api.post<StepActionResponse>(`/sessions/${sessionId}/steps/${current.id}/actions`, { action, hinted });
+      // A right move part-way through a step has no line of its own; never leave an
+      // earlier telling-off on screen after the student has put it right.
+      setLine(res.message ?? (res.outcome === "partial" ? "Good! Keep going. 👍" : line));
+      setMood(res.mood);
+      setMoodKey(k => k + 1);
+      setReveal(res.reveal);
+      setLastMistake(res.mistake_code);
 
-      if (res.quiz_unlocked) {
-        setFinished(true);
-        beakySay("Brilliant work, scientist! Time for the quiz! 🎉");
+      if (res.step_complete) {
+        setProgress({});
+        if (res.quiz_unlocked) {
+          setFinished(true);
+          beakySay("Brilliant work, scientist! Time for the quiz! 🎉");
+        } else {
+          // Let the student enjoy the success line before the next step opens.
+          setTimeout(() => setDone(res.steps_completed), 1100);
+        }
       } else {
-        toast(`Step ${current.step_order} done!`, "success");
+        setProgress(res.progress ?? {});
       }
     } catch (err) {
       if (err instanceof ApiError && err.code === "out_of_order") {
-        // Another tab moved ahead or fell behind; reload the true progress.
         toast("Your progress was updated in another window. Reloading…", "info");
         const s = await api.post<StartSessionResponse>(`/experiments/${id}/start`, { presentation_mode: "standard" });
-        setDoneIds(s.session.completed_step_ids ?? []);
+        setDone(s.session.completed_step_ids?.length ?? 0);
       } else {
-        toast(err instanceof Error ? err.message : "Could not save this step. Check your connection.", "error");
+        toast(err instanceof Error ? err.message : "Could not save that move. Check your connection.", "error");
       }
     } finally {
-      setSaving(false);
+      setBusy(false);
     }
-  }, [current, sessionId, saving, doneIds, id, toast]);
+  }
 
   async function ask(e: React.FormEvent) {
     e.preventDefault();
     if (!current || !question.trim()) return;
     setAsking(true);
+    setHinted(true);   // recorded with the next move, for the readiness report
     try {
-      const g = await api.post<GuidanceResponse>(`/steps/${current.id}/guidance`, { question: question.trim() });
-      setGuidance(g);
+      setAnswer(await api.post<GuidanceResponse>(`/steps/${current.id}/guidance`, { question: question.trim() }));
       setQuestion("");
+      setMood("think");
     } catch {
       toast("Could not reach your guide just now. Try again.", "error");
     } finally {
@@ -144,30 +167,25 @@ export default function ExperimentRunnerPage({ params }: { params: { id: string 
   }
 
   if (!detail || !current) {
-    return (
-      <Shell>
-        <div className="flex items-center justify-center min-h-[60vh] text-4xl animate-spin">⚗️</div>
-      </Shell>
-    );
+    return <Shell><div className="flex items-center justify-center min-h-[60vh] text-4xl animate-spin">⚗️</div></Shell>;
   }
 
   const exp = detail.experiment;
-  const avatar = avatarSrc(user?.avatar_key);
 
   if (finished) {
     return (
       <Shell>
         <Confetti fire />
         <div className="p-4 md:p-6 max-w-lg mx-auto text-center space-y-5">
-          <div className="text-7xl mt-6">{exp.emoji || "🧪"}</div>
+          <Image src={avatarSrc(user?.avatar_key)} alt="" width={96} height={96}
+                 className="rounded-full mx-auto mt-6 border-4 border-white shadow-card mood-party" />
           <h1 className="font-fredoka font-600 text-2xl text-ink">Experiment complete!</h1>
           <p className="text-sub font-700 text-sm">
             You finished all {total} steps of {exp.title}. Pass the quiz at 80% to earn {exp.base_points} XP.
           </p>
-          <button
-            onClick={() => router.push(`/experiments/${id}/quiz?session=${sessionId}`)}
-            className="w-full py-4 rounded-card font-fredoka font-600 text-white text-lg"
-            style={{ background: "linear-gradient(135deg,#9575CD,#7E57C2)", boxShadow: "0 8px 24px rgba(149,117,205,.4)" }}>
+          <button onClick={() => router.push(`/experiments/${id}/quiz?session=${sessionId}`)}
+                  className="w-full py-4 rounded-card font-fredoka font-600 text-white text-lg"
+                  style={{ background: "linear-gradient(135deg,#9575CD,#7E57C2)", boxShadow: "0 8px 24px rgba(149,117,205,.4)" }}>
             📝 Take the Quiz
           </button>
           <Link href="/experiments" className="block text-sub font-800 text-sm">Back to experiments</Link>
@@ -176,10 +194,11 @@ export default function ExperimentRunnerPage({ params }: { params: { id: string 
     );
   }
 
+  const worried = mood === "worried";
+
   return (
     <Shell>
       <div className="p-4 md:p-6 max-w-3xl mx-auto space-y-4">
-        {/* Header */}
         <div className="flex items-center gap-3">
           <Link href={`/experiments/${id}`} className="text-blue-d font-800 text-sm">‹ Exit</Link>
           <h1 className="font-fredoka font-600 text-lg text-ink truncate">{exp.emoji} {exp.title}</h1>
@@ -188,114 +207,67 @@ export default function ExperimentRunnerPage({ params }: { params: { id: string 
         {/* Progress */}
         <div className="bg-white rounded-card shadow-card p-4">
           <div className="flex justify-between text-xs font-800 text-sub mb-1.5">
-            <span>Step {stepIndex + 1} of {total}</span>
-            <span>{progressPct}%</span>
+            <span>Step {Math.min(done + 1, total)} of {total}</span><span>{pct}%</span>
           </div>
-          <div className="h-2.5 bg-sky rounded-full overflow-hidden"
-               role="progressbar" aria-valuenow={progressPct} aria-valuemin={0} aria-valuemax={100}>
-            <div className="h-full rounded-full transition-all duration-500"
-                 style={{ width: `${progressPct}%`, background: "linear-gradient(90deg,#4FC3F7,#4CAF82)" }} />
-          </div>
-          <div className="flex gap-1.5 mt-2.5 justify-center">
-            {steps.map((s, i) => (
-              <span key={s.id}
-                    className={`h-2 rounded-full transition-all ${i < doneIds.length ? "w-2 bg-green" : i === stepIndex ? "w-5 bg-blue" : "w-2 bg-sky"}`} />
-            ))}
+          <div className="h-2.5 bg-sky rounded-full overflow-hidden" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}>
+            <div className="h-full rounded-full transition-all duration-500" style={{ width: `${pct}%`, background: "linear-gradient(90deg,#4FC3F7,#4CAF82)" }} />
           </div>
         </div>
 
-        <div className="grid md:grid-cols-[1fr_260px] gap-4">
-          <div className="space-y-4">
-            {/* Coach */}
-            <div className="bg-white rounded-card shadow-card p-4 flex gap-3">
-              <Image src={avatar} alt="" width={48} height={48}
-                     className="rounded-full border-3 border-sky object-cover w-12 h-12 flex-shrink-0" />
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="font-fredoka font-600 text-sm text-ink">Your guide</span>
-                  {guidance && (
-                    <span className={`text-[10px] font-900 px-2 py-0.5 rounded-full
-                                      ${guidance.source === "ai" ? "bg-sky text-blue-d" : "bg-lemon text-orange-d"}`}>
-                      {guidance.source === "ai" ? "AI" : "Lab notes"}
-                    </span>
-                  )}
-                </div>
-                <p className="text-sm text-ink font-700 mt-1 leading-relaxed" aria-live="polite">
-                  {guidance ? guidance.text : "Thinking…"}
-                </p>
-                <form onSubmit={ask} className="flex gap-2 mt-3">
-                  <label htmlFor="ask" className="sr-only">Ask about this step</label>
-                  <input id="ask" value={question} onChange={e => setQuestion(e.target.value)}
-                         maxLength={300} placeholder="Ask about this step…"
-                         className="flex-1 min-w-0 px-3 py-2 rounded-xl border-2 border-blue/20 bg-sky
-                                    text-sm font-700 focus:outline-none focus:border-blue" />
-                  <button type="submit" disabled={asking || !question.trim()}
-                          className="px-3 py-2 rounded-xl bg-blue-d text-white text-sm font-800 disabled:opacity-50">
-                    {asking ? "…" : "Ask"}
-                  </button>
-                </form>
-              </div>
-            </div>
+        {/* The guide: the student's own avatar, with what it says now. */}
+        <div className="flex items-start gap-3">
+          <Image key={moodKey} src={avatarSrc(user?.avatar_key)} alt="Your guide" width={64} height={64}
+                 className={`rounded-full border-4 border-white shadow-card object-cover w-16 h-16 flex-shrink-0 mood-${mood}`} />
+          <div className={`relative flex-1 rounded-2xl rounded-tl-sm p-4 shadow-card ${worried ? "bg-coral" : mood === "oops" ? "bg-lemon" : "bg-white"}`}
+               aria-live="polite">
+            <p className="font-nunito font-800 text-[15px] text-ink leading-relaxed">{line}</p>
+          </div>
+        </div>
 
-            {/* Task */}
-            <div className="bg-white rounded-card shadow-card p-4 flex gap-3">
-              <span className="w-9 h-9 rounded-full bg-blue text-white font-900 flex items-center justify-center flex-shrink-0">
-                {current.step_order}
+        {/* The step */}
+        <div className="bg-white rounded-card shadow-card p-5 space-y-4">
+          <div className="flex gap-3">
+            <span className="w-9 h-9 rounded-full bg-blue text-white font-900 flex items-center justify-center flex-shrink-0">{current.step_order}</span>
+            <div>
+              <p className="font-fredoka font-600 text-base text-ink">{current.title}</p>
+              <p className="text-sm text-sub font-700 mt-0.5 leading-relaxed">{current.instruction_text}</p>
+            </div>
+          </div>
+          <GameStep key={current.id} step={current} progress={progress} reveal={reveal}
+                    lastMistake={lastMistake} busy={busy} onAct={act} />
+        </div>
+
+        {/* Ask AI (FR-03.7) */}
+        <details className="bg-white rounded-card shadow-card p-4 group">
+          <summary className="cursor-pointer font-fredoka font-600 text-ink list-none flex items-center gap-2">
+            <span aria-hidden>💬</span> Ask AI about this step
+            <span className="ml-auto text-sub text-xs group-open:rotate-180 transition-transform" aria-hidden>▾</span>
+          </summary>
+          <form onSubmit={ask} className="flex gap-2 mt-3">
+            <label htmlFor="ask" className="sr-only">Your question</label>
+            <input id="ask" value={question} onChange={e => setQuestion(e.target.value)} maxLength={300}
+                   placeholder="e.g. Why do we swirl the flask?"
+                   className="flex-1 min-w-0 px-3 py-2 rounded-xl border-2 border-blue/20 bg-sky text-sm font-700 focus:outline-none focus:border-blue" />
+            <button type="submit" disabled={asking || !question.trim()}
+                    className="px-3 py-2 rounded-xl bg-blue-d text-white text-sm font-800 disabled:opacity-50">{asking ? "…" : "Ask"}</button>
+          </form>
+          {answer && (
+            <div className="mt-3 bg-sky rounded-2xl p-3">
+              <span className={`text-[10px] font-900 px-2 py-0.5 rounded-full ${answer.source === "ai" ? "bg-white text-blue-d" : "bg-lemon text-orange-d"}`}>
+                {answer.source === "ai" ? "AI" : "Lab notes"}
               </span>
-              <div>
-                <p className="font-fredoka font-600 text-base text-ink">{current.title}</p>
-                <p className="text-sm text-sub font-700 mt-1 leading-relaxed">{current.instruction_text}</p>
-              </div>
+              <p className="text-sm text-ink font-700 mt-1.5 leading-relaxed">{answer.text}</p>
             </div>
+          )}
+        </details>
 
-            {/* Science */}
-            {exp.chemical_equation && (
-              <div className="bg-lemon rounded-card p-4">
-                <p className="font-fredoka font-600 text-xs text-orange-d uppercase tracking-wide">🔬 The science</p>
-                <p className="font-fredoka text-ink mt-1">{exp.chemical_equation}</p>
-              </div>
-            )}
+        {exp.chemical_equation && (
+          <div className="bg-lemon rounded-card p-4">
+            <p className="font-fredoka font-600 text-xs text-orange-d uppercase tracking-wide">🔬 The science</p>
+            <p className="font-fredoka text-ink mt-1">{exp.chemical_equation}</p>
           </div>
-
-          {/* Bench: drag the glowing item to the drop zone, or press the button. */}
-          <div className="bg-white rounded-card shadow-card p-4 flex flex-col gap-3">
-            <div
-              onDragOver={e => { e.preventDefault(); setDragOver(true); }}
-              onDragLeave={() => setDragOver(false)}
-              onDrop={e => { e.preventDefault(); setDragOver(false); completeStep(); }}
-              className={`rounded-2xl border-3 border-dashed h-32 flex flex-col items-center justify-center text-center
-                          transition-colors ${dragOver ? "border-green bg-mint" : "border-blue/40 bg-sky"}`}>
-              <span className="text-4xl" aria-hidden>{exp.emoji || "⚗️"}</span>
-              <span className="text-[11px] font-900 text-sub uppercase tracking-wide mt-1">Drop here</span>
-            </div>
-
-            <div className="flex flex-wrap gap-2 justify-center">
-              {steps.map((s, i) => {
-                const state = i < doneIds.length ? "placed" : i === stepIndex ? "active" : "queued";
-                return (
-                  <div key={s.id}
-                       draggable={state === "active"}
-                       onDragStart={e => e.dataTransfer.setData("text/plain", String(s.id))}
-                       className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl select-none
-                                   ${state === "active" ? "bg-sky bench-active cursor-grab" : ""}
-                                   ${state === "placed" ? "bg-mint opacity-60" : ""}
-                                   ${state === "queued" ? "bg-[#F5F7FA] opacity-40" : ""}`}
-                       aria-hidden>
-                    {state === "placed" ? "✓" : (s.item_emoji || "🧪")}
-                  </div>
-                );
-              })}
-            </div>
-
-            <button onClick={completeStep} disabled={saving}
-                    className="w-full py-3.5 rounded-2xl font-fredoka font-600 text-white text-base
-                               transition-transform hover:scale-[1.02] disabled:opacity-60"
-                    style={{ background: "linear-gradient(135deg,#4CAF82,#2E7D57)", boxShadow: "0 6px 20px rgba(76,175,130,.35)" }}>
-              {saving ? "Saving…" : `👉 ${current.action_label || "Done with this step"}`}
-            </button>
-            <p className="text-[11px] text-muted font-700 text-center">Your progress saves after every step.</p>
-          </div>
-        </div>
+        )}
+        <p className="text-[11px] text-muted font-700 text-center">Every move saves as you go.</p>
       </div>
     </Shell>
   );

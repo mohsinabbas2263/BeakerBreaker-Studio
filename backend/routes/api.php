@@ -39,7 +39,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/experiments', [ExperimentController::class, 'index']);
         Route::get('/experiments/{experiment}', [ExperimentController::class, 'show']);
         Route::post('/experiments/{experiment}/start', [ExperimentController::class, 'start']);
-        Route::post('/sessions/{session}/steps', [ExperimentController::class, 'completeStep']);
+        Route::post('/sessions/{session}/steps', [ExperimentController::class, 'completeStep']);          // confirm steps
+        Route::post('/sessions/{session}/steps/{step}/actions', [ExperimentController::class, 'act']);   // game steps
         Route::post('/steps/{step}/guidance', [ExperimentController::class, 'guidance']);
 
         Route::get('/experiments/{experiment}/quiz', [QuizController::class, 'show']);

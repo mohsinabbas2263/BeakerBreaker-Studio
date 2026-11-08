@@ -24,7 +24,7 @@ class ReadinessReport extends Model
 
     protected $fillable = [
         'subject_user_id', 'requesting_user_id', 'classification', 'narrative',
-        'ai_generated', 'generated_at', ...self::DIMENSIONS,
+        'ai_generated', 'formula_version', 'generated_at', ...self::DIMENSIONS,
     ];
 
     protected function casts(): array

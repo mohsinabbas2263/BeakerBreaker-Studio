@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\Models\Experiment;
 use App\Models\ExperimentSession;
 use App\Models\ExperimentStep;
+use App\Models\StepAction;
 use App\Services\ExperimentAccessService;
 use App\Services\GuidanceService;
 use App\Services\RewardService;
+use App\Services\StepJudge;
 use App\Services\TaskProgressService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,6 +21,7 @@ class ExperimentController extends Controller
         protected GuidanceService $guidance,
         protected RewardService $rewards,
         protected TaskProgressService $tasks,
+        protected StepJudge $judge,
     ) {}
 
     /** FR-03.1 the library, FR-03.2 filtering by difficulty and topic. */
@@ -119,6 +122,11 @@ class ExperimentController extends Controller
                 'instruction_text' => $s->instruction_text,
                 'item_emoji' => $s->item_emoji,
                 'action_label' => $s->action_label,
+                // docs/experiment-engine.md: the kind, its config with the answers
+                // removed (FR-02.5), and the avatar's opening line.
+                'kind' => $s->kind ?? 'confirm',
+                'config' => $s->publicConfig(),
+                'intro' => $s->messages['intro'] ?? null,
             ]) : [],
             // FR-03.5: an unfinished attempt comes back with its progress.
             'resume' => $session ? [
@@ -126,6 +134,8 @@ class ExperimentController extends Controller
                 'steps_completed' => $session->steps_completed,
                 'completed_step_ids' => $session->completed_step_ids ?? [],
                 'presentation_mode' => $session->presentation_mode,
+                // NFR-05: progress inside the current step, so a refresh resumes mid-step.
+                'step_state' => $this->publicStepState($session),
             ] : null,
         ]);
     }
@@ -192,25 +202,130 @@ class ExperimentController extends Controller
 
         abort_unless($step->experiment_id === $session->experiment_id, 422);
 
-        $done = collect($session->completed_step_ids ?? []);
+        if ($refusal = $this->outOfOrder($session, $step)) {
+            return $refusal;
+        }
 
-        // FR-03.4: a step may not be completed before the one in front of it.
-        $expectedOrder = $done->count() + 1;
-        if ($step->step_order !== $expectedOrder) {
+        // FR-02.5: a game step is judged on the server through its actions; a client
+        // cannot skip it by declaring it done here.
+        if ($step->isGame()) {
             return response()->json([
-                'message' => "Complete step {$expectedOrder} first.",
-                'code' => 'out_of_order',
+                'message' => 'This step is completed through its actions.',
+                'code' => 'use_actions',
             ], 422);
         }
 
-        $done->push($step->id);
+        return response()->json($this->advance($request, $session, $step));
+    }
+
+    /**
+     * docs/experiment-engine.md: one move inside a game step. The client sends what the
+     * student did; the server judges it (FR-02.5), records it in step_actions for the
+     * readiness report (FR-08.1), and answers with the avatar's line and mood.
+     */
+    public function act(Request $request, ExperimentSession $session, ExperimentStep $step): JsonResponse
+    {
+        abort_unless($session->user_id === $request->user()->id, 403);
+
+        if ($session->isComplete()) {
+            return response()->json(['message' => 'This session is already finished.'], 422);
+        }
+
+        abort_unless($step->experiment_id === $session->experiment_id, 422);
+
+        if ($refusal = $this->outOfOrder($session, $step)) {
+            return $refusal;
+        }
+
+        $request->validate(array_merge([
+            'action' => ['present', 'array'],
+            'hinted' => ['sometimes', 'boolean'],
+        ], self::ACTION_RULES[$step->kind ?? 'confirm'] ?? []));
+
+        $action = $request->input('action', []);
+        $previous = ($session->step_state['step_id'] ?? null) === $step->id ? $session->step_state : [];
+
+        $verdict = $this->judge->judge($step, $action, $previous, fn (int $order) => $this->readingFrom($session, $order));
+
+        StepAction::create([
+            'session_id' => $session->id,
+            'step_id' => $step->id,
+            'user_id' => $request->user()->id,
+            'kind' => $step->kind ?? 'confirm',
+            'action' => $action,
+            'outcome' => $verdict['outcome'],
+            'category' => $verdict['category'],
+            'mistake_code' => $verdict['mistake_code'],
+            'hinted' => $request->boolean('hinted'),
+        ]);
+
+        if ($verdict['step_complete']) {
+            $progress = $this->advance($request, $session, $step);
+        } else {
+            $session->update(['step_state' => ['step_id' => $step->id] + $verdict['state']]);
+            $progress = [
+                'steps_completed' => $session->steps_completed,
+                'step_count' => $session->experiment->steps()->count(),
+                'quiz_unlocked' => false,
+            ];
+        }
+
+        return response()->json([
+            'outcome' => $verdict['outcome'],
+            'category' => $verdict['category'],
+            'mistake_code' => $verdict['mistake_code'],
+            'message' => $verdict['message'],
+            'mood' => $progress['quiz_unlocked'] ? 'party' : $verdict['mood'],
+            'step_complete' => $verdict['step_complete'],
+            'mistakes' => $verdict['state']['mistakes'] ?? 0,
+            'progress' => $verdict['state']['data'] ?? [],
+            'reveal' => $verdict['reveal'],
+            'steps_completed' => $progress['steps_completed'],
+            'step_count' => $progress['step_count'],
+            'quiz_unlocked' => $progress['quiz_unlocked'],
+        ]);
+    }
+
+    /** What each kind must send (docs/experiment-engine.md, "action sent"). */
+    private const ACTION_RULES = [
+        'gear' => ['action.item' => ['required', 'string', 'max:40']],
+        'place' => ['action.item' => ['required', 'string', 'max:40'], 'action.zone' => ['required', 'string', 'max:40']],
+        'choose' => ['action.item' => ['required', 'string', 'max:40']],
+        'measure' => ['action.value' => ['required', 'numeric']],
+        'add_until' => ['action.stop_at' => ['required', 'numeric']],
+        'heat' => ['action.level' => ['required', 'string', 'max:20'], 'action.seconds' => ['required', 'integer', 'min:0', 'max:3600']],
+        'read' => ['action.value' => ['required', 'numeric']],
+        'observe' => ['action.option' => ['required', 'string', 'max:10']],
+        'confirm' => [],
+    ];
+
+    /** FR-03.4: a step may not be worked on before the one in front of it is done. */
+    private function outOfOrder(ExperimentSession $session, ExperimentStep $step): ?JsonResponse
+    {
+        $expected = count($session->completed_step_ids ?? []) + 1;
+
+        if ($step->step_order === $expected) {
+            return null;
+        }
+
+        return response()->json([
+            'message' => "Complete step {$expected} first.",
+            'code' => 'out_of_order',
+        ], 422);
+    }
+
+    /** FR-03.5: marks a step done at the moment it happens; finishing opens the quiz. */
+    private function advance(Request $request, ExperimentSession $session, ExperimentStep $step): array
+    {
+        $done = collect($session->completed_step_ids ?? [])->push($step->id)->unique()->values();
         $total = $session->experiment->steps()->count();
         $allDone = $done->count() >= $total;
 
         $session->update([
-            'completed_step_ids' => $done->unique()->values()->all(),
-            'steps_completed' => $done->unique()->count(),
+            'completed_step_ids' => $done->all(),
+            'steps_completed' => $done->count(),
             'completed_at' => $allDone ? now() : null,
+            'step_state' => null,
         ]);
 
         // FR-09.5: finishing the experiment completes any task set for it.
@@ -218,13 +333,42 @@ class ExperimentController extends Controller
             $this->tasks->experimentCompleted($request->user(), $session->experiment_id);
         }
 
-        return response()->json([
+        return [
             'session' => $session->fresh(),
-            'steps_completed' => $session->steps_completed,
+            'steps_completed' => $done->count(),
             'step_count' => $total,
             // FR-04.1: the quiz opens only once every step is done.
             'quiz_unlocked' => $allDone,
-        ]);
+        ];
+    }
+
+    /** read steps with value_from: the volume the student actually stopped at in step N. */
+    private function readingFrom(ExperimentSession $session, int $order): ?float
+    {
+        $action = StepAction::where('session_id', $session->id)
+            ->whereIn('outcome', ['correct', 'revealed'])
+            ->whereHas('step', fn ($q) => $q->where('step_order', $order))
+            ->latest('id')->first();
+
+        $value = $action?->action['stop_at'] ?? $action?->action['value'] ?? null;
+
+        return $value === null ? null : (float) $value;
+    }
+
+    /** The resumable progress, without anything that would give an answer away. */
+    private function publicStepState(ExperimentSession $session): ?array
+    {
+        $state = $session->step_state;
+
+        if (! $state) {
+            return null;
+        }
+
+        return [
+            'step_id' => $state['step_id'] ?? null,
+            'mistakes' => $state['mistakes'] ?? 0,
+            'progress' => $state['data'] ?? [],
+        ];
     }
 
     /**
