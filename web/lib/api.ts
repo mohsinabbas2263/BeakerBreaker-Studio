@@ -459,7 +459,23 @@ export interface ReadinessReport {
   classification: ReadinessClassification;
   narrative: string;
   dimensions: ReadinessDimensions;
-  student: { id: number; display_name: string; avatar_key: string };
+  /** Dimensions estimated from session and quiz history until the experiment engine records each step. */
+  estimated: (keyof ReadinessDimensions)[];
+  student: { id: number; display_name: string; avatar_key: string | null };
+}
+
+export interface ClassReadinessStudent {
+  id: number;
+  display_name: string;
+  avatar_key: string | null;
+  completed: number;
+  report: ReadinessReport | null;
+}
+
+export interface ClassReadinessResponse {
+  class: { id: number; title: string };
+  required: number;
+  students: ClassReadinessStudent[];
 }
 
 export interface ReadinessReportResponse {

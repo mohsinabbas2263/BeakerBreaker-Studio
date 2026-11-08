@@ -272,8 +272,59 @@ history back from there.
 
 ---
 
+## Readiness reports (M4)
+
+`FR-08.1` to `FR-08.6`. The six dimensions are computed in `ReadinessService`
+from the student's own history; only the classification is asked of Gemini, with
+a 4 second timeout. When Gemini has no key, times out, or answers with anything
+but a valid classification, the rule decides and `ai_generated` is `false`
+(`NFR-06`). Whatever Gemini says, a student under 90 on safety compliance is
+never `ready`.
+
+A report: `{id, generated_at, ai_generated, classification, narrative,
+dimensions{six values 0 to 100}, estimated[], student{id, display_name, avatar_key}}`.
+`classification` is `ready` (Ready for Real Lab), `developing` (Approaching
+Readiness) or `not_ready` (Not Ready), the names `FR-08.3` gives.
+
+**Interim formulas** (decided 8 Nov 2026, `ReadinessService::FORMULA_VERSION`
+`interim-1`). Two dimensions need the per-step record of the experiment engine,
+which is not built, so they are estimated and listed in `estimated`:
+
+| Dimension | Formula, 0 to 100 |
+|---|---|
+| Procedural accuracy | experiments finished ÷ experiments begun |
+| Safety compliance | average of the first attempt's score on each tier attempted |
+| Reagent management (estimated) | finished experiments completed in their first session, not abandoned and restarted |
+| Time efficiency | per finished experiment, estimated minutes ÷ actual minutes, capped at 100, averaged. Never affects points (`FR-06.2`) |
+| Conceptual understanding | average score of the first quiz attempt on each experiment |
+| Error recovery (estimated) | quizzes failed the first time that were passed later; 100 when none failed |
+
+Rule: average of the six at least 80 **and** safety at least 90 is `ready`;
+average at least 60 is `developing`; otherwise `not_ready`.
+
+### `GET /readiness` (student)
+`FR-08.6`, `SR-08`: the caller's own latest report. It takes no student or report
+id, so no other student's values are reachable. Under 3 completed experiments it
+answers **422** `not_eligible` with `completed` and `required`; with 3 or more and
+no report yet, **404** `no_report`.
+
+### `GET /teacher/classes/{class}/readiness` (teacher)
+wf_S12. Each student of the class with `completed` (distinct experiments
+finished), the latest `report` or `null`, and `required` (3).
+
+### `POST /teacher/students/{student}/readiness` (teacher)
+`FR-08.2`. Generates and stores a new report (`FR-08.5`: requester, student, six
+values, classification, time) and answers **201**. A student outside the
+teacher's classes is **403** `not_assigned`, logged as `teacher.refused`; under 3
+completed experiments is **422** `not_eligible` and nothing is stored
+(`FR-08.4`). Each report is also written to the audit log as
+`readiness.generated`. Measured locally on `php artisan serve` with no Gemini
+key: about 0.7 seconds over HTTP; not yet measured with Gemini or on the server.
+
+---
+
 ## Not built yet
 
-Readiness reporting (`FR-08.*`), the live class channel for `FR-09.3`,
+The live class channel for `FR-09.3`,
 administrator reporting and export (`FR-10.3` to `FR-10.7`), and push delivery
 through FCM (`FR-09.6`; the tokens are stored, nothing sends to them yet).

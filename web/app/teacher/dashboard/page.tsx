@@ -17,6 +17,7 @@ import type { TeacherDashboardResponse } from "@/lib/api";
 const ACTIONS = [
   { href: "/teacher/tasks",         icon: "📝", label: "Assign Task" },
   { href: "/teacher/monitor",       icon: "📋", label: "Class Monitor" },
+  { href: "/teacher/readiness",     icon: "🧠", label: "AI Readiness" },
   { href: "/teacher/safety",        icon: "🛡️", label: "Safety Review" },
   { href: "/teacher/notifications", icon: "📣", label: "Broadcast" },
 ];
