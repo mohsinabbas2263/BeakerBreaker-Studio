@@ -58,6 +58,11 @@ hazard signs, PPE, emergencies) for the safety tier question banks.
 | 16 | Synthesis of aspirin (salicylic acid, acetic anhydride) | Federal Activity p91 | federal |
 | 17 | Air quality with indoor plants (classroom investigation, not a bench experiment) | Federal 13.8.5 p267 | federal |
 
+Game-format content for Class 11 is in `backend/database/seeders/game/class-11.php`
+(not seeded yet): salt and sand (filtration and crystallisation, rows 1-2), fractional
+distillation, paper chromatography, NaOH standardisation, acid radicals (all four),
+basic radicals (Fe³⁺, Cu²⁺, Cr³⁺, Al³⁺/Zn²⁺, NH₄⁺; Ca²⁺ still to add), and aspirin.
+
 The compilation also lists a laboratory preparation of ammonia for Federal 11; it was not
 found in the OCR text and is left out until someone checks the book by eye.
 
