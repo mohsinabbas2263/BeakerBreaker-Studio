@@ -80,6 +80,12 @@ The Punjab 2nd year book has no lab activities. Fehling's, Tollens' and Brady's 
 discussed in its organic chapters (the current seeder lists them as Class 9-10; they belong
 to Class 12).
 
+Game-format content for Class 12 is in `backend/database/seeders/game/class-12.php`
+(not seeded yet): all five Federal rows above, plus a Punjab 12 aldehyde-or-ketone
+experiment built from its Section 23.3.2 (2,4-DNPH, Tollens', Fehling's), so a Punjab
+Class 11-12 student has at least one Class 12 experiment. That section is reading text,
+not a numbered activity.
+
 ## Decision, 8 Nov 2026: textbook experiments only
 
 Only experiments that appear in these textbooks are offered. `ExperimentSeeder::TEXTBOOK`
