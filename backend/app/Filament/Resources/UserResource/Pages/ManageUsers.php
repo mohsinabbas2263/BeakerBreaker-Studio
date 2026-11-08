@@ -4,11 +4,10 @@ namespace App\Filament\Resources\UserResource\Pages;
 
 use App\Filament\Resources\UserResource;
 use App\Models\AuditLog;
-use App\Models\StudentProfile;
 use App\Models\User;
 use Filament\Actions;
 use Filament\Resources\Pages\ManageRecords;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 
 class ManageUsers extends ManageRecords
 {
@@ -18,16 +17,19 @@ class ManageUsers extends ManageRecords
     {
         return [
             Actions\CreateAction::make()
-                ->after(function (Model $record) {
-                    /** @var User $record */
-                    if ($record->isStudent()) {
-                        StudentProfile::firstOrCreate(['user_id' => $record->id]);
-                    }
+                ->using(function (array $data): User {
+                    // class_id belongs on the student profile, not the users table.
+                    $classId = Arr::pull($data, 'class_id');
+
+                    $record = User::create($data);
+                    UserResource::syncStudentClass($record, $classId);
 
                     // FR-10.8: an account creation is an auditable event.
                     AuditLog::record(auth()->id(), 'user.created', "user:{$record->id}", [
                         'role' => $record->role->value,
                     ]);
+
+                    return $record;
                 }),
         ];
     }
