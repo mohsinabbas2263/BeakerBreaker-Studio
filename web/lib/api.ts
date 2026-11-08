@@ -113,9 +113,17 @@ export interface Profile {
   streak_days: number;
   safety_tier_passed: number;
   experiments_completed: number;
-  badges: string[];
+  badges: Badge[];
   certificate: Certificate | null;
-  class?: { id: number; name: string };
+  /** The class title, e.g. "Class 10-A". */
+  class: string | null;
+}
+
+/** FR-06.3: a badge as the server names it. */
+export interface Badge {
+  code: string;
+  name: string;
+  icon: string;
 }
 
 // ─── Safety ───────────────────────────────────────────────────────────────────

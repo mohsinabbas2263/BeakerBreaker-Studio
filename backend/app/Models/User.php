@@ -20,6 +20,14 @@ class User extends Authenticatable implements FilamentUser, HasName
 {
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
+    /** The four profile avatars from the prototype; web/public/avatars holds the images. */
+    public const AVATARS = [
+        'avatar-girl1' => 'Girl 1',
+        'avatar-girl2' => 'Girl 2',
+        'avatar-boy1' => 'Boy 1',
+        'avatar-boy2' => 'Boy 2',
+    ];
+
     protected $fillable = [
         'school_id', 'role', 'display_name', 'email', 'password', 'status', 'avatar_key',
     ];

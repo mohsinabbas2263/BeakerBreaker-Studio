@@ -9,6 +9,7 @@ import Confetti from "@/components/ui/Confetti";
 import { beakySay } from "@/components/ui/Beaky";
 import { useToast } from "@/components/ui/Toast";
 import { useAuth } from "@/lib/auth";
+import { avatarSrc } from "@/lib/avatars";
 import {
   api,
   ApiError,
@@ -29,13 +30,6 @@ import {
  *          is down the API answers with the pre-authored line (NFR-06), so this
  *          page never has a "no guidance" state.
  */
-
-const AVATARS: Record<string, string> = {
-  "avatar-girl1": "/avatars/avatar-girl1.png",
-  "avatar-girl2": "/avatars/avatar-girl2.png",
-  "avatar-boy1":  "/avatars/avatar-boy1.png",
-  "avatar-boy2":  "/avatars/avatar-boy2.png",
-};
 
 export default function ExperimentRunnerPage({ params }: { params: { id: string } }) {
   const { id } = params;
@@ -158,7 +152,7 @@ export default function ExperimentRunnerPage({ params }: { params: { id: string 
   }
 
   const exp = detail.experiment;
-  const avatar = AVATARS[user?.avatar_key ?? ""] ?? "/avatars/avatar-girl1.png";
+  const avatar = avatarSrc(user?.avatar_key);
 
   if (finished) {
     return (
