@@ -5,13 +5,11 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useAuth } from "@/lib/auth";
 
-/**
- * Layout for teacher screens (wf_S10 to wf_S15). AI Readiness (wf_S12) is linked
- * once M4 gives it an API.
- */
+/** Layout for teacher screens, wf_S10 to wf_S15. */
 const NAV = [
   { href: "/teacher/dashboard",     icon: "🏫", label: "Dashboard" },
   { href: "/teacher/monitor",       icon: "📋", label: "Class Monitor" },
+  { href: "/teacher/readiness",     icon: "🧠", label: "AI Readiness" },
   { href: "/teacher/tasks",         icon: "📝", label: "Tasks" },
   { href: "/teacher/safety",        icon: "🛡️", label: "Safety Review" },
   { href: "/teacher/notifications", icon: "📣", label: "Broadcast" },

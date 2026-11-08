@@ -56,8 +56,8 @@ the server (`FR-09.1`), and an assignment moves to overdue with no teacher actio
 
 **State, 8 Nov 2026:** built, both done-when conditions tested in
 `TeacherFeaturesTest` (19 tests). Screens wf_S10, S11, S13, S14 and S15 work against the
-API. Two pieces remain: `FR-09.3` is met by polling every 5 seconds rather than a live
-Pusher channel, and wf_S12 (AI readiness) waits for M4. A task counts as completed when
+API. One piece remains: `FR-09.3` is met by polling every 5 seconds rather than a live
+Pusher channel. wf_S12 arrived with M4. A task counts as completed when
 the student finishes every step of its experiment, the point at which the quiz opens.
 
 ## M4. AI readiness reporting
@@ -70,6 +70,11 @@ completed experiments; a student sees only their own.
 
 **Done when:** a student cannot reach another student's values by any route (`SR-08`), and
 a report still generates with the Gemini key removed (`NFR-06`).
+
+**State, 8 Nov 2026:** built, both done-when conditions tested in `ReadinessTest`
+(12 tests). Teacher screen wf_S12 and the student's own report work against the API.
+Reagent management and error recovery use interim formulas until the experiment
+engine records each step (see `docs/api.md`); the report marks them as estimated.
 
 ## M5. Administrator reporting
 

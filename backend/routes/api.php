@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\LeaderboardController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\QuizController;
+use App\Http\Controllers\Api\ReadinessController;
 use App\Http\Controllers\Api\SafetyController;
 use App\Http\Controllers\Api\TaskController;
 use App\Http\Controllers\Api\TeacherClassController;
@@ -45,6 +46,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/experiments/{experiment}/quiz', [QuizController::class, 'submit']);
 
         Route::get('/leaderboard', [LeaderboardController::class, 'index']);
+        Route::get('/readiness', [ReadinessController::class, 'mine']);                      // FR-08.6
         Route::get('/profile', [ProfileController::class, 'show']);
         Route::patch('/profile', [ProfileController::class, 'update']);
 
@@ -62,6 +64,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/teacher/classes/{class}/students', [TeacherClassController::class, 'monitor']);    // FR-09.2
         Route::get('/teacher/classes/{class}/safety', [TeacherClassController::class, 'safety']);       // FR-02.9
         Route::get('/teacher/classes/{class}/experiments', [TaskController::class, 'experiments']);
+
+        // FR-08: readiness reports (wf_S12).
+        Route::get('/teacher/classes/{class}/readiness', [ReadinessController::class, 'forClass']);
+        Route::post('/teacher/students/{student}/readiness', [ReadinessController::class, 'generate']);  // FR-08.2
 
         // FR-09.4, FR-09.5: tasks.
         Route::get('/teacher/tasks', [TaskController::class, 'index']);
