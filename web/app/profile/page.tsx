@@ -20,18 +20,48 @@ export default function ProfilePage() {
   const toast = useToast();
   const [picking, setPicking] = useState(false);
   const [saving, setSaving]   = useState<string | null>(null);
+  const [name, setName]       = useState("");
+  const [nameError, setNameError] = useState<string | null>(null);
+
+  function openEditor() {
+    setName(data?.display_name ?? "");
+    setNameError(null);
+    setPicking(true);
+  }
 
   async function chooseAvatar(key: string) {
-    if (!data || key === data.avatar_key) { setPicking(false); return; }
+    if (!data || key === data.avatar_key) return;
     setSaving(key);
     try {
       await api.patch("/profile", { avatar_key: key });
       updateStoredUser({ avatar_key: key });
       await mutate({ ...data, avatar_key: key }, { revalidate: false });
-      setPicking(false);
       toast("Avatar updated!", "success");
     } catch (err) {
       toast(err instanceof Error ? err.message : "Could not change the avatar.", "error");
+    } finally {
+      setSaving(null);
+    }
+  }
+
+  // The server tidies spaces and checks the name (letters only, 2 to 40); it is
+  // the name classmates see on the leaderboard (FR-07.1).
+  async function saveName(e: React.FormEvent) {
+    e.preventDefault();
+    if (!data) return;
+    const clean = name.trim().replace(/\s+/g, " ");
+    if (clean === data.display_name) { setNameError(null); return; }
+    if (clean.length < 2) { setNameError("Your name needs at least 2 letters."); return; }
+    setSaving("name");
+    setNameError(null);
+    try {
+      const res = await api.patch<{ display_name: string }>("/profile", { display_name: clean });
+      updateStoredUser({ display_name: res.display_name });
+      await mutate({ ...data, display_name: res.display_name }, { revalidate: false });
+      setName(res.display_name);
+      toast("Name saved!", "success");
+    } catch (err) {
+      setNameError(err instanceof Error ? err.message : "Could not save your name.");
     } finally {
       setSaving(null);
     }
@@ -46,9 +76,9 @@ export default function ProfilePage() {
         {/* Hero */}
         <div className="rounded-card shadow-card p-6 mb-5 text-center"
              style={{ background: "linear-gradient(135deg,#E8F4FD,#BBDEFB)" }}>
-          <button type="button" onClick={() => setPicking(p => !p)}
+          <button type="button" onClick={() => (picking ? setPicking(false) : openEditor())}
                   className="relative mx-auto mb-3 block rounded-full focus:outline-none focus-visible:ring-4 focus-visible:ring-blue/50"
-                  aria-label="Change avatar" aria-expanded={picking}>
+                  aria-label="Edit name and avatar" aria-expanded={picking}>
             <Image src={avatarSrc(data.avatar_key)} alt="" width={96} height={96}
                    className="rounded-full border-4 border-white shadow-card object-cover" />
             <span className="absolute -bottom-1 -right-1 w-9 h-9 rounded-full bg-white shadow-md
@@ -60,15 +90,38 @@ export default function ProfilePage() {
           <p className="text-sub font-700 text-sm mt-1">{data.rank_name}</p>
           {data.class && <p className="text-xs text-muted font-700 mt-1">{data.class}</p>}
           {!picking && (
-            <button type="button" onClick={() => setPicking(true)}
+            <button type="button" onClick={openEditor}
                     className="mt-3 text-xs font-800 text-blue-d underline underline-offset-2">
-              Change avatar
+              ✏️ Edit name &amp; avatar
             </button>
           )}
 
           {picking && (
-            <div className="mt-4">
-              <p className="text-xs font-800 text-sub mb-2">Pick your lab partner</p>
+            <div className="mt-4 text-left">
+              <form onSubmit={saveName} className="mb-4" noValidate>
+                <label htmlFor="display-name" className="block text-xs font-800 text-sub mb-1.5 text-center">
+                  Your name
+                </label>
+                <div className="flex gap-2">
+                  <input id="display-name" type="text" value={name} maxLength={40} autoComplete="name"
+                         onChange={e => { setName(e.target.value); setNameError(null); }}
+                         aria-invalid={nameError !== null} aria-describedby="display-name-help"
+                         className={`flex-1 min-w-0 px-4 py-2.5 rounded-2xl bg-white font-nunito font-800 text-ink
+                                     border-2 outline-none transition-colors
+                                     ${nameError ? "border-orange" : "border-blue/20 focus:border-blue"}`} />
+                  <button type="submit" disabled={saving !== null}
+                          className="px-4 py-2.5 rounded-2xl bg-green hover:bg-green-d text-white
+                                     font-fredoka font-600 text-sm shadow-md disabled:opacity-60 transition-colors">
+                    {saving === "name" ? "Saving…" : "Save"}
+                  </button>
+                </div>
+                <p id="display-name-help"
+                   className={`text-[11px] font-700 mt-1.5 text-center ${nameError ? "text-orange-d" : "text-muted"}`}>
+                  {nameError ?? "Your classmates see this name on the leaderboard."}
+                </p>
+              </form>
+
+              <p className="text-xs font-800 text-sub mb-2 text-center">Pick your lab partner</p>
               <div className="flex justify-center gap-3 flex-wrap">
                 {AVATARS.map(a => {
                   const active = a.key === data.avatar_key;
@@ -84,6 +137,12 @@ export default function ProfilePage() {
                     </button>
                   );
                 })}
+              </div>
+              <div className="text-center mt-4">
+                <button type="button" onClick={() => setPicking(false)}
+                        className="text-xs font-800 text-sub underline underline-offset-2">
+                  Done
+                </button>
               </div>
             </div>
           )}
