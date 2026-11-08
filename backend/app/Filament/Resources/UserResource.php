@@ -4,6 +4,9 @@ namespace App\Filament\Resources;
 
 use App\Enums\UserRole;
 use App\Filament\Resources\UserResource\Pages;
+use App\Models\AuditLog;
+use App\Models\SchoolClass;
+use App\Models\StudentProfile;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -11,6 +14,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Hash;
 
 /**
@@ -35,8 +39,10 @@ class UserResource extends Resource
                 ->relationship('school', 'name')
                 ->label('School')
                 ->searchable()
-                ->preload(),
+                ->preload()
+                ->live(),
 
+            // live(): the class picker below appears only once Student is chosen.
             Forms\Components\Select::make('role')
                 ->options([
                     UserRole::Student->value => 'Student',
@@ -44,7 +50,8 @@ class UserResource extends Resource
                     UserRole::Administrator->value => 'Administrator',
                 ])
                 ->required()
-                ->native(false),
+                ->native(false)
+                ->live(),
 
             Forms\Components\TextInput::make('display_name')
                 ->required()
@@ -73,14 +80,39 @@ class UserResource extends Resource
                 ->native(false)
                 ->helperText('Suspending an account invalidates its tokens on the next request (SR-05).'),
 
+            // FR-10.1: a student belongs to a class, which drives the class
+            // leaderboard (FR-07.1) and the teacher's reach (FR-09.1). Saved onto
+            // the student profile by ManageUsers, not onto the users table.
             Forms\Components\Select::make('class_id')
                 ->label('Class (students only)')
-                ->relationship('profile.schoolClass', 'title')
+                ->options(fn (Forms\Get $get) => SchoolClass::query()
+                    ->when($get('school_id'), fn (Builder $q, $schoolId) => $q->where('school_id', $schoolId))
+                    ->orderBy('title')
+                    ->pluck('title', 'id'))
                 ->searchable()
-                ->preload()
-                ->visible(fn (Forms\Get $get) => $get('role') === UserRole::Student->value)
-                ->dehydrated(false),
+                ->visible(fn (Forms\Get $get) => self::isStudentRole($get('role'))),
         ]);
+    }
+
+    public static function isStudentRole(mixed $role): bool
+    {
+        return ($role instanceof UserRole ? $role->value : $role) === UserRole::Student->value;
+    }
+
+    /**
+     * Writes the form's class choice onto the student's profile. Every student
+     * gets a profile, with or without a class.
+     */
+    public static function syncStudentClass(User $user, mixed $classId): void
+    {
+        if (! $user->isStudent()) {
+            return;
+        }
+
+        StudentProfile::updateOrCreate(
+            ['user_id' => $user->id],
+            ['class_id' => filled($classId) ? (int) $classId : null],
+        );
     }
 
     public static function table(Table $table): Table
@@ -108,7 +140,22 @@ class UserResource extends Resource
                 Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->mutateRecordDataUsing(function (array $data, User $record): array {
+                        $data['class_id'] = $record->profile?->class_id;
+
+                        return $data;
+                    })
+                    ->using(function (User $record, array $data): User {
+                        $classId = Arr::pull($data, 'class_id');
+                        $record->update($data);
+                        self::syncStudentClass($record, $classId);
+
+                        // FR-10.8: every administrative account operation is recorded.
+                        AuditLog::record(auth()->id(), 'user.updated', "user:{$record->id}");
+
+                        return $record;
+                    }),
                 // FR-01.5: deletion is a soft delete, recoverable for 30 days.
                 Tables\Actions\DeleteAction::make(),
                 Tables\Actions\RestoreAction::make(),

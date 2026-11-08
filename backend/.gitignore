@@ -24,3 +24,7 @@ yarn-error.log
 # Local SQLite database (holds account data; never commit)
 /database/*.sqlite
 /database/*.sqlite-journal
+
+# Published by `php artisan filament:upgrade` on every composer install
+/public/css/filament
+/public/js/filament
