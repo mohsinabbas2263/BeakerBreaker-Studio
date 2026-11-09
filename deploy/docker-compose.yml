@@ -1,0 +1,115 @@
+# Beaker Breakers Studio, production stack for one VPS (docs/deploy.md).
+#
+#   proxy      Caddy: HTTPS with TLS 1.3 only (SR-02), certificates renewed by itself
+#   web        nginx: serves backend/public and hands PHP to app
+#   app        Laravel API and Filament admin (PHP-FPM)
+#   queue      Laravel queue worker
+#   scheduler  Laravel scheduler (assignments:mark-overdue every 15 min, FR-09.5)
+#   mysql      MySQL 8.4, every table encrypted at rest (SR-06)
+#   redis      cache, queue and leaderboard (NFR-01, NFR-04)
+#   backup     encrypted database dump every 24 h, kept 30 days (SR-10)
+#
+# Secrets live only in backend/.env on the server, never in git.
+# The web portal runs on Vercel and is not part of this file.
+
+name: beaker
+
+x-laravel: &laravel
+  build:
+    context: ..
+    dockerfile: deploy/backend.Dockerfile
+    target: app
+  image: beaker-backend:latest
+  env_file: ../backend/.env
+  restart: unless-stopped
+  depends_on:
+    mysql: { condition: service_healthy }
+    redis: { condition: service_started }
+  volumes:
+    - storage:/var/www/html/storage
+
+services:
+  proxy:
+    image: caddy:2.8-alpine
+    restart: unless-stopped
+    ports: ["80:80", "443:443"]
+    environment:
+      API_DOMAIN: ${API_DOMAIN:?set API_DOMAIN in deploy/.env}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on: [web]
+
+  web:
+    build:
+      context: ..
+      dockerfile: deploy/backend.Dockerfile
+      target: web
+    image: beaker-web:latest
+    restart: unless-stopped
+    depends_on: [app]
+
+  app:
+    <<: *laravel
+
+  queue:
+    <<: *laravel
+    command: ["php", "artisan", "queue:work", "--sleep=1", "--tries=3", "--max-time=3600"]
+
+  scheduler:
+    <<: *laravel
+    command: ["php", "artisan", "schedule:work"]
+
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    env_file: ./.env
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-beaker_breakers}
+      MYSQL_USER: ${DB_USERNAME:-beaker}
+    volumes:
+      - mysql:/var/lib/mysql
+      - mysql_keyring:/var/lib/mysql-keyring
+      # SR-06: the keyring component and encryption defaults (see mysql/README.md).
+      - ./mysql/mysqld.my:/usr/sbin/mysqld.my:ro
+      - ./mysql/component_keyring_file.cnf:/usr/lib64/mysql/plugin/component_keyring_file.cnf:ro
+      - ./mysql/encryption.cnf:/etc/mysql/conf.d/encryption.cnf:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent"]
+      interval: 10s
+      retries: 12
+
+  redis:
+    image: redis:7.4-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory-policy", "noeviction"]
+    volumes:
+      - redis:/data
+
+  backup:
+    image: alpine:3.20
+    restart: unless-stopped
+    env_file: ./.env
+    volumes:
+      - ./backup.sh:/usr/local/bin/backup.sh:ro
+      - backups:/backups
+      - mysql_keyring:/keyring:ro
+    entrypoint: ["/bin/sh", "-c"]
+    # Every day at 02:00 Pakistan time (21:00 UTC).
+    command:
+      - >
+        apk add --no-cache mysql-client openssl gzip &&
+        echo '0 21 * * * /bin/sh /usr/local/bin/backup.sh >> /backups/backup.log 2>&1' | crontab - &&
+        crond -f -l 8
+    depends_on:
+      mysql: { condition: service_healthy }
+
+volumes:
+  mysql:
+  mysql_keyring:
+  redis:
+  storage:
+  backups:
+  caddy_data:
+  caddy_config:

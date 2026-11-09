@@ -15,7 +15,7 @@ Chapters 1 to 4 are written and signed off. Development started in October 2026.
 
 | Part | State |
 |---|---|
-| `backend/` | **Running, 184 tests passing** (SQLite; MySQL not yet tested). M1 foundation, licensing by board and class (Classes 9 to 12), M3 teacher features (class monitor, safety review, tasks with automatic states, broadcast) M4 readiness reports, and the game experiment engine with all 34 textbook experiments (Classes 9 to 12) seeded in it. Not built: admin reporting (M5). |
+| `backend/` | **Running, 186 tests passing** (SQLite; all also pass on MySQL 8.4). M1 foundation, licensing by board and class (Classes 9 to 12), M3 teacher features (class monitor, safety review, tasks with automatic states, broadcast) M4 readiness reports, and the game experiment engine with all 34 textbook experiments (Classes 9 to 12) seeded in it. Not built: admin reporting (M5). |
 | `Beaker Breakers Studio (2)/` | A working **UI prototype**: vanilla HTML, CSS and JavaScript, 9 student screens, all data hardcoded in `data.js`. No auth, no teacher or admin screens, no backend. It is the visual source of truth, not the application. |
 | `web/` | **Student portal (M2), teacher screens (M3) and readiness reports (M4) built** in Next.js 14. |
 | `mobile/` | Not started. Phase 2, after the web portal is in schools. |
@@ -34,6 +34,7 @@ Chapters 1 to 4 are written and signed off. Development started in October 2026.
 | `docs/experiment-engine.md` | Game-style experiment steps: step kinds, config, schema, API, readiness formulas. **Agreed (PR #3) and built.** Content is in `backend/database/seeders/game/`. |
 | `docs/build-order.md` | The milestones in dependency order. |
 | `backend/README.md` | How to get the backend running, and what is deliberately missing. |
+| `docs/deploy.md` | The production runbook (VPS with Docker Compose, Vercel), and which checks have been run. |
 
 Diagrams are in `FYP/` and `Documentation/UML Diagrams/`. Screen layouts are in
 `FYP/Wire framing & error Handling/` as `wf_S01` to `wf_S18`, and the prototype in

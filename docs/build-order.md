@@ -116,6 +116,12 @@ Load testing to 1000 concurrent users, WCAG 2.1 AA audit, the browser matrix, Re
 cache and queues, TLS, backups every 24 hours retained 30 days, and the coverage `NFR-10`
 asks for. This is also where the first school pilot goes out.
 
+**State, 9 Nov 2026:** the tests pass on MySQL 8.4; encryption at rest (`SR-06`) and
+backup with restore (`SR-10`) were run and checked; security headers and HSTS are in.
+The deploy kit (`deploy/`, runbook `docs/deploy.md`) is written but not yet started on a
+server. Not yet measured: TLS 1.3 on the live server, load test, first paint, browsers,
+accessibility.
+
 ## Phase 2. Flutter application
 
 `FR-05.*` on ARCore and ARKit, `NFR-11`, `NFR-12`. After the web portal is in schools, not

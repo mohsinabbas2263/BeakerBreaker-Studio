@@ -1,0 +1,20 @@
+# HTTPS in front of the API and the admin panel.
+# Caddy obtains and renews the certificate for API_DOMAIN by itself.
+
+{$API_DOMAIN} {
+	# SR-02: all communication over TLS 1.3, nothing older.
+	tls {
+		protocols tls1.3
+	}
+
+	encode zstd gzip
+
+	reverse_proxy web:80 {
+		header_up X-Forwarded-Proto https
+	}
+
+	log {
+		output stdout
+		format console
+	}
+}
