@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -46,8 +47,10 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         {/* Brand */}
         <div className="text-center mb-8">
-          <div className="text-7xl mb-3" style={{ filter: "drop-shadow(0 8px 16px rgba(79,195,247,.4))" }}>⚗️</div>
-          <h1 className="font-fredoka font-600 text-3xl text-ink">Beaker Breakers</h1>
+          <h1>
+            <Image src="/brand/logo.png" alt="Beaker Breakers Studio" width={720} height={970} priority
+                   className="w-40 h-auto mx-auto mb-2" style={{ filter: "drop-shadow(0 8px 16px rgba(79,195,247,.25))" }} />
+          </h1>
           <p className="text-sub font-700 text-sm mt-1">Virtual Chemistry Lab</p>
         </div>
 

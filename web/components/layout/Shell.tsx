@@ -46,7 +46,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
   if (loading || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <span className="text-4xl animate-spin">⚗️</span>
+        <Image src="/brand/mark.png" alt="" width={256} height={317} className="w-12 h-auto animate-pulse" />
       </div>
     );
   }
@@ -71,7 +71,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
                          ${sideOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}>
         {/* Brand */}
         <div className="flex items-center gap-2 pb-3 border-b-2 border-black/5">
-          <span className="text-4xl" style={{ filter: "drop-shadow(0 4px 8px rgba(0,188,212,.3))" }}>⚗️</span>
+          <Image src="/brand/mark.png" alt="" width={256} height={317} className="w-10 h-auto flex-shrink-0" />
           <div>
             <p className="font-fredoka font-600 text-base text-ink leading-tight">Beaker Breakers</p>
             <p className="text-[11px] text-sub font-800 uppercase tracking-wide">Studio</p>
@@ -155,7 +155,10 @@ export default function Shell({ children }: { children: React.ReactNode }) {
                 className="w-10 h-10 rounded-xl bg-sky text-blue-d text-xl font-900 flex items-center justify-center">
           ☰
         </button>
-        <span className="flex-1 font-fredoka font-600 text-[17px] text-ink">Beaker Breakers</span>
+        <span className="flex-1 flex items-center gap-2 font-fredoka font-600 text-[17px] text-ink">
+          <Image src="/brand/mark.png" alt="" width={256} height={317} className="w-7 h-auto" />
+          Beaker Breakers
+        </span>
         <NotificationBell />
         <div className="flex items-center gap-1.5 bg-gradient-to-r from-orange to-yellow
                         text-white px-3 py-1.5 rounded-full font-fredoka font-600 text-sm">
