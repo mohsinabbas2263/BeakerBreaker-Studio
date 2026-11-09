@@ -18,15 +18,24 @@ use RuntimeException;
  */
 class GameExperimentSeeder extends Seeder
 {
-    public const FILES = ['punjab', 'federal', 'class-11', 'class-12'];
+    public const FILES = ['punjab', 'federal', 'federal-activities', 'class-11', 'class-12'];
 
     /**
      * Old-format experiments a game experiment replaces. They stay in the database,
      * unpublished, so past sessions and quiz attempts keep their experiment.
+     * The eight Federal ones did not match their book pages (see federal-activities.php).
      */
     public const SUPERSEDED = [
         'standardise-naoh' => 'p11-standardise-naoh-game',
         'confirmatory-ion-tests' => 'p11-acid-radicals',
+        'melting-points' => 'f9-water-melting-point',
+        'boiling-points' => 'f9-water-boiling-point',
+        'solubility-temperature' => 'f9-saturated-sugar-solution',
+        'copper-sulphate-crystals' => 'f10-copper-sulphate-from-cuo',
+        'dilution-hcl' => 'f10-dilute-hcl',
+        'standardise-hcl' => 'f10-standardise-hcl',
+        'acid-base-neutral' => 'f10-sodium-chloride-titration',
+        'displacement-reactions' => 'f10-metal-reactivity',
     ];
 
     /** Card colours from the prototype's palette, by grade. */

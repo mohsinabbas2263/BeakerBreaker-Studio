@@ -15,7 +15,7 @@ Chapters 1 to 4 are written and signed off. Development started in October 2026.
 
 | Part | State |
 |---|---|
-| `backend/` | **Running, 184 tests passing** (SQLite; MySQL not yet tested). M1 foundation, licensing by board and class (Classes 9 to 12), M3 teacher features (class monitor, safety review, tasks with automatic states, broadcast) M4 readiness reports, and the game experiment engine with all 26 textbook experiments (Classes 9 to 12) seeded in it. Not built: admin reporting (M5). |
+| `backend/` | **Running, 184 tests passing** (SQLite; MySQL not yet tested). M1 foundation, licensing by board and class (Classes 9 to 12), M3 teacher features (class monitor, safety review, tasks with automatic states, broadcast) M4 readiness reports, and the game experiment engine with all 34 textbook experiments (Classes 9 to 12) seeded in it. Not built: admin reporting (M5). |
 | `Beaker Breakers Studio (2)/` | A working **UI prototype**: vanilla HTML, CSS and JavaScript, 9 student screens, all data hardcoded in `data.js`. No auth, no teacher or admin screens, no backend. It is the visual source of truth, not the application. |
 | `web/` | **Student portal (M2), teacher screens (M3) and readiness reports (M4) built** in Next.js 14. |
 | `mobile/` | Not started. Phase 2, after the web portal is in schools. |

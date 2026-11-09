@@ -86,6 +86,18 @@ experiment built from its Section 23.3.2 (2,4-DNPH, Tollens', Fehling's), so a P
 Class 11-12 student has at least one Class 12 experiment. That section is reading text,
 not a numbered activity.
 
+## State, 9 Nov 2026: every published experiment is a game experiment
+
+All 34 experiments offered come from these books and are written in game format in
+`backend/database/seeders/game/`. Comparing the eight old seeded Federal experiments
+with their book pages showed none matched: the old melting and boiling point used
+naphthalene and a distillation flask where Federal 9 tests the purity of water with ice
+and a beaker; the old standardisation used methyl orange and 25 cm³ where Activity 3.2
+uses phenolphthalein and 10 cm³; the old reactivity experiment put metals in copper
+sulphate where Activity 7.1 puts them in dilute HCl. They were rewritten from the pages
+(`federal-activities.php`) and the old ones unpublished (`GameExperimentSeeder::SUPERSEDED`).
+A student in a Class 9 or 10 now sees 8 experiments in a Punjab school and 16 in a Federal one; in Class 11 or 12, 7 (Punjab) and 6 (Federal).
+
 ## Decision, 8 Nov 2026: textbook experiments only
 
 Only experiments that appear in these textbooks are offered. `ExperimentSeeder::TEXTBOOK`
