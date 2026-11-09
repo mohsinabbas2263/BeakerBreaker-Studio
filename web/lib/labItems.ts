@@ -23,6 +23,17 @@ export const ITEMS: Record<string, { emoji: string; label: string }> = {
   fractionating_column: { emoji: "🏛️", label: "Fractionating column" },
   tweezers: { emoji: "🪡", label: "Tweezers" },
   pencil: { emoji: "✏️", label: "Pencil" },
+  volumetric_flask: { emoji: "🍶", label: "Volumetric flask" },
+  graduated_pipette: { emoji: "💉", label: "Graduated pipette" },
+  pipette: { emoji: "💉", label: "Pipette" },
+  evaporating_dish: { emoji: "🥣", label: "Evaporating dish" },
+  sandpaper: { emoji: "🟫", label: "Sandpaper" },
+  ice_cubes: { emoji: "🧊", label: "Ice cubes" },
+  sugar: { emoji: "🍬", label: "Sugar" },
+  copper_oxide: { emoji: "⚫", label: "Copper(II) oxide" },
+  magnesium: { emoji: "🎗️", label: "Magnesium" },
+  iron: { emoji: "🔩", label: "Iron" },
+  conc_hcl: { emoji: "☠️", label: "Concentrated HCl" },
   cotton_nh3: { emoji: "☁️", label: "Cotton with ammonia" },
   cotton_hcl: { emoji: "☁️", label: "Cotton with HCl" },
   glowing_splint: { emoji: "🪵", label: "Glowing splint" },
@@ -83,6 +94,8 @@ const PLACES: Record<string, string> = {
   column_top: "Top of the column", left_end: "Left end", right_end: "Right end", tube_a: "Tube A", tube_b: "Tube B",
   lane_1: "Lane 1", lane_2: "Lane 2", lane_3: "Lane 3", first: "Add first", second: "Add second",
   chromatography_paper: "Chromatography paper", sodium_metal: "Sodium", gas_tube: "Gas", tray: "Tray",
+  tripod: "Tripod stand", volumetric_flask: "Volumetric flask", conc_hcl: "Concentrated HCl",
+  tube_mg: "Tube: Mg", tube_zn: "Tube: Zn", tube_fe: "Tube: Fe", tube_cu: "Tube: Cu",
 };
 
 export function place(id: string): string {
