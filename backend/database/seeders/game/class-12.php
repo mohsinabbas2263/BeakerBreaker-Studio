@@ -228,6 +228,7 @@ return [
 
     [
         'slug' => 'f12-forensic-ink',
+        'ar' => true,   // FR-05.1: offered in AR mode (web/lib/arScenes.ts draws its bench)
         'title' => 'Crime Lab: Whose Ink Is It?',
         'topic' => 'Chromatography', 'difficulty' => 'medium', 'grade_level' => 12, 'board' => 'federal',
         'chemical_equation' => 'Rf = distance moved by the spot ÷ distance moved by the solvent',
