@@ -13,7 +13,7 @@
 |
 | The Punjab 11 titration book text says to add acid "till the colour becomes light
 | pink persistently"; with phenolphthalein and acid added to alkali the end point is
-| pink turning colourless, which is what this file uses. Check with a teacher.
+| pink turning colourless, which is what this file uses.
 |
 | Extra item ids: sand, salt_sand_mix, distilled_water, condenser, thermometer,
 | fractionating_column, ethanol_water, chromatography_paper, pencil, ink_sample,
@@ -97,6 +97,66 @@ return [
         ],
     ],
 
+
+    [
+        // Punjab 11, Section 15.3.1 (1. Simple distillation), book p319.
+        'slug' => 'p11-simple-distillation',
+        'title' => 'Pure Water from Sea Water',
+        'topic' => 'Separation Methods', 'difficulty' => 'medium', 'grade_level' => 11, 'board' => 'punjab',
+        'chemical_equation' => 'Sea water → water (distillate, 100 °C) + dissolved salts (residue)',
+        'explanatory_note' => 'Simple distillation separates a solvent from a solution. The water boils, its vapour is cooled back to liquid in the condenser and collected as the distillate; the dissolved salts stay behind as the residue. Boiling chips stop the liquid bumping. Punjab 11 Section 15.3.1.',
+        'base_points' => 60, 'estimated_minutes' => 15, 'emoji' => '🌊',
+        'steps' => [
+            $safety(),
+            ['step_order' => 2, 'kind' => 'measure', 'title' => 'Measure the sea water',
+             'instruction_text' => 'Take 100 cm³ of sea water in the distillation flask.',
+             'preauthored_guidance' => 'The book uses 100 cm³ of sea water.',
+             'config' => ['unit' => 'cm³', 'min' => 0, 'max' => 200, 'step' => 5, 'target' => 100, 'tolerance' => 5],
+             'messages' => ['intro' => 'How much sea water goes into the flask?', 'success' => '100 cm³ of sea water in the flask.',
+                            'too_low' => 'A bit more. We need 100 cm³.', 'too_high' => 'Too much: the flask must not be overfilled. 100 cm³.']],
+            ['step_order' => 3, 'kind' => 'choose', 'title' => 'Stop the bumping',
+             'instruction_text' => 'Add something that makes the liquid boil smoothly.',
+             'preauthored_guidance' => 'Without them, the liquid can boil in sudden violent bursts: bumping.',
+             'config' => ['items' => ['boiling_chips', 'sand', 'sodium_chloride'], 'target' => 'flask', 'correct' => 'boiling_chips',
+                          'wrong' => ['sand' => 'procedure', 'sodium_chloride' => 'concept']],
+             'messages' => ['intro' => 'What stops the liquid bumping?', 'success' => 'A few boiling chips. Smooth boiling.',
+                            'sand' => 'Sand would only add dirt to the flask.', 'sodium_chloride' => 'More salt does not help: it is what we want to remove.']],
+            ['step_order' => 4, 'kind' => 'place', 'title' => 'Set up the apparatus',
+             'instruction_text' => 'Fit the condenser to the side arm and put the receiving flask at the end of the condenser.',
+             'preauthored_guidance' => 'Vapour leaves through the side arm, cools in the condenser and drips into the receiver.',
+             'config' => ['items' => ['condenser', 'conical_flask', 'funnel'], 'zones' => ['side_arm', 'condenser_end'],
+                          'answer' => ['side_arm' => 'condenser', 'condenser_end' => 'conical_flask']],
+             'messages' => ['intro' => 'Build it: condenser on the side arm, receiver at the end.', 'success' => 'Apparatus ready and air-tight.',
+                            'funnel' => 'No funnel here. We need the condenser and a receiving flask.']],
+            ['step_order' => 5, 'kind' => 'observe', 'title' => 'Turn on the cooling water',
+             'instruction_text' => 'Which way should the cold water flow through the condenser?',
+             'preauthored_guidance' => 'Water entering at the bottom fills the jacket completely.',
+             'config' => ['options' => ['a' => 'In at the bottom, out at the top', 'b' => 'In at the top, out at the bottom', 'c' => 'No water is needed', 'd' => 'Hot water in at the top'], 'correct' => 'a'],
+             'messages' => ['intro' => 'Turn on the tap slowly.', 'success' => 'In at the bottom: the condenser stays full of cold water.', 'wrong' => 'Think: which way keeps the jacket full of cold water?']],
+            ['step_order' => 6, 'kind' => 'heat', 'title' => 'Heat gently',
+             'instruction_text' => 'Heat the flask gently with the Bunsen burner.',
+             'preauthored_guidance' => 'Gentle heat; the water boils steadily.',
+             'config' => ['levels' => ['low', 'high'], 'sequence' => ['low'], 'min_seconds' => 20],
+             'messages' => ['intro' => 'Light the burner. Gentle heat.', 'success' => 'The water is boiling and drops are collecting in the receiver.',
+                            'too_hot_first' => 'Gently! Strong heat makes the liquid bump.']],
+            ['step_order' => 7, 'kind' => 'read', 'title' => 'Read the thermometer',
+             'instruction_text' => 'Read the steady temperature while the liquid distils.',
+             'preauthored_guidance' => 'It stays at the boiling point of the liquid that is distilling.',
+             'config' => ['unit' => '°C', 'instrument' => 'thermometer', 'value' => 100, 'tolerance' => 1],
+             'messages' => ['intro' => 'Read the thermometer.', 'success' => '100 °C: water is distilling.', 'wrong' => 'Read the steady value on the thermometer.']],
+            ['step_order' => 8, 'kind' => 'observe', 'title' => 'Name what you collected',
+             'instruction_text' => 'The liquid in the receiving flask is called:',
+             'preauthored_guidance' => 'What distils over is the distillate; what stays is the residue.',
+             'config' => ['options' => ['a' => 'Distillate: pure water', 'b' => 'Residue: salty water', 'c' => 'Filtrate', 'd' => 'Solute'], 'correct' => 'a'],
+             'messages' => ['intro' => 'Look in the receiving flask.', 'success' => 'The distillate: pure water. The salts are left in the flask as the residue.', 'wrong' => 'The salts did not boil. What came over?']],
+        ],
+        'quiz' => [
+            ['prompt' => 'Simple distillation separates:', 'options' => ['A solvent from a solution', 'Two miscible liquids', 'An insoluble solid from a liquid', 'Coloured dyes'], 'correct_option' => 0, 'explanation' => 'Two liquids need fractional distillation; insoluble solids need filtration.'],
+            ['prompt' => 'Why are boiling chips added?', 'options' => ['To prevent bumping', 'To make the water salty', 'To colour the liquid', 'To cool the vapour'], 'correct_option' => 0, 'explanation' => 'They give smooth, even boiling.'],
+            ['prompt' => 'What is left in the distillation flask?', 'options' => ['The residue: dissolved salts', 'Pure water', 'Nothing', 'Ethanol'], 'correct_option' => 0, 'explanation' => 'The salts do not boil at 100 °C, so they stay behind.'],
+            ['prompt' => 'What does the condenser do?', 'options' => ['Cools the vapour back to a liquid', 'Heats the solution', 'Filters the salt', 'Measures the temperature'], 'correct_option' => 0, 'explanation' => 'Cold water around it turns the vapour into the distillate.'],
+        ],
+    ],
     [
         'slug' => 'p11-fractional-distillation',
         'title' => 'Fractional Distillation of Ethanol and Water',

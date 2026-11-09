@@ -85,6 +85,13 @@ const Map<String, LabItem> kItems = {
   'ink_crime_scene': LabItem('📝', 'Crime scene ink'),
   'ink_suspect_a': LabItem('🖊️', 'Suspect A\'s pen'),
   'ink_suspect_b': LabItem('🖊️', 'Suspect B\'s pen'),
+  'vinegar': LabItem('🍶', 'Vinegar'),
+  'baking_soda_solution': LabItem('🧂', 'Sodium bicarbonate solution'),
+  'caustic_cleaner': LabItem('☠️', 'Caustic drain cleaner'),
+  'boiling_water': LabItem('♨️', 'Boiling water'),
+  'sea_water': LabItem('🌊', 'Sea water'),
+  'boiling_chips': LabItem('⚪', 'Boiling chips'),
+  'condenser': LabItem('🌀', 'Condenser'),
 };
 
 const Map<String, String> kPlaces = {
@@ -113,6 +120,9 @@ const Map<String, String> kPlaces = {
   'tube_zn': 'Tube: Zn',
   'tube_fe': 'Tube: Fe',
   'tube_cu': 'Tube: Cu',
+  'drain': 'Drain',
+  'side_arm': 'Side arm of the flask',
+  'condenser_end': 'End of the condenser',
 };
 
 const Map<String, Color> kColours = {

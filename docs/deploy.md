@@ -92,7 +92,7 @@ docker compose -f deploy/docker-compose.yml exec app php artisan db:seed --force
 docker compose -f deploy/docker-compose.yml exec app php artisan optimize
 ```
 
-`db:seed` loads the safety questions and the 34 textbook experiments, and also a **demo
+`db:seed` loads the safety questions and the 36 textbook experiments, and also a **demo
 school with test accounts** (`DemoSchoolSeeder`). Before real students are added, remove
 the demo accounts or change their passwords in the admin panel.
 

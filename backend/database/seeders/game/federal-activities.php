@@ -20,7 +20,7 @@
 |   Federal 10 Activity 6.3  p78   copper(II) sulphate from copper(II) oxide
 |   Federal 10 Activity 7.1  p91   reactivity of Mg, Zn, Fe, Cu with dilute HCl
 |
-| Notes for the teacher check:
+| Where the game differs from the page, and why:
 | - Activity 3.1 transfers the acid into the flask and then adds water to the mark.
 |   The game has the student put some distilled water in the flask first, the safe
 |   habit of adding acid to water; the result is the same 250 cm3 of 0.1 M.

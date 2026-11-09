@@ -29,11 +29,11 @@ class GameContentTest extends TestCase
     {
         $slugs = collect((new GameExperimentSeeder)->load())->pluck('slug');
 
-        $this->assertCount(34, $slugs);
-        $this->assertSame(34, Experiment::whereIn('slug', $slugs)->where('is_published', true)->count());
+        $this->assertCount(36, $slugs);
+        $this->assertSame(36, Experiment::whereIn('slug', $slugs)->where('is_published', true)->count());
 
         // Every published experiment is now a game experiment from the books.
-        $this->assertSame(34, Experiment::where('is_published', true)->count());
+        $this->assertSame(36, Experiment::where('is_published', true)->count());
         $this->assertSame(12, Experiment::where('slug', 'f12-forensic-ink')->value('grade_level'));
         $this->assertSame('punjab', Experiment::where('slug', 'p11-acid-radicals')->value('board'));
     }
