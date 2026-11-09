@@ -98,7 +98,7 @@ enforced on the server (`FR-09.1`, `SR-04`).
 ## Stack, and why
 
 Laravel 12 on PHP 8.2 for the API and the Filament administrator panel. MySQL 8 for data,
-Redis 7 for cache, queues and the leaderboard. Next.js 14 with React 18 for the web portal,
+Redis 7 for cache, queues and the leaderboard. Next.js 15 with React 18 for the web portal,
 delivered as a PWA. AWS S3 behind Cloudflare for assets.
 
 External services: Gemini (guidance and readiness classification), ElevenLabs (avatar
@@ -170,6 +170,10 @@ Record any further ones here, with the reason. These three are already decided:
 7. **A twenty-second table, `daily_missions`** (`FR-07.3`): which three missions a
    student was given on a day (Pakistan time) and when each was completed. The data
    dictionary has nowhere to keep it. Chapter 4's data dictionary needs this row.
+8. **Next.js 15.5, not Next.js 14** (9 Nov 2026). Every 14.2 release, the last one
+   included, has open advisories, two of them critical (remote code execution in
+   image optimisation, fixed only from 15.5.28). React stays 18, which Next 15
+   accepts. Chapter 4 (Table 17) says Next.js 14.x and needs updating.
 
 ---
 

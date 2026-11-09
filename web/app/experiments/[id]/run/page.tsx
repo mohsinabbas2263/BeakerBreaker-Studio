@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import Shell from "@/components/layout/Shell";
 import GameStep from "@/components/game/GameStep";
 import Confetti from "@/components/ui/Confetti";
@@ -20,8 +20,9 @@ import { useGameRunner } from "@/lib/useGameRunner";
  * FR-03.7  Ask AI answers about the current step; with the AI service down the API
  *          answers with the pre-authored line (NFR-06), as does every avatar line.
  */
-export default function ExperimentRunnerPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default function ExperimentRunnerPage() {
+  // Next 15: a page's params arrive as a Promise; the hook reads them directly.
+  const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const { user } = useAuth();
   const {

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useParams } from "next/navigation";
 import Shell from "@/components/layout/Shell";
 import Confetti from "@/components/ui/Confetti";
 import { beakySay } from "@/components/ui/Beaky";
@@ -47,8 +47,9 @@ interface QuizSubmitResult {
   badges_awarded?: Badge[];
 }
 
-export default function QuizPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default function QuizPage() {
+  // Next 15: a page's params arrive as a Promise; the hook reads them directly.
+  const { id } = useParams<{ id: string }>();
   const sessionParam = useSearchParams().get("session");
   const toast = useToast();
 
