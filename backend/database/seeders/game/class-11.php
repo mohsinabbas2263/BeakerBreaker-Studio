@@ -147,6 +147,7 @@ return [
 
     [
         'slug' => 'p11-paper-chromatography',
+        'ar' => true,   // FR-05.1: offered in AR mode (web/lib/arScenes.ts draws its bench)
         'title' => 'Paper Chromatography and Rf',
         'topic' => 'Separation Methods', 'difficulty' => 'medium', 'grade_level' => 11, 'board' => 'punjab',
         'chemical_equation' => 'Rf = distance moved by the spot ÷ distance moved by the solvent',

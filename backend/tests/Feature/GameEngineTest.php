@@ -207,6 +207,33 @@ class GameEngineTest extends TestCase
         $this->postJson("/api/sessions/{$s}/steps/{$other->id}/actions", ['action' => []])->assertStatus(422);
     }
 
+    /**
+     * FR-05.5: AR mode, live or simulated, plays through the same game endpoint
+     * with the same server judging; the old one-tap endpoint stays closed to it.
+     */
+    public function test_an_ar_session_is_played_through_the_same_game_steps(): void
+    {
+        $this->experiment->update(['ar_available' => true]);
+
+        $s = $this->postJson("/api/experiments/{$this->experiment->id}/start", ['presentation_mode' => 'ar'])
+            ->assertCreated()->assertJsonPath('session.presentation_mode', 'ar')->json('session.id');
+
+        $this->postJson("/api/sessions/{$s}/steps", ['step_id' => $this->steps[1]->id])
+            ->assertStatus(422)->assertJsonPath('code', 'use_actions');
+
+        $this->act($s, 1, ['item' => 'sandals'])->assertJsonPath('outcome', 'mistake')->assertJsonPath('category', 'safety');
+        $this->act($s, 1, ['item' => 'goggles']);
+        $this->act($s, 1, ['item' => 'coat'])->assertJsonPath('step_complete', true);
+
+        $this->assertSame(3, StepAction::where('session_id', $s)->count());
+    }
+
+    public function test_ar_is_refused_where_the_experiment_has_none(): void
+    {
+        $this->postJson("/api/experiments/{$this->experiment->id}/start", ['presentation_mode' => 'ar'])
+            ->assertStatus(422)->assertJsonPath('code', 'ar_unavailable');
+    }
+
     public function test_step_actions_are_insert_only(): void
     {
         $s = $this->start();

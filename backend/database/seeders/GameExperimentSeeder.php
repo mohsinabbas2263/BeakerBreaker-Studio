@@ -84,7 +84,7 @@ class GameExperimentSeeder extends Seeder
             'board' => $data['board'],
             'chemical_equation' => $data['chemical_equation'],
             'explanatory_note' => $data['explanatory_note'],
-            'ar_available' => false,
+            'ar_available' => $data['ar'] ?? false,
             'base_points' => $data['base_points'],
             'estimated_minutes' => $data['estimated_minutes'],
             'emoji' => $data['emoji'],

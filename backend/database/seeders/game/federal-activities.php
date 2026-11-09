@@ -349,6 +349,7 @@ return [
 
     [
         'slug' => 'f10-metal-reactivity',
+        'ar' => true,   // FR-05.1: offered in AR mode (web/lib/arScenes.ts draws its bench)
         'title' => 'Which Metal Is Most Reactive?',
         'topic' => 'Reactivity', 'difficulty' => 'easy', 'grade_level' => 10, 'board' => 'federal',
         'chemical_equation' => 'Mg + 2HCl → MgCl₂ + H₂;  Zn + 2HCl → ZnCl₂ + H₂;  Fe + 2HCl → FeCl₂ + H₂;  Cu + HCl → no reaction',

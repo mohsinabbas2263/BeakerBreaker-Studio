@@ -99,4 +99,24 @@ class GameContentTest extends TestCase
             default => [[]],
         };
     }
+
+    /**
+     * FR-05.1: at least four experiments in AR, and one in each board's pair of
+     * classes, so every licensed student has at least one AR experiment to open.
+     */
+    public function test_at_least_four_experiments_offer_ar_and_every_board_and_class_pair_has_one(): void
+    {
+        $ar = Experiment::where('is_published', true)->where('ar_available', true)->get();
+
+        $this->assertGreaterThanOrEqual(4, $ar->count());
+
+        foreach (['punjab', 'federal'] as $board) {
+            foreach ([[9, 10], [11, 12]] as $pair) {
+                $this->assertTrue(
+                    $ar->contains(fn ($e) => in_array($e->board, [$board, 'both'], true) && in_array($e->grade_level, $pair, true)),
+                    "no AR experiment for {$board} classes ".implode(' and ', $pair),
+                );
+            }
+        }
+    }
 }

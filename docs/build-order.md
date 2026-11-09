@@ -95,6 +95,19 @@ demand: unsupported device, refused camera permission, undetected surface.
 **Done when:** all three fallbacks land on the same simulated presentation with identical
 controls, and no AR path is the only way to finish an experiment.
 
+**State, 9 Nov 2026:** built on the game engine. Five experiments have AR (`'ar' => true`
+in `backend/database/seeders/game/`), at least one for each board and pair of classes
+(`GameContentTest`): copper sulphate heating, HCl and NH₃ diffusion, metal reactivity,
+paper chromatography, forensic ink. `web/app/ar/page.tsx` plays them through
+`useGameRunner`, the same moves and server judging as the standard runner, with the bench
+drawn in 3D (three.js, `components/ar/labRig.ts`) on the desk in live AR and in the
+labelled simulation. Checked in a desktop browser only: the "unsupported" fallback
+appeared 28 ms after Launch AR and a move was judged by the server. **Not yet run on a
+phone:** live AR, the camera refused path, the no-surface path, and the 3-second surface
+detection (`NFR-12`, 5 Android and 2 iOS models). The live page shows "Desk found in
+x s" so the testers can write the time down. iPhones have no WebXR AR in Safari, so they
+always get the simulation.
+
 ## M7. Notifications
 
 `FR-09.6`, `FR-09.7`. Web push first, through the PWA; FCM device tokens are already

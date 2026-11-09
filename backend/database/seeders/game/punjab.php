@@ -39,6 +39,7 @@ return [
 
     [
         'slug' => 'p9-hydrated-copper-sulphate',
+        'ar' => true,   // FR-05.1: offered in AR mode (web/lib/arScenes.ts draws its bench)
         'title' => 'Heating Blue Copper Sulphate',
         'topic' => 'Reversible Reactions', 'difficulty' => 'easy', 'grade_level' => 9, 'board' => 'both',
         'chemical_equation' => 'CuSO₄·5H₂O(s) ⇌ CuSO₄(s) + 5H₂O(l)',
@@ -194,6 +195,7 @@ return [
 
     [
         'slug' => 'p10-diffusion-hcl-nh3',
+        'ar' => true,   // FR-05.1: offered in AR mode (web/lib/arScenes.ts draws its bench)
         'title' => 'Which Gas Diffuses Faster?',
         'topic' => 'Gases', 'difficulty' => 'medium', 'grade_level' => 10, 'board' => 'punjab',
         'chemical_equation' => 'NH₃(g) + HCl(g) → NH₄Cl(s)',
