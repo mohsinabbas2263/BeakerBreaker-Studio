@@ -40,7 +40,7 @@ class ProfileTest extends TestCase
         $badges = collect($this->getJson('/api/profile')->assertOk()->json('badges'))->keyBy('code');
 
         $this->assertSame(
-            ['code' => 'safety_tier_1', 'name' => 'Safety Tier 1', 'icon' => '🛡️'],
+            ['code' => 'safety_tier_1', 'name' => 'Safety Tier 1', 'icon' => '🛡️', 'description' => 'Pass safety tier 1.'],
             $badges['safety_tier_1'],
         );
         $this->assertSame('Neutralisation Titration', $badges['experiment_acid-base-neutral']['name']);

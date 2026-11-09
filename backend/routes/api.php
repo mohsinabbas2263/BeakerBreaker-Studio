@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ExperimentController;
 use App\Http\Controllers\Api\LeaderboardController;
+use App\Http\Controllers\Api\MissionController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\QuizController;
@@ -47,6 +48,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/experiments/{experiment}/quiz', [QuizController::class, 'submit']);
 
         Route::get('/leaderboard', [LeaderboardController::class, 'index']);
+        Route::get('/missions', [MissionController::class, 'index']);                       // FR-07.3
         Route::get('/readiness', [ReadinessController::class, 'mine']);                      // FR-08.6
         Route::get('/profile', [ProfileController::class, 'show']);
         Route::patch('/profile', [ProfileController::class, 'update']);

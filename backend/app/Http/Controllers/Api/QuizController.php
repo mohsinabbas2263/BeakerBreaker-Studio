@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Models\Experiment;
 use App\Models\ExperimentQuizQuestion;
 use App\Models\QuizAttempt;
+use App\Services\AchievementService;
 use App\Services\RewardService;
+use App\Support\Badges;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -22,7 +24,10 @@ class QuizController extends Controller
         return "quiz_attempt:{$id}";
     }
 
-    public function __construct(protected RewardService $rewards) {}
+    public function __construct(
+        protected RewardService $rewards,
+        protected AchievementService $achievements,
+    ) {}
 
     /** FR-04.1: available only after every step is complete. FR-04.5: fresh order each time. */
     public function show(Request $request, Experiment $experiment): JsonResponse
@@ -160,9 +165,11 @@ class QuizController extends Controller
         }
 
         $this->rewards->recordActivity($user);
+        $badges = $this->achievements->refresh($user);   // FR-06.3, FR-07.3
 
         return response()->json([
             'attempt_id' => $attempt->id,
+            'badges_awarded' => Badges::describe($badges),
             'score' => $score,
             'passed' => $passed,
             'pass_mark' => self::PASS_MARK,
