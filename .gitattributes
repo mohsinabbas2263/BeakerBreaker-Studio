@@ -1,0 +1,4 @@
+
+# deploy/ runs on Linux: shell scripts and configs must keep LF line endings.
+*.sh text eol=lf
+deploy/** text eol=lf
