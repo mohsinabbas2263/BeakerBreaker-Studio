@@ -36,7 +36,7 @@ class _SimBenchState extends State<SimBench> with SingleTickerProviderStateMixin
       onEnd: () => _angle = target,
       builder: (context, angle, _) => AnimatedBuilder(
         animation: _sway,
-        builder: (context, __) {
+        builder: (context, _) {
           _angle = angle;
           final sway = math.sin(_sway.value * 2 * math.pi) * .08;
           return CustomPaint(painter: _BenchPainter(widget.bench, angle + sway), size: Size.infinite);

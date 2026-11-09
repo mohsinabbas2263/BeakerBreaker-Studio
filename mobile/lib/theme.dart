@@ -41,7 +41,7 @@ ThemeData buildTheme() {
     scaffoldBackgroundColor: C.page,
   );
   return base.copyWith(
-    textTheme: GoogleFonts.nunitoTextTheme(base.textTheme).apply(bodyColor: C.ink, displayColor: C.ink),
+    textTheme: base.textTheme.apply(fontFamily: GoogleFonts.nunito().fontFamily, bodyColor: C.ink, displayColor: C.ink),
     appBarTheme: AppBarTheme(
       backgroundColor: Colors.white,
       foregroundColor: C.ink,

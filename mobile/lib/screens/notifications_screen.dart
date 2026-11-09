@@ -35,7 +35,7 @@ class NotificationsScreen extends StatelessWidget {
             child: ListView.separated(
               padding: const EdgeInsets.all(16),
               itemCount: rows.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 10),
+              separatorBuilder: (context, i) => const SizedBox(height: 10),
               itemBuilder: (context, i) {
                 final n = rows[i];
                 final alert = n['notification_type'] == 'safety_alert';

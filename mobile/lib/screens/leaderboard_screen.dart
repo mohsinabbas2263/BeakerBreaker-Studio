@@ -22,7 +22,7 @@ class LeaderboardScreen extends StatelessWidget {
             child: ListView.separated(
               padding: const EdgeInsets.all(16),
               itemCount: rows.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 8),
+              separatorBuilder: (context, i) => const SizedBox(height: 8),
               itemBuilder: (context, i) {
                 final r = rows[i];
                 final me = r['is_me'] == true;
