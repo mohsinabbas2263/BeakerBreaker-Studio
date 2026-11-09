@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -30,7 +31,7 @@ export default function TeacherShell({ children }: { children: React.ReactNode }
   if (loading || !user || user.role !== "teacher") {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <span className="text-4xl animate-spin">⚗️</span>
+        <Image src="/brand/mark.png" alt="" width={256} height={317} className="w-12 h-auto animate-pulse" />
       </div>
     );
   }
@@ -39,7 +40,7 @@ export default function TeacherShell({ children }: { children: React.ReactNode }
     <div className="min-h-screen">
       <header className="sticky top-0 z-[900] bg-white/95 backdrop-blur-xl border-b-2 border-blue/20 shadow-sm">
         <div className="max-w-5xl mx-auto flex items-center gap-3 px-4 py-3 flex-wrap">
-          <span className="text-3xl" aria-hidden>⚗️</span>
+          <Image src="/brand/mark.png" alt="" width={256} height={317} className="w-9 h-auto" />
           <div className="mr-auto">
             <p className="font-fredoka font-600 text-base text-ink leading-tight">Beaker Breakers</p>
             <p className="text-[11px] text-sub font-800 uppercase tracking-wide">Teacher</p>

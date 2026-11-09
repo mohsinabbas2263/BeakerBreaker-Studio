@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 /** The card layout shared by the sign-in, forgot-password and reset-password screens. */
@@ -7,9 +8,8 @@ export default function AuthCard({ title, children }: { title: string; children:
          style={{ background: "linear-gradient(135deg,#E8F4FD 0%,#C8F7E4 50%,#FFF9C4 100%)" }}>
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <div className="text-7xl mb-3" aria-hidden
-               style={{ filter: "drop-shadow(0 8px 16px rgba(79,195,247,.4))" }}>⚗️</div>
-          <p className="font-fredoka font-600 text-3xl text-ink">Beaker Breakers</p>
+          <Image src="/brand/logo.png" alt="Beaker Breakers Studio" width={720} height={970} priority
+                 className="w-40 h-auto mx-auto mb-2" style={{ filter: "drop-shadow(0 8px 16px rgba(79,195,247,.25))" }} />
           <p className="text-sub font-700 text-sm mt-1">Virtual Chemistry Lab</p>
         </div>
 

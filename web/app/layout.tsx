@@ -6,7 +6,6 @@ export const metadata: Metadata = {
   title: "Beaker Breakers Studio",
   description: "AI-powered gamified virtual chemistry laboratory for secondary schools",
   manifest: "/manifest.json",
-  icons: { icon: "/assets/logo.png", apple: "/assets/logo.png" },
 };
 
 export const viewport: Viewport = {
