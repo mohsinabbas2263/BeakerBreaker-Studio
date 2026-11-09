@@ -17,7 +17,7 @@ Chapters 1 to 4 are written and signed off. Development started in October 2026.
 |---|---|
 | `backend/` | **Running, 199 tests passing** (SQLite; all also pass on MySQL 8.4). M1 foundation, licensing by board and class (Classes 9 to 12), M3 teacher features (class monitor, safety review, tasks with automatic states, broadcast) M4 readiness reports, and the game experiment engine with all 34 textbook experiments (Classes 9 to 12) seeded in it. Not built: admin reporting (M5). |
 | `Beaker Breakers Studio (2)/` | A working **UI prototype**: vanilla HTML, CSS and JavaScript, 9 student screens, all data hardcoded in `data.js`. No auth, no teacher or admin screens, no backend. It is the visual source of truth, not the application. |
-| `web/` | **Student portal (M2), teacher screens (M3), readiness reports (M4) and AR mode (M6) built** in Next.js 14. AR has been checked in a desktop browser only, not yet on phones. |
+| `web/` | **Student portal (M2), teacher screens (M3), readiness reports (M4) and AR mode (M6) built** in Next.js 15. AR has been checked in a desktop browser only, not yet on phones. |
 | `mobile/` | Not started. Phase 2, after the web portal is in schools. |
 
 ---
@@ -115,7 +115,7 @@ mentions the mobile application, say so as roadmap rather than as something buil
 ```
 backend/                      Laravel 12 API and Filament admin panel
 Beaker Breakers Studio (2)/   the UI prototype (vanilla HTML/CSS/JS)
-web/                          Next.js 14 portal (M2)
+web/                          Next.js 15 portal (M2)
 mobile/                       Flutter app (Phase 2)
 docs/                         the specification, in markdown
 FYP/                          diagrams and wireframes
