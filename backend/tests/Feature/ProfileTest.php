@@ -77,7 +77,8 @@ class ProfileTest extends TestCase
             'target_reference' => "user:{$this->student->id}",
         ]);
         $entry = AuditLog::where('action_type', 'profile.name_changed')->first();
-        $this->assertSame(['from' => $old, 'to' => 'Ayesha Khan'], $entry->context);
+        // assertEquals: MySQL stores JSON object keys in its own order.
+        $this->assertEquals(['from' => $old, 'to' => 'Ayesha Khan'], $entry->context);
     }
 
     public function test_an_urdu_name_is_accepted(): void

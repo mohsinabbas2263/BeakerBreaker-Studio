@@ -1,0 +1,10 @@
+# SR-06: student data encrypted while stored. Needs the keyring component loaded
+# through mysqld.my and component_keyring_file.cnf (see README.md).
+[mysqld]
+# Every new table is created encrypted, and nobody may create one that is not.
+default_table_encryption = ON
+table_encryption_privilege_check = ON
+# The logs hold row data too.
+innodb_redo_log_encrypt = ON
+innodb_undo_log_encrypt = ON
+binlog_encryption = ON

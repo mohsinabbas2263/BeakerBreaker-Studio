@@ -16,6 +16,13 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\EnsureRole::class,
         ]);
+
+        // SR-02: security headers on every response, HSTS in production.
+        $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
+
+        // Behind the TLS proxy (deploy/Caddyfile) the app sees plain HTTP from the proxy;
+        // trusting it is what makes request URLs and secure cookies come out as https.
+        $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
