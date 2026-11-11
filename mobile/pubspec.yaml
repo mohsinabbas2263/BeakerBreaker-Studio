@@ -58,6 +58,14 @@ dev_dependencies:
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
+# arcore_flutter_plus 1.0.2 was written for Gradle 7: its build.gradle reads
+# `configurations.all` and `lintOptions`, which Gradle 9 and AGP 9 removed, so the
+# Android build fails. packages/arcore_flutter_plus is the same release (MIT) with
+# only those lines and compileSdk changed (PATCHED.md). Drop this once a fixed version is on pub.dev.
+dependency_overrides:
+  arcore_flutter_plus:
+    path: packages/arcore_flutter_plus
+
 flutter:
 
   # The following line ensures that the Material Icons font is

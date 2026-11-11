@@ -69,9 +69,12 @@ class _ExperimentsScreenState extends State<ExperimentsScreen> {
       );
 }
 
-Color _parseGradientStart(String? css) {
-  final m = RegExp(r'#([0-9A-Fa-f]{6})').firstMatch(css ?? '');
-  return m == null ? C.blue : Color(int.parse('FF${m.group(1)}', radix: 16));
+/// The colours of the server's CSS `card_gradient`, e.g. a pastel then a strong
+/// tone, so the card looks the same as on the web portal.
+List<Color> _gradientColours(String? css) {
+  final hex = RegExp(r'#([0-9A-Fa-f]{6})').allMatches(css ?? '').map((m) => Color(int.parse('FF${m.group(1)}', radix: 16))).toList();
+  if (hex.isEmpty) return [C.sky, const Color(0xFFBBDEFB)];
+  return hex.length == 1 ? [hex.first, hex.first] : hex;
 }
 
 class _ExperimentCard extends StatelessWidget {
@@ -82,7 +85,7 @@ class _ExperimentCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final locked = e['locked'] == true;
-    final top = _parseGradientStart(e['card_gradient'] as String?);
+    final colours = _gradientColours(e['card_gradient'] as String?);
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Opacity(
@@ -94,7 +97,7 @@ class _ExperimentCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                gradient: LinearGradient(colors: [top, top.withValues(alpha: .7)]),
+                gradient: LinearGradient(colors: colours, begin: Alignment.topLeft, end: Alignment.bottomRight),
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
               ),
               child: Row(children: [
@@ -102,11 +105,11 @@ class _ExperimentCard extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text('${e['title']}', style: fredoka(16, color: Colors.white)),
-                    Text('${e['topic']}', style: nunito(12, color: Colors.white)),
+                    Text('${e['title']}', style: fredoka(16, color: C.ink)),
+                    Text('${e['topic']}', style: nunito(12, color: C.sub, weight: FontWeight.w700)),
                   ]),
                 ),
-                if (e['completed'] == true) const Text('✓', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w900)),
+                if (e['completed'] == true) const Text('✓', style: TextStyle(color: C.greenD, fontSize: 20, fontWeight: FontWeight.w900)),
                 if (locked) const Text('🔒', style: TextStyle(fontSize: 20)),
               ]),
             ),

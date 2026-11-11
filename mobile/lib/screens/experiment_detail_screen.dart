@@ -97,15 +97,15 @@ class ExperimentDetailScreen extends StatelessWidget {
                   child: const Text('🥽 Play in AR Mode'),
                 ),
               ],
-              // FR-04.1: the server opens the quiz only after every step of a run;
-              // until then the quiz screen shows its reason.
-              if (resume == null) ...[
-                const SizedBox(height: 4),
-                TextButton(
-                  onPressed: () => open(QuizScreen(experimentId: id)),
-                  child: Text('📝 Take the quiz', style: nunito(14, color: C.purple, weight: FontWeight.w900)),
-                ),
-              ],
+              // FR-04.1: the server opens the quiz only after every step of a run,
+              // and the quiz screen shows its reason until then. The link stays
+              // visible during a second run, because a student who finished an
+              // earlier run may still take the quiz.
+              const SizedBox(height: 4),
+              TextButton(
+                onPressed: () => open(QuizScreen(experimentId: id)),
+                child: Text('📝 Take the quiz', style: nunito(14, color: C.purple, weight: FontWeight.w900)),
+              ),
             ],
           ]);
         },

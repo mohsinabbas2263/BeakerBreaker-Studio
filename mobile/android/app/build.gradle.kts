@@ -6,7 +6,10 @@ plugins {
 
 android {
     namespace = "pk.edu.uoc.beakerbreakers.beaker_breakers"
-    compileSdk = flutter.compileSdkVersion
+    // permission_handler_android 14.1.1 must be compiled against SDK 37 (Flutter defaults
+    // to 36). Only the compile SDK changes; minSdk and targetSdk, which decide the phones
+    // and the runtime behaviour, stay as they are.
+    compileSdk = 37
     ndkVersion = flutter.ndkVersion
 
     compileOptions {

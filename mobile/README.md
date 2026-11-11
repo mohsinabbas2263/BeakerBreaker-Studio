@@ -62,12 +62,24 @@ py -3 -I tool/gen_lab_items.py ..
   end
   ```
 
+## Building on Windows
+
+- If Gradle stops with `Unable to establish loopback connection`, the user's TEMP path
+  (a space, or a short `NAME~1` form) is the cause. Point Java at a plain folder for the build:
+  `set JAVA_TOOL_OPTIONS=-Djdk.net.unixdomain.tmpdir=C:\src	mp` (and `TEMP`/`TMP` to the same folder).
+- `compileSdk` is 37 because `permission_handler_android` needs it; `minSdk` 24 and
+  `targetSdk` are unchanged.
+- `arcore_flutter_plus` is used from `packages/` with three build lines fixed for Gradle 9
+  (`packages/arcore_flutter_plus/PATCHED.md`), and `android.uniquePackageNames=false`
+  lets its Sceneform libraries share a namespace.
+
 ## Checked so far
 
 | Check | State |
 |---|---|
 | `flutter analyze` | ✅ no issues |
 | `flutter test` | ❌ blocked on the development PC: Windows Smart App Control stops `flutter_tester.exe` |
-| Android debug build | see the commit that adds this line |
-| Run on an emulator or phone | ❌ not yet |
+| Android debug build | ✅ 11 Nov 2026, Flutter 3.47.9, AGP 9.1, Gradle 9.3.1, Java 21 (Android Studio's JBR) |
+| Run on an emulator (Pixel 5, Android 11) | ✅ 11 Nov 2026 against the local backend: login, home with missions, labs list, experiment detail, game steps (gear with a wrong and right move, measure), Safety tiers, quiz opens, AR Mode falls back to the labelled simulation (no ARCore on the emulator) |
+| Run on a real phone, live AR | ❌ not yet: needs an Android phone with ARCore (`NFR-12`) |
 | iOS build | ❌ needs a Mac |
