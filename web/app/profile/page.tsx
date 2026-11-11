@@ -177,10 +177,12 @@ export default function ProfilePage() {
         {/* Badges */}
         {data.badges.length > 0 && (
           <div>
-            <h2 className="font-fredoka font-600 text-lg text-ink mb-3">Badges</h2>
+            <h2 className="font-fredoka font-600 text-lg text-ink mb-3">
+              Badges{data.badges_total ? <span className="text-sm text-sub font-800"> · {data.badges.length} of {data.badges_total}</span> : null}
+            </h2>
             <div className="flex flex-wrap gap-2">
               {data.badges.map(b => (
-                <span key={b.code}
+                <span key={b.code} title={b.description}
                       className="px-3 py-1.5 bg-white rounded-full shadow-sm
                                  font-nunito font-800 text-sm text-ink border-2 border-blue/20">
                   {b.icon} {b.name}

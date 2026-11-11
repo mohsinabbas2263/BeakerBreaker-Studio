@@ -1,0 +1,1 @@
+Patched copy of arcore_flutter_plus 1.0.2 (MIT, see LICENSE). Changed: android/build.gradle, configurations.all -> configurations and lintOptions -> lint, compileSdk 34 -> 36 (its AndroidX dependencies need 35 or later), for Gradle 9 / AGP 9. example/ removed.

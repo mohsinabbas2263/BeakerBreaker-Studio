@@ -15,9 +15,9 @@ Chapters 1 to 4 are written and signed off. Development started in October 2026.
 
 | Part | State |
 |---|---|
-| `backend/` | **Running, 189 tests passing** (SQLite; all also pass on MySQL 8.4). M1 foundation, licensing by board and class (Classes 9 to 12), M3 teacher features (class monitor, safety review, tasks with automatic states, broadcast) M4 readiness reports, and the game experiment engine with all 34 textbook experiments (Classes 9 to 12) seeded in it. Not built: admin reporting (M5). |
+| `backend/` | **Running, 203 tests passing** (SQLite; the first 199 also passed on MySQL 8.4). M1 foundation, licensing by board and class (Classes 9 to 12), M3 teacher features (class monitor, safety review, tasks with automatic states, broadcast) M4 readiness reports, and the game experiment engine with all 36 textbook experiments (Classes 9 to 12) seeded in it. Not built: admin reporting (M5). |
 | `Beaker Breakers Studio (2)/` | A working **UI prototype**: vanilla HTML, CSS and JavaScript, 9 student screens, all data hardcoded in `data.js`. No auth, no teacher or admin screens, no backend. It is the visual source of truth, not the application. |
-| `web/` | **Student portal (M2), teacher screens (M3), readiness reports (M4) and AR mode (M6) built** in Next.js 14. AR has been checked in a desktop browser only, not yet on phones. |
+| `web/` | **Student portal (M2), teacher screens (M3), readiness reports (M4) and AR mode (M6) built** in Next.js 15. AR has been checked in a desktop browser only, not yet on phones. |
 | `mobile/` | Not started. Phase 2, after the web portal is in schools. |
 
 ---
@@ -98,7 +98,7 @@ enforced on the server (`FR-09.1`, `SR-04`).
 ## Stack, and why
 
 Laravel 12 on PHP 8.2 for the API and the Filament administrator panel. MySQL 8 for data,
-Redis 7 for cache, queues and the leaderboard. Next.js 14 with React 18 for the web portal,
+Redis 7 for cache, queues and the leaderboard. Next.js 15 with React 18 for the web portal,
 delivered as a PWA. AWS S3 behind Cloudflare for assets.
 
 External services: Gemini (guidance and readiness classification), ElevenLabs (avatar
@@ -115,7 +115,7 @@ mentions the mobile application, say so as roadmap rather than as something buil
 ```
 backend/                      Laravel 12 API and Filament admin panel
 Beaker Breakers Studio (2)/   the UI prototype (vanilla HTML/CSS/JS)
-web/                          Next.js 14 portal (M2)
+web/                          Next.js 15 portal (M2)
 mobile/                       Flutter app (Phase 2)
 docs/                         the specification, in markdown
 FYP/                          diagrams and wireframes
@@ -167,6 +167,13 @@ Record any further ones here, with the reason. These three are already decided:
    Every move inside a step is recorded, insert only, because the readiness report
    (`FR-08.1`) is computed from it. `readiness_reports` also gains `formula_version`.
    Chapter 4's data dictionary needs these rows.
+7. **A twenty-second table, `daily_missions`** (`FR-07.3`): which three missions a
+   student was given on a day (Pakistan time) and when each was completed. The data
+   dictionary has nowhere to keep it. Chapter 4's data dictionary needs this row.
+8. **Next.js 15.5, not Next.js 14** (9 Nov 2026). Every 14.2 release, the last one
+   included, has open advisories, two of them critical (remote code execution in
+   image optimisation, fixed only from 15.5.28). React stays 18, which Next 15
+   accepts. Chapter 4 (Table 17) says Next.js 14.x and needs updating.
 
 ---
 

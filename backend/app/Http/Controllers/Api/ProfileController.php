@@ -39,6 +39,7 @@ class ProfileController extends Controller
             'certificate' => $user->certificate,
             // FR-06.3: each badge with the name a student reads, not its code.
             'badges' => Badges::describe($badges),
+            'badges_total' => count(Badges::catalogue()),
         ]);
     }
 

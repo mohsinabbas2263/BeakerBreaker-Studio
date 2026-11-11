@@ -114,6 +114,8 @@ export interface Profile {
   safety_tier_passed: number;
   experiments_completed: number;
   badges: Badge[];
+  /** FR-06.3: how many badges exist to earn. */
+  badges_total?: number;
   certificate: Certificate | null;
   /** The class title, e.g. "Class 10-A". */
   class: string | null;
@@ -124,6 +126,27 @@ export interface Badge {
   code: string;
   name: string;
   icon: string;
+  /** What earns it, in one line. */
+  description?: string;
+}
+
+// ─── Daily missions (FR-07.3) ────────────────────────────────────────────────
+
+export interface Mission {
+  code: string;
+  title: string;
+  icon: string;
+  target: number;
+  progress: number;
+  completed: boolean;
+}
+
+export interface MissionsResponse {
+  /** The mission day, in Pakistan time. */
+  date: string;
+  /** When the next set arrives: midnight Pakistan time, as an ISO date. */
+  resets_at: string;
+  missions: Mission[];
 }
 
 // ─── Safety ───────────────────────────────────────────────────────────────────
@@ -166,6 +189,7 @@ export interface SafetySubmitResponse {
   may_reattempt: boolean;
   next_tier_available: boolean;
   certificate: Certificate | null;
+  badges_awarded?: Badge[];
 }
 
 export interface Certificate {
@@ -247,6 +271,8 @@ export interface StepActionResponse {
   steps_completed: number;
   step_count: number;
   quiz_unlocked: boolean;
+  /** FR-06.3: badges this move earned. */
+  badges_awarded?: Badge[];
 }
 
 export interface ResumeInfo {
