@@ -22,7 +22,10 @@ workflows:
         # API_URL lives in Codemagic (Environment variables, group "beaker"), so the
         # address can change without a commit.
         - beaker
-      flutter: stable
+      # The version the app is written and tested with (the Android build too).
+      # "stable" moved to 3.50, which deprecates package:flutter/material.dart;
+      # move to it deliberately, not by accident.
+      flutter: 3.47.9
       xcode: latest
       vars:
         # permission_handler compiles the camera permission in only when asked
@@ -42,7 +45,9 @@ workflows:
       - name: Packages
         script: flutter pub get
       - name: Analyze
-        script: flutter analyze
+        # Errors and warnings stop the build; info notes (such as a deprecation
+        # notice in a newer Flutter) are printed but do not.
+        script: flutter analyze --no-fatal-infos
       - name: Build for iPhone (release, unsigned)
         # Release, because an iPhone will not start a debug build without a
         # debugger attached.
