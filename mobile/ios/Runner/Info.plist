@@ -4,6 +4,15 @@
 <dict>
 	<key>NSCameraUsageDescription</key>
 	<string>AR mode uses the camera to find your desk and put the lab bench on it. Nothing is recorded or uploaded.</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<!-- Test builds talk to a backend on the same Wi-Fi over plain HTTP. Only local
+		     addresses are allowed; anything on the internet must be HTTPS (SR-02). -->
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Connects to the Beaker Breakers server on your school or home network.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>

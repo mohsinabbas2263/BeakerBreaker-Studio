@@ -1,0 +1,54 @@
+# Codemagic builds for the Flutter student app in mobile/.
+#
+# ios-unsigned: an iPhone build without an Apple Developer account. Codemagic builds
+# it on its own Mac; the .ipa is then signed with a free Apple ID and installed over
+# USB from Windows with Sideloadly (mobile/README.md, "iPhone"). Such an install runs
+# for 7 days. Nothing here is published to the App Store or TestFlight.
+#
+# Set API_URL in Codemagic (Environment variables) before starting a build: the
+# address of the backend as the iPhone sees it, for example
+# http://192.168.1.20:8000/api for a PC on the same Wi-Fi, or https://api.<domain>/api.
+# It is compiled into the app; it is not a secret.
+
+workflows:
+  ios-unsigned:
+    name: iOS, unsigned IPA (for Sideloadly)
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    working_directory: mobile
+    environment:
+      flutter: stable
+      xcode: latest
+      vars:
+        # permission_handler compiles the camera permission in only when asked
+        # (AR Mode, FR-05.1). Under Swift Package Manager it also reads
+        # NSCameraUsageDescription from Info.plist; this makes it explicit.
+        PERMISSION_CAMERA: "1"
+    scripts:
+      - name: Check API_URL
+        script: |
+          if [ -z "$API_URL" ]; then
+            echo "API_URL is not set. Add it under Environment variables, e.g. http://192.168.1.20:8000/api"
+            exit 1
+          fi
+          echo "Building against $API_URL"
+      - name: Use Swift Package Manager for the plugins
+        script: flutter config --enable-swift-package-manager
+      - name: Packages
+        script: flutter pub get
+      - name: Analyze
+        script: flutter analyze
+      - name: Build for iPhone (release, unsigned)
+        # Release, because an iPhone will not start a debug build without a
+        # debugger attached.
+        script: flutter build ios --release --no-codesign --dart-define=API_URL="$API_URL"
+      - name: Package as .ipa
+        script: |
+          rm -rf Payload build/BeakerBreakers-unsigned.ipa
+          mkdir Payload
+          cp -R build/ios/iphoneos/Runner.app Payload/
+          zip -qry build/BeakerBreakers-unsigned.ipa Payload
+          ls -lh build/BeakerBreakers-unsigned.ipa
+    artifacts:
+      - mobile/build/BeakerBreakers-unsigned.ipa
+      - build/BeakerBreakers-unsigned.ipa

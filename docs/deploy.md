@@ -16,11 +16,12 @@ Students' browsers ──HTTPS──► Vercel (web/, Next.js)
 
 | Check | Status |
 |---|---|
-| The backend tests on **MySQL 8.4** (not only SQLite) | ✅ all 184 passed, 9 Nov 2026 (the 2 security header tests came after, and pass on SQLite) |
+| The backend tests on **MySQL 8.4** (not only SQLite) | ✅ all 203 passed, 11 Nov 2026 (184 on 9 Nov) |
 | `migrate:fresh --seed` on MySQL 8.4 | ✅ |
 | Encryption at rest (`SR-06`) with the settings in `deploy/mysql/` | ✅ every tablespace encrypted; the email is not readable in the raw file (`deploy/mysql/README.md`) |
 | Backup, then restore into a fresh database (`SR-10`) | ✅ counts match; the backup file holds no plain text; a wrong passphrase is refused |
 | Security headers, HSTS in production (`SR-02`) | ✅ `SecurityHeadersTest` |
+| Web portal production build with its security headers (`web/next.config.js`) | ✅ 11 Nov 2026, `next build` and `next start` locally: CSP without `unsafe-eval`, HSTS, frame-ancestors none; student pages (home, labs, run, safety, profile, AR simulation) and the teacher dashboard load with no CSP errors. Check again on Vercel |
 | The Docker images build and the stack starts | ❌ **not run**: Docker is not installed on the development machine. First thing to check on the server |
 | TLS 1.3 only (`SR-02`) | ❌ configured in `Caddyfile`, check on the server (step 7) |
 | 300 ms at p95 for 1000 users (`NFR-01`, `NFR-04`) | ❌ load test not run |

@@ -47,20 +47,35 @@ py -3 -I tool/gen_lab_items.py ..
   manifest, so the app installs on any phone; one without ARCore, a refused camera,
   or no table found in 3 seconds all land on the labelled simulation (`FR-05.4`).
 - The live view shows "Desk found in x s": write it down per phone for `NFR-12`.
-- iOS: ARKit through `arkit_plugin`. **Not built or run yet**: an iPhone build needs a
-  Mac with Xcode. On the Mac, after `flutter pub get`, add the camera permission
-  for `permission_handler` to `ios/Podfile`:
+- iOS: ARKit through `arkit_plugin`, with the same fallbacks. Built on Codemagic and
+  installed with Sideloadly, below.
 
-  ```ruby
-  post_install do |installer|
-    installer.pods_project.targets.each do |target|
-      flutter_additional_ios_build_settings(target)
-      target.build_configurations.each do |config|
-        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)', 'PERMISSION_CAMERA=1']
-      end
-    end
-  end
-  ```
+## iPhone (no Mac, no paid Apple account)
+
+The app is not published for iOS; schools get the Android app. For testing and the
+defence it runs on our own iPhones (an iPhone 11 and an iPhone 14 Pro Max):
+
+1. **Build on Codemagic.** `codemagic.yaml` at the repository root has the
+   `ios-unsigned` workflow. In Codemagic, add the repository, set the environment
+   variable `API_URL` (see 3), and start the workflow. It builds a release app on
+   Codemagic's Mac and gives `BeakerBreakers-unsigned.ipa` under Artifacts. The free
+   plan's monthly macOS minutes cover this.
+2. **Install from Windows with Sideloadly** (download it only from sideloadly.io).
+   Turn on Developer Mode on the iPhone (Settings, Privacy & Security), connect it by
+   USB, drop the `.ipa` on Sideloadly and sign in with an Apple ID. Use a separate
+   Apple ID made for this, not your main one. The free signing lasts **7 days**;
+   install again before a demo.
+3. **Backend address.** The iPhone cannot use `10.0.2.2`. Before the server exists,
+   run the backend on the PC so the Wi-Fi can reach it,
+   `php artisan serve --host=0.0.0.0 --port=8000`, allow it through the Windows
+   firewall, and set `API_URL` to `http://<PC's Wi-Fi IP>:8000/api` (`ipconfig`
+   shows the IP). Info.plist allows plain HTTP only to local addresses
+   (`NSAllowsLocalNetworking`); after deployment use `https://api.<domain>/api`.
+4. On first start iOS asks for local network access and, in AR Mode, the camera.
+
+Camera permission: under Swift Package Manager `permission_handler` enables it from
+`NSCameraUsageDescription` in Info.plist, and the workflow also sets
+`PERMISSION_CAMERA=1`. No Podfile is needed; every plugin supports Swift Package Manager.
 
 ## Building on Windows
 
@@ -82,4 +97,5 @@ py -3 -I tool/gen_lab_items.py ..
 | Android debug build | ✅ 11 Nov 2026, Flutter 3.47.9, AGP 9.1, Gradle 9.3.1, Java 21 (Android Studio's JBR) |
 | Run on an emulator (Pixel 5, Android 11) | ✅ 11 Nov 2026 against the local backend: login, home with missions, labs list, experiment detail, game steps (gear with a wrong and right move, measure), Safety tiers, quiz opens, AR Mode falls back to the labelled simulation (no ARCore on the emulator) |
 | Run on a real phone, live AR | ❌ not yet: needs an Android phone with ARCore (`NFR-12`) |
-| iOS build | ❌ needs a Mac |
+| iOS build (Codemagic, unsigned) | ❌ not run yet: needs a Codemagic account linked to the repository |
+| Run on an iPhone | ❌ not yet |

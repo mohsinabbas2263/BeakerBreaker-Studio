@@ -15,10 +15,10 @@ Chapters 1 to 4 are written and signed off. Development started in October 2026.
 
 | Part | State |
 |---|---|
-| `backend/` | **Running, 203 tests passing** (SQLite; the first 199 also passed on MySQL 8.4). M1 foundation, licensing by board and class (Classes 9 to 12), M3 teacher features (class monitor, safety review, tasks with automatic states, broadcast) M4 readiness reports, and the game experiment engine with all 36 textbook experiments (Classes 9 to 12) seeded in it. Not built: admin reporting (M5). |
+| `backend/` | **Running, 203 tests passing** (SQLite, and all 203 on MySQL 8.4 on 11 Nov 2026). M1 foundation, licensing by board and class (Classes 9 to 12), M3 teacher features (class monitor, safety review, tasks with automatic states, broadcast) M4 readiness reports, and the game experiment engine with all 36 textbook experiments (Classes 9 to 12) seeded in it. Not built: admin reporting (M5). |
 | `Beaker Breakers Studio (2)/` | A working **UI prototype**: vanilla HTML, CSS and JavaScript, 9 student screens, all data hardcoded in `data.js`. No auth, no teacher or admin screens, no backend. It is the visual source of truth, not the application. |
 | `web/` | **Student portal (M2), teacher screens (M3), readiness reports (M4) and AR mode (M6) built** in Next.js 15. AR has been checked in a desktop browser only, not yet on phones. |
-| `mobile/` | Not started. Phase 2, after the web portal is in schools. |
+| `mobile/` | **Flutter student app built.** Android: built and run on an emulator (11 Nov 2026), not yet on a phone. iOS: same code; to be built unsigned on Codemagic (`codemagic.yaml`) and installed on our test iPhones with a free Apple ID, not run yet; not published. See `mobile/README.md`. |
 
 ---
 
@@ -104,19 +104,18 @@ delivered as a PWA. AWS S3 behind Cloudflare for assets.
 External services: Gemini (guidance and readiness classification), ElevenLabs (avatar
 voice), Pusher (live class), Firebase Cloud Messaging (push), SendGrid (email).
 
-**Flutter is Phase 2, after the web portal is in schools.** Chapter 4 names Flutter 3 with
-ARCore and ARKit, and that stays the plan — the order changed, not the target. Three
-platforms at once is not deliverable by two people, and a PWA reaches a school's phones,
-desktops and shared computers with no app store, no review cycle and no device-specific
-build. AR runs through WebXR in the browser in the meantime, with the same three fallbacks
-to simulated presentation that `FR-05.4` to `FR-05.6` already require. When the report
-mentions the mobile application, say so as roadmap rather than as something built.
+**Flutter is built now, not Phase 2** (decided by Rabail, 9 Nov 2026: everything in the
+proposal is delivered, nothing moves to a later phase). Chapter 4 names Flutter 3 with ARCore
+and ARKit, and that is what `mobile/` is. The web portal (a PWA, AR through WebXR) stays the
+main way into schools. **Schools get the Android app; the iOS app is built and tested on our
+own iPhones but not published** (11 Nov 2026: no paid Apple Developer account). Say exactly
+that in the report.
 
 ```
 backend/                      Laravel 12 API and Filament admin panel
 Beaker Breakers Studio (2)/   the UI prototype (vanilla HTML/CSS/JS)
 web/                          Next.js 15 portal (M2)
-mobile/                       Flutter app (Phase 2)
+mobile/                       Flutter student app (Android; iOS for testing)
 docs/                         the specification, in markdown
 FYP/                          diagrams and wireframes
 Documentation/                the submitted Word chapters
@@ -150,7 +149,7 @@ Record any further ones here, with the reason. These three are already decided:
 2. **A twentieth table, `quiz_attempts`.** `FR-04.4` requires every quiz attempt to be
    recorded with its score, answers and time, and the nineteen entities in the data
    dictionary have nowhere to put it. Chapter 4's data dictionary needs this row added.
-3. **Flutter after the web portal**, as above.
+3. **Flutter is built alongside the web portal; iOS is not published**, as above.
 4. **Laravel 12, not Laravel 11.** Laravel 11 no longer receives security fixes and
    Composer refuses to install it. Chapter 4 (Table 17) still says Laravel 11 (PHP 8.2)
    and needs updating to Laravel 12 (PHP 8.2).
