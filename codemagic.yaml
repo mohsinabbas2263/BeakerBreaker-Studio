@@ -5,7 +5,8 @@
 # USB from Windows with Sideloadly (mobile/README.md, "iPhone"). Such an install runs
 # for 7 days. Nothing here is published to the App Store or TestFlight.
 #
-# Set API_URL in Codemagic (Environment variables) before starting a build: the
+# Set API_URL in Codemagic (Environment variables, in a group named "beaker") before
+# starting a build: the
 # address of the backend as the iPhone sees it, for example
 # http://192.168.1.20:8000/api for a PC on the same Wi-Fi, or https://api.<domain>/api.
 # It is compiled into the app; it is not a secret.
@@ -17,6 +18,10 @@ workflows:
     max_build_duration: 60
     working_directory: mobile
     environment:
+      groups:
+        # API_URL lives in Codemagic (Environment variables, group "beaker"), so the
+        # address can change without a commit.
+        - beaker
       flutter: stable
       xcode: latest
       vars:

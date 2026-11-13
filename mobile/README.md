@@ -57,7 +57,7 @@ defence it runs on our own iPhones (an iPhone 11 and an iPhone 14 Pro Max):
 
 1. **Build on Codemagic.** `codemagic.yaml` at the repository root has the
    `ios-unsigned` workflow. In Codemagic, add the repository, set the environment
-   variable `API_URL` (see 3), and start the workflow. It builds a release app on
+   variable `API_URL` in a group named `beaker` (see 3), and start the workflow. It builds a release app on
    Codemagic's Mac and gives `BeakerBreakers-unsigned.ipa` under Artifacts. The free
    plan's monthly macOS minutes cover this.
 2. **Install from Windows with Sideloadly** (download it only from sideloadly.io).
