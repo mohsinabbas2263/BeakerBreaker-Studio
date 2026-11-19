@@ -18,7 +18,7 @@ Chapters 1 to 4 are written and signed off. Development started in October 2026.
 | `backend/` | **Running, 203 tests passing** (SQLite, and all 203 on MySQL 8.4 on 11 Nov 2026). M1 foundation, licensing by board and class (Classes 9 to 12), M3 teacher features (class monitor, safety review, tasks with automatic states, broadcast) M4 readiness reports, and the game experiment engine with all 36 textbook experiments (Classes 9 to 12) seeded in it. Not built: admin reporting (M5). |
 | `Beaker Breakers Studio (2)/` | A working **UI prototype**: vanilla HTML, CSS and JavaScript, 9 student screens, all data hardcoded in `data.js`. No auth, no teacher or admin screens, no backend. It is the visual source of truth, not the application. |
 | `web/` | **Student portal (M2), teacher screens (M3), readiness reports (M4) and AR mode (M6) built** in Next.js 15. AR has been checked in a desktop browser only, not yet on phones. |
-| `mobile/` | **Flutter student app built.** Android: built and run on an emulator (11 Nov 2026), not yet on a phone. iOS: same code; to be built unsigned on Codemagic (`codemagic.yaml`) and installed on our test iPhones with a free Apple ID, not run yet; not published. See `mobile/README.md`. |
+| `mobile/` | **Flutter student app built.** Android: built and run on an emulator (11 Nov 2026), not yet on a phone. iOS: same code; builds unsigned on Codemagic (`codemagic.yaml`, passed 13 Nov 2026); not yet installed on an iPhone; not published. See `mobile/README.md`. |
 
 ---
 

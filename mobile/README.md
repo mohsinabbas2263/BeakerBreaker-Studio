@@ -97,5 +97,5 @@ Camera permission: under Swift Package Manager `permission_handler` enables it f
 | Android debug build | ✅ 11 Nov 2026, Flutter 3.47.9, AGP 9.1, Gradle 9.3.1, Java 21 (Android Studio's JBR) |
 | Run on an emulator (Pixel 5, Android 11) | ✅ 11 Nov 2026 against the local backend: login, home with missions, labs list, experiment detail, game steps (gear with a wrong and right move, measure), Safety tiers, quiz opens, AR Mode falls back to the labelled simulation (no ARCore on the emulator) |
 | Run on a real phone, live AR | ❌ not yet: needs an Android phone with ARCore (`NFR-12`) |
-| iOS build (Codemagic, unsigned) | ❌ not run yet: needs a Codemagic account linked to the repository |
+| iOS build (Codemagic, unsigned) | ✅ 13 Nov 2026, build 2 (commit 13809d4), Flutter 3.47.9 on a Mac mini M2: analyze, release build and an 8.7 MB `.ipa`. Build 1 failed only because Codemagic's "stable" was Flutter 3.50 |
 | Run on an iPhone | ❌ not yet |
