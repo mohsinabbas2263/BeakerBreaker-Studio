@@ -2,12 +2,13 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useParams } from "next/navigation";
 import Shell from "@/components/layout/Shell";
 import Confetti from "@/components/ui/Confetti";
 import { beakySay } from "@/components/ui/Beaky";
 import { useToast } from "@/components/ui/Toast";
-import { api, ApiError, type User } from "@/lib/api";
+import { api, ApiError, type Badge, type User } from "@/lib/api";
+import { announceBadges } from "@/lib/celebrate";
 
 /**
  * wf_S05, the knowledge quiz.
@@ -43,10 +44,12 @@ interface QuizSubmitResult {
   points_awarded: number;
   feedback: Feedback[];
   may_reattempt: boolean;
+  badges_awarded?: Badge[];
 }
 
-export default function QuizPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default function QuizPage() {
+  // Next 15: a page's params arrive as a Promise; the hook reads them directly.
+  const { id } = useParams<{ id: string }>();
   const sessionParam = useSearchParams().get("session");
   const toast = useToast();
 
@@ -81,6 +84,7 @@ export default function QuizPage({ params }: { params: { id: string } }) {
         _quiz_session: quiz._quiz_session,
       });
       setResult(res);
+      announceBadges(res.badges_awarded, toast);
       window.scrollTo({ top: 0, behavior: "smooth" });
 
       if (res.points_awarded > 0) {

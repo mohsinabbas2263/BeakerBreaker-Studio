@@ -4,7 +4,10 @@ namespace App\Providers;
 
 use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
@@ -36,5 +39,22 @@ class AppServiceProvider extends ServiceProvider
                     'email' => $user->getEmailForPasswordReset(),
                 ]);
         });
+
+        // SR-03: request limits, so no single account or address can flood the API.
+        // Login has its own lockout (FR-01.4, AuthController); these sit around it.
+        //
+        // api: every signed-in request, per user. Generous, because a game step sends
+        // a move per drag or click.
+        RateLimiter::for('api', fn (Request $request) => Limit::perMinute(300)
+            ->by($request->user()?->id ?: $request->ip()));
+
+        // guidance: each call can reach Gemini, which is paid per request.
+        RateLimiter::for('guidance', fn (Request $request) => Limit::perMinute(30)
+            ->by($request->user()?->id ?: $request->ip()));
+
+        // password: forgot and reset, per address, so nobody can flood an inbox with
+        // reset mail or hammer reset tokens. Ten a minute still covers a whole lab.
+        RateLimiter::for('password', fn (Request $request) => Limit::perMinute(10)
+            ->by($request->ip()));
     }
 }

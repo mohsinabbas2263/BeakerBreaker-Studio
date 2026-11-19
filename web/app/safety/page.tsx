@@ -6,6 +6,8 @@ import Shell from "@/components/layout/Shell";
 import { api } from "@/lib/api";
 import { fetcher } from "@/lib/fetcher";
 import { beakySay } from "@/components/ui/Beaky";
+import { useToast } from "@/components/ui/Toast";
+import { announceBadges } from "@/lib/celebrate";
 import type { SafetyTiersResponse, SafetyStartResponse, SafetySubmitResponse } from "@/lib/api";
 
 const TIER_TITLES = [
@@ -24,6 +26,7 @@ export default function SafetyPage() {
   const [quiz, setQuiz]           = useState<SafetyStartResponse | null>(null);
   const [answers, setAnswers]     = useState<Record<number, number>>({});
   const [result, setResult]       = useState<SafetySubmitResponse | null>(null);
+  const toast = useToast();
   const [submitting, setSubmitting] = useState(false);
 
   async function startTier(tier: number) {
@@ -46,6 +49,7 @@ export default function SafetyPage() {
       });
       setResult(res);
       setPhase("result");
+      announceBadges(res.badges_awarded, toast);
       mutate("/safety/tiers");
       if (res.passed) {
         beakySay(res.certificate ? "🎉 All 4 tiers passed! Certificate issued!" : `Tier ${tierNum} passed! 🛡️ Great job!`);

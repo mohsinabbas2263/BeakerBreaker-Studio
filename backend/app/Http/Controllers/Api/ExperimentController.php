@@ -8,7 +8,9 @@ use App\Models\ExperimentStep;
 use App\Models\StepAction;
 use App\Services\ExperimentAccessService;
 use App\Services\GuidanceService;
+use App\Services\AchievementService;
 use App\Services\RewardService;
+use App\Support\Badges;
 use App\Services\StepJudge;
 use App\Services\TaskProgressService;
 use Illuminate\Http\JsonResponse;
@@ -22,6 +24,7 @@ class ExperimentController extends Controller
         protected RewardService $rewards,
         protected TaskProgressService $tasks,
         protected StepJudge $judge,
+        protected AchievementService $achievements,
     ) {}
 
     /** FR-03.1 the library, FR-03.2 filtering by difficulty and topic. */
@@ -270,7 +273,11 @@ class ExperimentController extends Controller
             ];
         }
 
+        // FR-06.3, FR-07.3: a move can finish a mission or earn a badge.
+        $badges = $this->achievements->refresh($request->user());
+
         return response()->json([
+            'badges_awarded' => Badges::describe($badges),
             'outcome' => $verdict['outcome'],
             'category' => $verdict['category'],
             'mistake_code' => $verdict['mistake_code'],

@@ -1,6 +1,7 @@
 "use client";
 
 import useSWR from "swr";
+import MissionsCard from "@/components/home/MissionsCard";
 import Link from "next/link";
 import Shell from "@/components/layout/Shell";
 import { fetcher } from "@/lib/fetcher";
@@ -78,6 +79,8 @@ export default function HomePage() {
             </div>
           </Link>
         )}
+
+        <MissionsCard />
 
         {/* Quick actions */}
         <div className="grid grid-cols-2 gap-3 mb-6">

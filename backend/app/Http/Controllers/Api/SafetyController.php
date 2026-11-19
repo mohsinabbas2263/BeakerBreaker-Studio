@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\SafetyTierQuestion;
+use App\Services\AchievementService;
 use App\Services\RewardService;
+use App\Support\Badges;
 use App\Services\SafetyCertificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -23,6 +25,7 @@ class SafetyController extends Controller
     public function __construct(
         protected SafetyCertificationService $safety,
         protected RewardService $rewards,
+        protected AchievementService $achievements,
     ) {}
 
     /** FR-02.1 and FR-02.2: the four tiers, and which of them is open. */
@@ -159,10 +162,12 @@ class SafetyController extends Controller
 
         // FR-02.7: issued the moment the fourth tier is passed, not a step later.
         $certificate = $this->safety->issueCertificateIfEarned($user->fresh());
+        $badges = $this->achievements->refresh($user->fresh());   // FR-06.3, FR-07.3
 
         return response()->json([
             'score' => $attempt->score,
             'passed' => $attempt->passed,
+            'badges_awarded' => Badges::describe($badges),
             'pass_mark' => SafetyCertificationService::PASS_MARK,
             'points_awarded' => $pointsAwarded,
             'next_tier_available' => $this->safety->tierIsAvailable($user->fresh(), $tier + 1),

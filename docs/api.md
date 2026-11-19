@@ -208,7 +208,7 @@ than show the message.
 | 401 | no token, or an expired one (`SR-03`) |
 | 403 | wrong role (`SR-04`), or a gate not met (`FR-02.3`, `FR-03.3`, `FR-04.1`) |
 | 422 | validation, or an action out of sequence |
-| 429 | login lockout (`FR-01.4`) |
+| 429 | login lockout (`FR-01.4`); also any request over its limit (SR-03): 300 a minute per signed-in user, 30 a minute for guidance, 10 a minute per address for forgot and reset password |
 
 ---
 

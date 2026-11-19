@@ -47,7 +47,11 @@ class AuthController extends Controller
 
         $user = User::where('email', $credentials['email'])->first();
 
-        if (! $user || ! Hash::check($credentials['password'], $user->password)) {
+        // An unknown address still pays for one hash check, so the response time
+        // does not tell an attacker which addresses have accounts.
+        $hash = $user?->password ?? self::dummyHash();
+
+        if (! Hash::check($credentials['password'], $hash) || ! $user) {
             RateLimiter::hit($key, self::DECAY_SECONDS);
 
             // The same message for both cases: no probing for valid addresses.
@@ -133,6 +137,14 @@ class AuthController extends Controller
         return $status === Password::PasswordReset
             ? response()->json(['message' => 'Password changed. Sign in with the new one.'])
             : response()->json(['message' => 'That reset link is no longer valid.'], 422);
+    }
+
+    /** A hash of a random string, made once per process, at the same work factor. */
+    private static function dummyHash(): string
+    {
+        static $hash = null;
+
+        return $hash ??= Hash::make(Str::random(40));
     }
 
     protected function userPayload(User $user): array

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Reward;
 use App\Models\StudentProfile;
 use App\Models\User;
+use App\Support\Badges;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -79,7 +80,7 @@ class RewardService
         return true;
     }
 
-    /** FR-06.5: consecutive days of activity, with badges at 7, 30 and 100. */
+    /** FR-06.5: consecutive days of activity, with badges at 7, 30 and 100 (and 3, to start). */
     public function recordActivity(User $user): void
     {
         $profile = StudentProfile::firstOrCreate(['user_id' => $user->id]);
@@ -94,7 +95,7 @@ class RewardService
         $profile->last_active_on = $today;
         $profile->save();
 
-        foreach ([7, 30, 100] as $milestone) {
+        foreach (Badges::STREAKS as $milestone) {
             if ($profile->current_streak_days === $milestone) {
                 $this->awardBadge($user, "streak_{$milestone}_days");
             }

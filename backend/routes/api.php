@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ExperimentController;
 use App\Http\Controllers\Api\LeaderboardController;
+use App\Http\Controllers\Api\MissionController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\QuizController;
@@ -19,11 +20,11 @@ use Illuminate\Support\Facades\Route;
  */
 
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
-Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->middleware('throttle:password');
+Route::post('/reset-password', [AuthController::class, 'resetPassword'])->middleware('throttle:password');
 
-// SR-03: everything below requires a valid access token.
-Route::middleware('auth:sanctum')->group(function () {
+// SR-03: everything below requires a valid access token, and is rate limited per user.
+Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout']);
 
@@ -41,12 +42,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/experiments/{experiment}/start', [ExperimentController::class, 'start']);
         Route::post('/sessions/{session}/steps', [ExperimentController::class, 'completeStep']);          // confirm steps
         Route::post('/sessions/{session}/steps/{step}/actions', [ExperimentController::class, 'act']);   // game steps
-        Route::post('/steps/{step}/guidance', [ExperimentController::class, 'guidance']);
+        Route::post('/steps/{step}/guidance', [ExperimentController::class, 'guidance'])
+            ->middleware('throttle:guidance');                                                 // paid AI calls
 
         Route::get('/experiments/{experiment}/quiz', [QuizController::class, 'show']);
         Route::post('/experiments/{experiment}/quiz', [QuizController::class, 'submit']);
 
         Route::get('/leaderboard', [LeaderboardController::class, 'index']);
+        Route::get('/missions', [MissionController::class, 'index']);                       // FR-07.3
         Route::get('/readiness', [ReadinessController::class, 'mine']);                      // FR-08.6
         Route::get('/profile', [ProfileController::class, 'show']);
         Route::patch('/profile', [ProfileController::class, 'update']);

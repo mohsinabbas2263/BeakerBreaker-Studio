@@ -82,6 +82,14 @@ export const ITEMS: Record<string, { emoji: string; label: string }> = {
   ink_crime_scene: { emoji: "📝", label: "Crime scene ink" },
   ink_suspect_a: { emoji: "🖊️", label: "Suspect A's pen" },
   ink_suspect_b: { emoji: "🖊️", label: "Suspect B's pen" },
+  // drain unblocking (Punjab 9 Act 7.3) and simple distillation (Punjab 11 15.3.1)
+  vinegar: { emoji: "🍶", label: "Vinegar" },
+  baking_soda_solution: { emoji: "🧂", label: "Sodium bicarbonate solution" },
+  caustic_cleaner: { emoji: "☠️", label: "Caustic drain cleaner" },
+  boiling_water: { emoji: "♨️", label: "Boiling water" },
+  sea_water: { emoji: "🌊", label: "Sea water" },
+  boiling_chips: { emoji: "⚪", label: "Boiling chips" },
+  condenser: { emoji: "🌀", label: "Condenser" },
 };
 
 export function item(id: string): { emoji: string; label: string } {
@@ -96,6 +104,7 @@ const PLACES: Record<string, string> = {
   chromatography_paper: "Chromatography paper", sodium_metal: "Sodium", gas_tube: "Gas", tray: "Tray",
   tripod: "Tripod stand", volumetric_flask: "Volumetric flask", conc_hcl: "Concentrated HCl",
   tube_mg: "Tube: Mg", tube_zn: "Tube: Zn", tube_fe: "Tube: Fe", tube_cu: "Tube: Cu",
+  drain: "Drain", side_arm: "Side arm of the flask", condenser_end: "End of the condenser",
 };
 
 export function place(id: string): string {

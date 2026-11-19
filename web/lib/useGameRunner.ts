@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { beakySay } from "@/components/ui/Beaky";
 import { useToast } from "@/components/ui/Toast";
+import { announceBadges } from "@/lib/celebrate";
 import {
   api,
   ApiError,
@@ -106,6 +107,7 @@ export function useGameRunner(id: string | null, mode: PresentationMode, enabled
       setMoodKey(k => k + 1);
       setReveal(res.reveal);
       setLastMistake(res.mistake_code);
+      announceBadges(res.badges_awarded, toast);
 
       if (res.step_complete) {
         setProgress({});

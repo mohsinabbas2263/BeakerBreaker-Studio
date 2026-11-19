@@ -2,7 +2,7 @@
 
 Status: **agreed and built.** Mohsin merged this proposal (PR #3) on 8 Nov 2026 without
 comments on the four questions at the end, so the proposals there stand as written. Built
-on 9 Nov 2026: schema, `StepJudge`, the action endpoint, the 34 textbook experiments
+on 9 Nov 2026: schema, `StepJudge`, the action endpoint, the 36 textbook experiments
 seeded in this format, the web runner, and readiness from `step_actions`.
 
 Approved look and feel: the clickable demo at
@@ -33,7 +33,7 @@ https://claude.ai/artifact/2SJ8zaHA5gd82F6YcfHxRa (titration, 8 steps).
 
 ## Step kinds
 
-Nine kinds cover every textbook experiment in Classes 9 to 12, both boards (34 experiments
+Nine kinds cover every textbook experiment in Classes 9 to 12, both boards (36 experiments
 written, see [Content written](#content-written)). An experiment is a list of steps,
 each one of these kinds. Existing experiments become `confirm` steps, so nothing breaks.
 
@@ -216,7 +216,7 @@ The titration in the demo, as seed data, is in [Appendix A](#appendix-a-titratio
 
 ### Content written
 
-All 34 textbook experiments are written in this format on `main`, in
+All 36 textbook experiments are written in this format on `main`, in
 `backend/database/seeders/game/`. None is seeded until this document is agreed.
 
 | File | Experiments |
@@ -242,9 +242,10 @@ Each file's header lists its book pages and any place the book text looked wrong
 | 4 | Titration converted as the first real experiment, then 7 to 9 more for the pilot | Rabail and the school's teacher, with Claude |
 | 5 | Readiness computation from `step_actions` | Mohsin and Claude |
 
-State, 9 Nov 2026: steps 1, 2, 3 and 5 done; all 34 textbook experiments are seeded in
+State, 9 Nov 2026: steps 1, 2, 3 and 5 done; all 36 textbook experiments are seeded in
 this format (step 4 went further than planned), and every published experiment is a game
-experiment. Still to do: a teacher checks the content against the books.
+experiment. The content follows the textbook pages; the team decided (9 Nov 2026) that
+what is in the books is what is offered, with no separate teacher review.
 
 Experiments not yet converted keep working as `confirm` steps throughout.
 

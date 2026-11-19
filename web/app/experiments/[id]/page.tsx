@@ -1,5 +1,6 @@
 "use client";
 
+import { useParams } from "next/navigation";
 import useSWR from "swr";
 import Link from "next/link";
 import Shell from "@/components/layout/Shell";
@@ -15,8 +16,9 @@ const LOCK_MSGS: Record<string, string> = {
   not_licensed:            "This experiment is not part of your class.",
 };
 
-export default function ExperimentDetailPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default function ExperimentDetailPage() {
+  // Next 15: a page's params arrive as a Promise; the hook reads them directly.
+  const { id } = useParams<{ id: string }>();
   const { data, isLoading } = useSWR<ExperimentDetailResponse>(`/experiments/${id}`, fetcher<ExperimentDetailResponse>);
 
   if (isLoading) {

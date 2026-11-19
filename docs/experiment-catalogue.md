@@ -88,7 +88,7 @@ not a numbered activity.
 
 ## State, 9 Nov 2026: every published experiment is a game experiment
 
-All 34 experiments offered come from these books and are written in game format in
+All 36 experiments offered come from these books and are written in game format in
 `backend/database/seeders/game/`. Comparing the eight old seeded Federal experiments
 with their book pages showed none matched: the old melting and boiling point used
 naphthalene and a distillation flask where Federal 9 tests the purity of water with ice
@@ -96,7 +96,13 @@ and a beaker; the old standardisation used methyl orange and 25 cm³ where Activ
 uses phenolphthalein and 10 cm³; the old reactivity experiment put metals in copper
 sulphate where Activity 7.1 puts them in dilute HCl. They were rewritten from the pages
 (`federal-activities.php`) and the old ones unpublished (`GameExperimentSeeder::SUPERSEDED`).
-A student in a Class 9 or 10 now sees 8 experiments in a Punjab school and 16 in a Federal one; in Class 11 or 12, 7 (Punjab) and 6 (Federal).
+A student in a Class 9 or 10 now sees 9 experiments in a Punjab school and 16 in a Federal one; in Class 11 or 12, 8 (Punjab) and 6 (Federal).
+
+Added 9 Nov 2026: the drain activity (Punjab 9 Activity 7.3, `p9-unblock-drain`; the caustic
+cleaner is only ever the wrong choice) and simple distillation of sea water (Punjab 11
+Section 15.3.1, `p11-simple-distillation`). Every hands-on activity in the catalogue above
+now has a game version, except the Federal 11 classroom air-quality investigation (not a
+bench experiment) and the Federal 11 ammonia preparation, which was not found in the book text.
 
 ## Decision, 8 Nov 2026: textbook experiments only
 
