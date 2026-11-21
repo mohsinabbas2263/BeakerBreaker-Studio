@@ -34,9 +34,26 @@ class ExperimentAccessService
             return $query->whereRaw('1 = 0');
         }
 
+        $classId = $user->profile?->class_id;
+
         return $query
             ->whereIn('grade_level', $grades)
-            ->whereIn('board', [$user->school->board, 'both']);
+            ->whereIn('board', [$user->school->board, 'both'])
+            // FR-10.4: turned off for the student's class, with immediate effect.
+            ->whereNotIn('experiments.id', fn ($q) => $q->select('experiment_id')
+                ->from('class_disabled_experiments')
+                ->where('class_id', $classId));
+    }
+
+    /** FR-10.4: has the administrator turned this experiment off for the student's class? */
+    public function disabledForClass(User $user, Experiment $experiment): bool
+    {
+        $classId = $user->profile?->class_id;
+
+        return $classId !== null && \Illuminate\Support\Facades\DB::table('class_disabled_experiments')
+            ->where('class_id', $classId)
+            ->where('experiment_id', $experiment->id)
+            ->exists();
     }
 
     /** The grades this student may work on: their exam pair, as far as the school is licensed. */
@@ -73,9 +90,19 @@ class ExperimentAccessService
             && in_array((int) $experiment->grade_level, $this->gradesFor($user), true)
             && in_array($experiment->board, [$school->board, 'both'], true);
 
-        return $licensed
-            ? ['allowed' => true, 'code' => null, 'reason' => null]
-            : ['allowed' => false, 'code' => 'not_licensed', 'reason' => 'This experiment is not part of your class.'];
+        if (! $licensed) {
+            return ['allowed' => false, 'code' => 'not_licensed', 'reason' => 'This experiment is not part of your class.'];
+        }
+
+        if ($this->disabledForClass($user, $experiment)) {
+            return [
+                'allowed' => false,
+                'code' => 'disabled_for_class',
+                'reason' => 'Your school has turned this experiment off for your class for now.',
+            ];
+        }
+
+        return ['allowed' => true, 'code' => null, 'reason' => null];
     }
 
     private function gradeOf(User $user): ?int

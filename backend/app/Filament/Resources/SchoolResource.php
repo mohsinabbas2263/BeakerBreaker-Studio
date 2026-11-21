@@ -10,9 +10,18 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 
-/** FR-10.5: licensed institutions and their caps. */
+/**
+ * Licensed institutions: board, licensed classes and licence dates (CLAUDE.md
+ * deviation 5). The project team's alone. A school administrator cannot open
+ * this page, so it cannot extend its own licence or see another school.
+ */
 class SchoolResource extends Resource
 {
+    public static function canViewAny(): bool
+    {
+        return \App\Filament\AdminScope::isTeam();
+    }
+
     protected static ?string $model = School::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-building-library';
@@ -58,7 +67,9 @@ class SchoolResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                // School::deleting refuses too; hiding the button says so first.
+                Tables\Actions\DeleteAction::make()
+                    ->hidden(fn (School $record) => $record->hasAccounts()),
             ]);
     }
 

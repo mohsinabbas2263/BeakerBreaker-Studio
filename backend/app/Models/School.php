@@ -18,6 +18,26 @@ class School extends Model
         'name', 'district', 'board', 'licensed_grades', 'licence_start', 'licence_end', 'student_cap',
     ];
 
+    /**
+     * A school with accounts, even deleted ones still in their 30-day window
+     * (FR-01.5), cannot be deleted. users.school_id is set to null when its school
+     * goes, and an administrator with no school is a team administrator: deleting
+     * the school would hand its administrators every school's data (SR-04).
+     */
+    protected static function booted(): void
+    {
+        static::deleting(function (School $school) {
+            if ($school->hasAccounts()) {
+                throw new \LogicException('A school that still has accounts cannot be deleted.');
+            }
+        });
+    }
+
+    public function hasAccounts(): bool
+    {
+        return User::withTrashed()->where('school_id', $this->id)->exists();
+    }
+
     protected function casts(): array
     {
         return [

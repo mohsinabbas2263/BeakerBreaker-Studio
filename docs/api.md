@@ -102,6 +102,12 @@ experiment has to say why (`FR-03.3`). The codes are
 `safety_tier_1_required`, `safety_tier_required`, `prerequisite_incomplete`
 and `unpublished`.
 
+**Turned off for the class** (`FR-10.4`). An experiment the school administrator has
+turned off for the student's class is left out of the list at once. Opened by
+address, `GET /experiments/{id}` answers with `access.code` `disabled_for_class`
+and its reason, and `start` refuses it with `403`. A teacher cannot set it as a task
+(`422`).
+
 **Licensing.** The list holds only experiments the student is licensed for: their
 class's board-exam pair (Class 9 and 10, or 11 and 12), limited to the classes their
 school is licensed for, and only of the school's board or marked for both boards. A
@@ -208,7 +214,7 @@ than show the message.
 | 401 | no token, or an expired one (`SR-03`) |
 | 403 | wrong role (`SR-04`), or a gate not met (`FR-02.3`, `FR-03.3`, `FR-04.1`) |
 | 422 | validation, or an action out of sequence |
-| 429 | login lockout (`FR-01.4`); also any request over its limit (SR-03): 300 a minute per signed-in user, 30 a minute for guidance, 10 a minute per address for forgot and reset password |
+| 429 | login lockout (`FR-01.4`, the same counter as the admin panel sign-in); also any request over its limit (SR-03): 300 a minute per signed-in user, 30 a minute for guidance and for readiness reports (both can call Gemini, shared), 10 a minute per address for forgot and reset password |
 
 ---
 

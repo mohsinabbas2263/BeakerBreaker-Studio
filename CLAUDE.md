@@ -15,7 +15,7 @@ Chapters 1 to 4 are written and signed off. Development started in October 2026.
 
 | Part | State |
 |---|---|
-| `backend/` | **Running, 203 tests passing** (SQLite, and all 203 on MySQL 8.4 on 11 Nov 2026). M1 foundation, licensing by board and class (Classes 9 to 12), M3 teacher features (class monitor, safety review, tasks with automatic states, broadcast) M4 readiness reports, and the game experiment engine with all 36 textbook experiments (Classes 9 to 12) seeded in it. Not built: admin reporting (M5). |
+| `backend/` | **Running, 247 tests passing** on SQLite (21 Nov 2026; the 203 before M5 also passed on MySQL 8.4 on 11 Nov 2026). M1 foundation, licensing by board and class (Classes 9 to 12), M3 teacher features (class monitor, safety review, tasks with automatic states, broadcast) M4 readiness reports, M5 administrator side (school administrators limited to their school, `school:onboard`, welcome email, CSV import, certificate register and school report with CSV export, experiments on or off per class), and the game experiment engine with all 36 textbook experiments (Classes 9 to 12) seeded in it. |
 | `Beaker Breakers Studio (2)/` | A working **UI prototype**: vanilla HTML, CSS and JavaScript, 9 student screens, all data hardcoded in `data.js`. No auth, no teacher or admin screens, no backend. It is the visual source of truth, not the application. |
 | `web/` | **Student portal (M2), teacher screens (M3), readiness reports (M4) and AR mode (M6) built** in Next.js 15. AR has been checked in a desktop browser only, not yet on phones. |
 | `mobile/` | **Flutter student app built.** Android: built and run on an emulator (11 Nov 2026), not yet on a phone. iOS: same code; builds unsigned on Codemagic (`codemagic.yaml`, passed 13 Nov 2026); not yet installed on an iPhone; not published. See `mobile/README.md`. |
@@ -156,7 +156,7 @@ Record any further ones here, with the reason. These three are already decided:
 5. **Classes 9 to 12, sold to schools and colleges, licensed by class and board**
    (decided by Rabail, 8 Nov 2026). `FR-03.1` and the report's scope say Class 9 and 10
    in secondary schools; the product now covers Classes 9 to 12 of the Punjab and Federal
-   boards. The administrator sets each school's board and licensed classes. A student sees
+   boards. A team administrator (below, 9) sets each school's board and licensed classes. A student sees
    their class's board-exam pair (9 and 10, or 11 and 12) within the licence, and only
    their board's experiments or those in both books. Enforced in
    `ExperimentAccessService`; a student with no class sees none. The report and
@@ -173,6 +173,26 @@ Record any further ones here, with the reason. These three are already decided:
    included, has open advisories, two of them critical (remote code execution in
    image optimisation, fixed only from 15.5.28). React stays 18, which Next 15
    accepts. Chapter 4 (Table 17) says Next.js 14.x and needs updating.
+9. **School administrators and team administrators, still one role** (21 Nov 2026).
+   UC-01 says accounts are made by "a school administrator", and every user row has
+   a `school_id`. An administrator with a school works on that school alone (`SR-04`,
+   `App\Filament\AdminScope`): its people, classes, certificates, audit entries and
+   report. An administrator with no school is the project team: it onboards schools
+   (`php artisan school:onboard`), sets board and licence, and keeps the experiment
+   library, which every school shares. No new role, no new column. A school that
+   still has accounts cannot be deleted, because its administrators would lose their
+   school and become team administrators. Chapter 4 should say this in the actor
+   description, and the supervisor should be told with deviation 5.
+10. **A twenty-third table, `class_disabled_experiments`** (`FR-10.4`): which
+    experiments an administrator has turned off for a class, by whom and when. A row
+    means off; no row means on, so a new experiment reaches every licensed class
+    without anyone acting. The data dictionary has nowhere to keep this. Chapter 4's
+    data dictionary needs this row.
+
+Not a deviation, but the report must match: UC-01 says a user signs in with "school
+identifier and password". The data dictionary has only `email`, and the code signs in
+by email. Either write that the school identifier is the email address, or change the
+line.
 
 ---
 

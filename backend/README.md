@@ -62,7 +62,8 @@ why this seeder must never run anywhere a student can reach.
 
 | Role | Email |
 |---|---|
-| Administrator | `admin@beakerbreakers.test` |
+| Team administrator (every school) | `admin@beakerbreakers.test` |
+| School administrator (the demo school only) | `schooladmin@beakerbreakers.test` |
 | Teacher | `teacher@beakerbreakers.test` |
 | Student | `rabail@beakerbreakers.test` |
 | Student | `mohsin@beakerbreakers.test` |
@@ -141,17 +142,45 @@ experiment through.
 
 ## Not built yet
 
-These are later milestones, not oversights:
+These wait on keys or a server, not on code decisions:
 
-- **Teacher endpoints** (`FR-09.*`): class monitor, task assignment, safety
-  review. The `tasks`, `task_assignments` and `class_teachers` tables and the
-  `AssignmentState` machine are in place; the controllers are not.
-- **AI readiness reporting** (`FR-08.*`): table and the six dimensions exist;
-  the computation does not.
-- **Administrator reporting** (`FR-10.3` to `FR-10.7`): CSV export, usage
-  reports, licence reports.
-- **Notifications and FCM** (`FR-09.6`, `FR-09.7`): tables only.
-- **Experiment library** (`FR-03.1`): 6 of the 30 experiments are written.
-  Adding the rest is content work in `ExperimentSeeder`, not code.
+- **Push notifications** (`FR-09.6`): in-app notifications work; Firebase Cloud
+  Messaging is not wired until there is a Firebase project and key.
+- **Email delivery**: `MAIL_MAILER=log` writes every email (welcome, password
+  reset) to `storage/logs/laravel.log` instead of sending it. Production needs the
+  SendGrid settings (`docs/deploy.md`, step 2).
+- **PDF export** (`FR-10.7` says PDF *or* delimited text): reports and the
+  certificate register export as CSV. PDF would need a PDF library.
 - **Redis** (`NFR-02`, `FR-07.2`): `.env` is on the database driver. Switch
   `CACHE_STORE` and `QUEUE_CONNECTION` to `redis` once Redis is running.
+
+---
+
+## Onboarding a school
+
+Administrators come in two kinds, with one Administrator role (`FR-01.1`):
+
+| | `school_id` | Can do |
+|---|---|---|
+| **Team administrator** (us) | empty | Every school; schools, their board and licence; the experiment library |
+| **School administrator** | the school | Its own school only (`SR-04`): teachers, students, classes, turning experiments off for a class (`FR-10.4`), CSV import (`FR-10.2`), certificate register (`FR-10.5`), school report (`FR-10.6`) |
+
+A school administrator cannot open Schools or Experiments, so it cannot extend its
+own licence. Onboarding is run by the team on the server:
+
+```bash
+php artisan school:onboard "Government High School, Gujrat" --district=Gujrat \
+    --board=punjab --classes=9,10 --from=2026-12-01 --until=2027-11-30 --cap=400 \
+    --admin-name="Ms Ayesha" --admin-email=admin@ghs-gujrat.edu.pk
+```
+
+That makes the school and its first administrator, and emails the administrator a
+link to choose a password (valid once, for 60 minutes; after that, "Forgot
+password"). Add `--print-link` to print the link instead of emailing it, for when
+email is not set up yet. `php artisan school:onboard --team --admin-name=... --admin-email=...`
+makes a team administrator.
+
+The school administrator then adds teachers and students in the panel, one at a
+time or from a CSV file (Import students: `name,email,class`, up to 500 rows; one
+bad row and nothing is created). An account made without a typed password is
+emailed the same kind of link, so no administrator ever knows a student's password.

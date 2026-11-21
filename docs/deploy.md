@@ -22,6 +22,8 @@ Students' browsers ──HTTPS──► Vercel (web/, Next.js)
 | Backup, then restore into a fresh database (`SR-10`) | ✅ counts match; the backup file holds no plain text; a wrong passphrase is refused |
 | Security headers, HSTS in production (`SR-02`) | ✅ `SecurityHeadersTest` |
 | Web portal production build with its security headers (`web/next.config.js`) | ✅ 11 Nov 2026, `next build` and `next start` locally: CSP without `unsafe-eval`, HSTS, frame-ancestors none; student pages (home, labs, run, safety, profile, AR simulation) and the teacher dashboard load with no CSP errors. Check again on Vercel |
+| Bulk import of 500 students within 60 s (`FR-10.2`) | ✅ 21 Nov 2026, 0.5 s on SQLite on the development machine (welcome emails are queued, not counted). Check again on MySQL on the server |
+| Report and certificate register export within 10 s (`FR-10.7`) | ✅ asserted in the tests on small data only. Measure with a real school's data |
 | The Docker images build and the stack starts | ❌ **not run**: Docker is not installed on the development machine. First thing to check on the server |
 | TLS 1.3 only (`SR-02`) | ❌ configured in `Caddyfile`, check on the server (step 7) |
 | 300 ms at p95 for 1000 users (`NFR-01`, `NFR-04`) | ❌ load test not run |
@@ -69,6 +71,7 @@ In `backend/.env`:
 | `CACHE_STORE` / `QUEUE_CONNECTION` | `redis` / `redis` |
 | `REDIS_HOST` | `redis` |
 | `LOG_LEVEL` | `warning` |
+| `SESSION_SECURE_COOKIE` | `true`: the admin panel's session cookie is then sent over HTTPS only |
 | `MAIL_MAILER` | `smtp` with the SendGrid settings, or password resets will not arrive |
 | `GEMINI_API_KEY` | the key. Leave it empty and everything still works on pre-authored guidance (`NFR-06`) |
 
@@ -96,6 +99,20 @@ docker compose -f deploy/docker-compose.yml exec app php artisan optimize
 `db:seed` loads the safety questions and the 36 textbook experiments, and also a **demo
 school with test accounts** (`DemoSchoolSeeder`). Before real students are added, remove
 the demo accounts or change their passwords in the admin panel.
+
+Then make the team's own administrator, and onboard each school (`backend/README.md`,
+"Onboarding a school"):
+
+```bash
+docker compose -f deploy/docker-compose.yml exec app php artisan school:onboard --team \
+  --admin-name="..." --admin-email=...
+docker compose -f deploy/docker-compose.yml exec app php artisan school:onboard "School name" \
+  --district=... --board=punjab --classes=9,10 --from=YYYY-MM-DD --until=YYYY-MM-DD \
+  --admin-name="..." --admin-email=...
+```
+
+Each new administrator is emailed a link to choose a password. Until SendGrid is set
+up, add `--print-link` and pass the link on privately.
 
 ## 5. Check encryption at rest (`SR-06`)
 
