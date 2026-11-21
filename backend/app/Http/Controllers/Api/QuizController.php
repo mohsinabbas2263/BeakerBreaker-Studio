@@ -11,6 +11,7 @@ use App\Support\Badges;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class QuizController extends Controller
 {
@@ -92,7 +93,10 @@ class QuizController extends Controller
         $validated = $request->validate([
             'answers'        => ['present', 'array'],
             'answers.*'      => ['required', 'integer', 'min:0', 'max:9'],
-            'session_id'     => ['nullable', 'integer', 'exists:experiment_sessions,id'],
+            // FR-04.4: an attempt may name only the student's own run of this experiment.
+            'session_id'     => ['nullable', 'integer', Rule::exists('experiment_sessions', 'id')
+                ->where('user_id', $request->user()->id)
+                ->where('experiment_id', $experiment->id)],
             '_quiz_session'  => ['required', 'string', 'max:40'],
         ]);
 

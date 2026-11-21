@@ -71,7 +71,8 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
 
         // FR-08: readiness reports (wf_S12).
         Route::get('/teacher/classes/{class}/readiness', [ReadinessController::class, 'forClass']);
-        Route::post('/teacher/students/{student}/readiness', [ReadinessController::class, 'generate']);  // FR-08.2
+        Route::post('/teacher/students/{student}/readiness', [ReadinessController::class, 'generate'])  // FR-08.2
+            ->middleware('throttle:guidance');                                                 // paid AI calls
 
         // FR-09.4, FR-09.5: tasks.
         Route::get('/teacher/tasks', [TaskController::class, 'index']);

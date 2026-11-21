@@ -12,9 +12,18 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
 
-/** FR-10.2: the experiment library, maintained by the administrator. */
+/**
+ * The experiment library, shared by every school, so the project team keeps it.
+ * A school administrator turns experiments off for its own classes instead
+ * (FR-10.4, SchoolClassResource), which changes nothing for another school.
+ */
 class ExperimentResource extends Resource
 {
+    public static function canViewAny(): bool
+    {
+        return \App\Filament\AdminScope::isTeam();
+    }
+
     protected static ?string $model = Experiment::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-beaker';

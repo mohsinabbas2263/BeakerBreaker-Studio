@@ -48,6 +48,15 @@ class AuditLogResource extends Resource
             ->actions([]);
     }
 
+    /**
+     * SR-04: a school administrator reads the entries made by its own school's
+     * staff. The project team reads them all.
+     */
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return \App\Filament\AdminScope::throughRelation(parent::getEloquentQuery(), 'actor');
+    }
+
     public static function getPages(): array
     {
         return ['index' => Pages\ManageAuditLogs::route('/')];

@@ -42,12 +42,26 @@ class DemoSchoolSeeder extends Seeder
             ['grade_level' => 10, 'academic_year' => '2026-2027']
         );
 
+        // A project team administrator (no school): onboards schools, sets their
+        // licence, keeps the experiment library.
         $admin = User::updateOrCreate(
             ['email' => 'admin@beakerbreakers.test'],
             [
-                'school_id' => $school->id,
+                'school_id' => null,
                 'role' => UserRole::Administrator,
                 'display_name' => 'System Administrator',
+                'password' => Hash::make('password'),
+                'status' => 'active',
+            ]
+        );
+
+        // The school's own administrator: this school's people, classes and reports only (SR-04).
+        User::updateOrCreate(
+            ['email' => 'schooladmin@beakerbreakers.test'],
+            [
+                'school_id' => $school->id,
+                'role' => UserRole::Administrator,
+                'display_name' => 'School Administrator',
                 'password' => Hash::make('password'),
                 'status' => 'active',
             ]

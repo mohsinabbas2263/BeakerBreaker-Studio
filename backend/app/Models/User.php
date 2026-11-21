@@ -34,6 +34,22 @@ class User extends Authenticatable implements FilamentUser, HasName
 
     protected $hidden = ['password', 'remember_token'];
 
+    /**
+     * SR-05: every token of a user whose password changes, or whose account is
+     * suspended or deleted, stops working at once. Done here so it holds for
+     * every path: the reset link, the administrator panel, an import.
+     */
+    protected static function booted(): void
+    {
+        static::updated(function (User $user) {
+            if ($user->wasChanged('password') || ($user->wasChanged('status') && ! $user->isActive())) {
+                $user->tokens()->delete();
+            }
+        });
+
+        static::deleted(fn (User $user) => $user->tokens()->delete());
+    }
+
     protected function casts(): array
     {
         return [
@@ -78,6 +94,23 @@ class User extends Authenticatable implements FilamentUser, HasName
     public function isAdministrator(): bool
     {
         return $this->role === UserRole::Administrator;
+    }
+
+    /**
+     * UC-01 and UC-17: an account is made by a *school* administrator, who works on
+     * that school alone (SR-04). An administrator with no school belongs to the
+     * project team: it onboards schools, sets their board and licence, and keeps
+     * the experiment library. There is still one Administrator role (FR-01.1);
+     * the school is what limits its reach.
+     */
+    public function isTeamAdministrator(): bool
+    {
+        return $this->isAdministrator() && $this->school_id === null;
+    }
+
+    public function isSchoolAdministrator(): bool
+    {
+        return $this->isAdministrator() && $this->school_id !== null;
     }
 
     public function school(): BelongsTo

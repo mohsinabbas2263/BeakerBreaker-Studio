@@ -54,6 +54,12 @@ class CertificateResource extends Resource
             ->actions([]);
     }
 
+    /** FR-10.5 and SR-04: the register is school-wide, and only that school's. */
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return \App\Filament\AdminScope::throughRelation(parent::getEloquentQuery(), 'user');
+    }
+
     public static function getPages(): array
     {
         return ['index' => Pages\ManageCertificates::route('/')];

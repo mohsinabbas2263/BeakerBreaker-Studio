@@ -198,16 +198,9 @@ class TaskController extends Controller
 
     private function assignable(SchoolClass $class)
     {
-        $school = $class->school;
-        $grades = array_values(array_filter(
-            ExperimentAccessService::GRADE_PAIRS[$class->grade_level] ?? [],
-            fn (int $g) => $school?->licensesGrade($g),
-        ));
-
-        return Experiment::query()
-            ->where('is_published', true)
-            ->whereIn('grade_level', $grades)
-            ->whereIn('board', [$school?->board ?? 'punjab', 'both']);
+        // FR-10.4: an experiment turned off for the class cannot be set as a task.
+        return $class->licensedExperiments()
+            ->whereNotIn('id', $class->disabledExperiments()->select('experiments.id'));
     }
 
     private function summary(Task $t): array
